@@ -45,10 +45,37 @@
                 <x-input-field label="Target Stok (Opsional)" name="stok_dibutuhkan" type="number" placeholder="Dalam satuan yg dipilih" />
             </div>
 
-            <div>
+            <div x-data="{ photoName: null, photoPreview: null }">
                 <label class="block text-sm font-medium text-on-surface mb-2">Upload Gambar (Opsional)</label>
-                <input type="file" name="gambar_file" accept="image/jpeg,image/png,image/webp" class="w-full border border-outline-variant rounded-lg py-2 px-3 text-sm focus:ring-primary bg-surface-container-lowest file:mr-4 file:py-1 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20">
-                <p class="text-[10px] text-on-surface-variant mt-1">Format: JPG, PNG, WEBP. Maks: 2MB.</p>
+                
+                <div class="flex items-center gap-4">
+                    <!-- Preview Image -->
+                    <div class="w-24 h-24 rounded-lg bg-surface-container-high border border-outline-variant flex items-center justify-center overflow-hidden shrink-0">
+                        <template x-if="!photoPreview">
+                            <svg class="w-8 h-8 text-on-surface-variant/50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                        </template>
+                        <template x-if="photoPreview">
+                            <img :src="photoPreview" class="w-full h-full object-cover">
+                        </template>
+                    </div>
+                    
+                    <!-- File Input -->
+                    <div class="flex-1">
+                        <input type="file" name="gambar_file" accept="image/jpeg,image/png,image/webp" class="hidden"
+                            @change="
+                                photoName = $refs.photo.files[0].name;
+                                const reader = new FileReader();
+                                reader.onload = (e) => { photoPreview = e.target.result; };
+                                reader.readAsDataURL($refs.photo.files[0]);
+                            "
+                            x-ref="photo">
+                        
+                        <button type="button" @click="$refs.photo.click()" class="px-4 py-2 bg-surface-container-high hover:bg-surface-container-highest text-on-surface text-sm font-semibold rounded-lg transition-colors border border-outline-variant/50">
+                            Pilih Foto
+                        </button>
+                        <p class="text-[10px] text-on-surface-variant mt-2">Format: JPG, PNG, WEBP. Maks: 2MB.</p>
+                    </div>
+                </div>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">

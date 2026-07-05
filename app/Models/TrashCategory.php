@@ -78,8 +78,8 @@ class TrashCategory extends Model
         return match ($this->status_harga) {
             'naik' => 'bg-green-100 text-green-800',
             'turun' => 'bg-red-100 text-red-800',
-            'stabil' => 'bg-gray-100 text-gray-800',
-            default => 'bg-gray-100 text-gray-800',
+            'stabil' => 'bg-yellow-100 text-yellow-800',
+            default => 'bg-yellow-100 text-yellow-800',
         };
     }
 
