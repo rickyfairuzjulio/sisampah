@@ -37,6 +37,10 @@ Route::middleware(['auth', 'role:nasabah'])->prefix('nasabah')->name('nasabah.')
     Route::get('/dompet', [NasabahController::class, 'wallet'])->name('wallet');
     Route::post('/withdrawal', [NasabahController::class, 'requestWithdrawal'])->name('withdrawal.request');
     Route::get('/edukasi', [ArticleController::class, 'nasabahIndex'])->name('edukasi');
+    Route::get('/prices', [\App\Http\Controllers\TrashPriceController::class, 'publicIndex'])->name('prices.index');
+    Route::get('/prices/favorites', [\App\Http\Controllers\TrashPriceController::class, 'favorites'])->name('prices.favorites');
+    Route::get('/prices/{id}', [\App\Http\Controllers\TrashPriceController::class, 'publicShow'])->name('prices.show');
+    Route::post('/prices/{id}/favorite', [\App\Http\Controllers\TrashPriceController::class, 'toggleFavorite'])->name('prices.favorite');
 });
 
 Route::middleware(['auth', 'role:petugas'])->prefix('petugas')->name('petugas.')->group(function () {
@@ -49,10 +53,18 @@ Route::middleware(['auth', 'role:petugas'])->prefix('petugas')->name('petugas.')
 
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
-    Route::get('/harga-sampah', [AdminController::class, 'indexTrashPrice'])->name('trash_price.index');
-    Route::post('/harga-sampah', [AdminController::class, 'storeTrashPrice'])->name('trash_price.store');
-    Route::put('/harga-sampah/{id}', [AdminController::class, 'updateTrashPrice'])->name('trash_price.update');
-    Route::delete('/harga-sampah/{id}', [AdminController::class, 'destroyTrashPrice'])->name('trash_price.destroy');
+    // Modul Harga Sampah (Admin)
+    Route::prefix('trash-price')->name('trash_price.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\TrashPriceController::class, 'index'])->name('index');
+        Route::post('/', [\App\Http\Controllers\TrashPriceController::class, 'store'])->name('store');
+        Route::get('/history', [\App\Http\Controllers\TrashPriceController::class, 'history'])->name('history');
+        Route::get('/{id}', [\App\Http\Controllers\TrashPriceController::class, 'show'])->name('show');
+        Route::put('/{id}', [\App\Http\Controllers\TrashPriceController::class, 'update'])->name('update');
+        Route::delete('/{id}', [\App\Http\Controllers\TrashPriceController::class, 'destroy'])->name('destroy');
+        Route::post('/{id}/archive', [\App\Http\Controllers\TrashPriceController::class, 'archive'])->name('archive');
+        Route::post('/{id}/restore', [\App\Http\Controllers\TrashPriceController::class, 'restore'])->name('restore');
+        Route::post('/{id}/duplicate', [\App\Http\Controllers\TrashPriceController::class, 'duplicate'])->name('duplicate');
+    });
     Route::get('/validasi-keuangan', [AdminController::class, 'validateFinance'])->name('finance.validate');
     Route::post('/validasi-keuangan/{id}', [AdminController::class, 'approveWithdrawal'])->name('finance.approve');
     Route::post('/validasi-keuangan/{id}/reject', [AdminController::class, 'rejectWithdrawal'])->name('finance.reject');

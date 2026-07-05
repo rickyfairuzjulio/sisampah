@@ -11,7 +11,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->singleton(\App\Core\Services\PriceNotificationService::class);
+        $this->app->singleton(\App\Core\Services\PricePredictionService::class);
+        $this->app->singleton(\App\Core\Services\TrashPriceService::class);
     }
 
     /**

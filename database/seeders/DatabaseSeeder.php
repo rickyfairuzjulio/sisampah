@@ -13,6 +13,7 @@ class DatabaseSeeder extends Seeder
             TrashCategorySeeder::class,
             UserSeeder::class,
             ArticleSeeder::class,
+            PriceHistorySeeder::class,
         ]);
     }
 }

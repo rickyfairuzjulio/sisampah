@@ -53,50 +53,7 @@ class AdminController extends Controller
         ));
     }
 
-    public function indexTrashPrice()
-    {
-        $categories = TrashCategory::all();
-        return view('admin.trash-price.index', compact('categories'));
-    }
 
-    public function storeTrashPrice(Request $request)
-    {
-        $validated = $request->validate([
-            'nama' => 'required|string|unique:trash_categories,nama',
-            'harga_per_kg' => 'required|numeric|min:100',
-            'deskripsi' => 'nullable|string',
-        ]);
-
-        TrashCategory::create($validated);
-
-        return redirect()->route('admin.trash_price.index')
-            ->with('success', 'Kategori sampah berhasil ditambahkan.');
-    }
-
-    public function updateTrashPrice(Request $request, $id)
-    {
-        $category = TrashCategory::findOrFail($id);
-
-        $validated = $request->validate([
-            'nama' => 'required|string|unique:trash_categories,nama,' . $id,
-            'harga_per_kg' => 'required|numeric|min:100',
-            'deskripsi' => 'nullable|string',
-        ]);
-
-        $category->update($validated);
-
-        return redirect()->route('admin.trash_price.index')
-            ->with('success', 'Harga sampah berhasil diperbarui.');
-    }
-
-    public function destroyTrashPrice($id)
-    {
-        $category = TrashCategory::findOrFail($id);
-        $category->delete();
-
-        return redirect()->route('admin.trash_price.index')
-            ->with('success', 'Kategori sampah berhasil dihapus.');
-    }
 
     public function validateFinance()
     {

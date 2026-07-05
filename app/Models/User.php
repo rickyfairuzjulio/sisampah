@@ -51,4 +51,19 @@ class User extends Authenticatable
     {
         return $this->hasMany(Article::class, 'created_by');
     }
+
+    public function priceFavorites(): HasMany
+    {
+        return $this->hasMany(PriceFavorite::class);
+    }
+
+    public function priceNotifications(): HasMany
+    {
+        return $this->hasMany(PriceNotification::class);
+    }
+
+    public function priceHistories(): HasMany
+    {
+        return $this->hasMany(PriceHistory::class, 'admin_id');
+    }
 }

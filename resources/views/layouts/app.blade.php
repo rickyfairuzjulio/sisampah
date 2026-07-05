@@ -78,6 +78,7 @@
             </div>
         </footer>
     </div>
+    <x-toast />
     @stack('scripts')
 </body>
 </html>
