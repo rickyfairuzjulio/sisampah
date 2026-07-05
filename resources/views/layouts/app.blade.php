@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
+    <title>{{ config('app.name', 'SiSampah') }}</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @stack('styles')
+</head>
+<body class="font-sans antialiased bg-background text-on-surface overflow-x-hidden">
+    <div class="min-h-screen flex flex-col bg-background">
+        @include('layouts.navigation')
+
+        @isset($header)
+            <header class="bg-gradient-to-r from-surface-container-lowest to-surface-container border-b border-outline-variant shadow-sm">
+                <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+                    <div class="animate-fade-in">
+                        {{ $header }}
+                    </div>
+                </div>
+            </header>
+        @endisset
+
+        <main class="flex-1 w-full bg-background">
+            @yield('content')
+            {{ $slot ?? '' }}
+        </main>
+
+        <footer class="bg-on-background text-white border-t border-outline-variant py-12 mt-auto">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                    <div>
+                        <div class="flex items-center gap-2 mb-4">
+                            <div class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
+                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                                </svg>
+                            </div>
+                            <span class="text-xl font-bold">SiSampah</span>
+                        </div>
+                        <p class="text-white/70 text-sm">Mengubah sampah menjadi berkah bagi semua orang</p>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold mb-4">Produk</h4>
+                        <ul class="space-y-2 text-sm text-white/70">
+                            <li><a href="#" class="hover:text-white transition-colors">Untuk Nasabah</a></li>
+                            <li><a href="#" class="hover:text-white transition-colors">Untuk Petugas</a></li>
+                            <li><a href="#" class="hover:text-white transition-colors">Untuk Admin</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold mb-4">Perusahaan</h4>
+                        <ul class="space-y-2 text-sm text-white/70">
+                            <li><a href="#" class="hover:text-white transition-colors">Tentang Kami</a></li>
+                            <li><a href="{{ route('edukasi.index') }}" class="hover:text-white transition-colors">Edukasi</a></li>
+                            <li><a href="#" class="hover:text-white transition-colors">Kontak</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold mb-4">Hubungi</h4>
+                        <ul class="space-y-2 text-sm text-white/70">
+                            <li>hello@sisampah.id</li>
+                            <li>+62 822 1234 5678</li>
+                            <li>Jakarta, Indonesia</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="border-t border-white/20 pt-8 text-center text-white/70 text-sm">
+                    <p>&copy; {{ date('Y') }} SiSampah. Semua hak cipta dilindungi. | Bersih Desa, Sejahtera Bersama.</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+    @stack('scripts')
+</body>
+</html>

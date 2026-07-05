@@ -1,0 +1,137 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: sisampah_app
+    restart: unless-stopped
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www
+      - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    networks:
+      - sisampah_network
+    depends_on:
+      - db
+      - redis
+    environment:
+      - APP_ENV=production
+      - APP_DEBUG=false
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_DATABASE=sisampah
+      - DB_USERNAME=sisampah
+      - DB_PASSWORD=sisampah_password
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+
+  db:
+    image: mysql:8.0
+    container_name: sisampah_db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: sisampah
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_PASSWORD: sisampah_password
+      MYSQL_USER: sisampah
+    volumes:
+      - ./storage/mysql:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    networks:
+      - sisampah_network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    container_name: sisampah_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    networks:
+      - sisampah_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      timeout: 3s
+      retries: 5
+
+  nginx:
+    image: nginx:alpine
+    container_name: sisampah_nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./:/var/www
+      - ./docker/nginx/conf.d:/etc/nginx/conf.d
+      - ./docker/nginx/ssl:/etc/nginx/ssl
+    networks:
+      - sisampah_network
+    depends_on:
+      - app
+
+  queue:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: sisampah_queue
+    restart: unless-stopped
+    working_dir: /var/www
+    command: php artisan queue:work redis --sleep=3 --tries=3
+    volumes:
+      - ./:/var/www
+    networks:
+      - sisampah_network
+    depends_on:
+      - db
+      - redis
+    environment:
+      - APP_ENV=production
+      - APP_DEBUG=false
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_DATABASE=sisampah
+      - DB_USERNAME=sisampah
+      - DB_PASSWORD=sisampah_password
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+
+  scheduler:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: sisampah_scheduler
+    restart: unless-stopped
+    working_dir: /var/www
+    command: php artisan schedule:work
+    volumes:
+      - ./:/var/www
+    networks:
+      - sisampah_network
+    depends_on:
+      - db
+      - redis
+    environment:
+      - APP_ENV=production
+      - APP_DEBUG=false
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_DATABASE=sisampah
+      - DB_USERNAME=sisampah
+      - DB_PASSWORD=sisampah_password
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+
+networks:
+  sisampah_network:
+    driver: bridge
+
+volumes:
+  mysql:
+    driver: local
