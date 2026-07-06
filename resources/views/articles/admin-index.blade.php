@@ -1,7 +1,9 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <x-role-nav role="admin" />
+
     <div class="flex justify-between items-center mb-8">
         <h1 class="text-3xl font-bold text-gray-900">Kelola Artikel Edukasi</h1>
         <button onclick="openCreateModal()" class="px-6 py-3 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700">
