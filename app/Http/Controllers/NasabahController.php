@@ -37,13 +37,52 @@ class NasabahController extends Controller
             ->with('user')
             ->get();
 
+        // --- Carbon Footprint Logic ---
+        $impact = [
+            'co2' => $totalBerat * 1.5,
+            'pohon' => $totalBerat / 50,
+            'energi' => $totalBerat * 5,
+            'air' => $totalBerat * 20,
+            'isGreenStarter' => $totalBerat > 10
+        ];
+
+        // Monthly Data (Last 6 Months)
+        $sixMonthsAgo = now()->subMonths(5)->startOfMonth();
+        $monthlyStats = $user->transactions()
+            ->where('status', 'selesai')
+            ->where('created_at', '>=', $sixMonthsAgo)
+            ->selectRaw('YEAR(created_at) as year, MONTH(created_at) as month, SUM(berat_kg) as total_berat')
+            ->groupBy('year', 'month')
+            ->orderBy('year', 'asc')
+            ->orderBy('month', 'asc')
+            ->get();
+
+        $chartData = [
+            'labels' => [],
+            'data' => []
+        ];
+
+        for ($i = 5; $i >= 0; $i--) {
+            $date = now()->subMonths($i);
+            $chartData['labels'][] = $date->translatedFormat('M Y');
+            
+            // Find data for this month
+            $stat = $monthlyStats->first(function ($item) use ($date) {
+                return $item->year == $date->year && $item->month == $date->month;
+            });
+            
+            $chartData['data'][] = $stat ? (float) $stat->total_berat : 0;
+        }
+
         return view('nasabah.dashboard', compact(
             'saldo',
             'hargaSampah',
             'transaksiTerbaru',
             'totalBerat',
             'totalPoin',
-            'leaderboard'
+            'leaderboard',
+            'impact',
+            'chartData'
         ));
     }
 

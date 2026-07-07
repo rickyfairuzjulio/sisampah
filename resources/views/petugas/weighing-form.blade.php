@@ -31,22 +31,37 @@
                 </x-alert>
             @endif
 
-            <form action="{{ route('petugas.weighing.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+            <form action="{{ route('petugas.weighing.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6"
+                  x-data="weighingForm()" 
+                  @detected="handleAI($event.detail)">
                 @csrf
                 <input type="hidden" name="user_id" value="{{ $user->id }}">
 
+                <div class="mb-6">
+                    <x-camera-scanner />
+                </div>
+
                 <!-- Form Section 1: Kategori -->
                 <div class="space-y-4">
-                    <div class="flex items-center gap-2 pb-3 border-b border-primary/20">
-                        <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                            <span class="text-sm font-bold text-primary">1</span>
+                    <div class="flex items-center justify-between pb-3 border-b border-primary/20">
+                        <div class="flex items-center gap-2">
+                            <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                                <span class="text-sm font-bold text-primary">1</span>
+                            </div>
+                            <h3 class="font-semibold text-on-surface">Pilih Kategori Sampah</h3>
                         </div>
-                        <h3 class="font-semibold text-on-surface">Pilih Kategori Sampah</h3>
+                        
+                        <!-- AI Status Badge -->
+                        <div x-show="aiDetectedCategory" x-cloak class="px-3 py-1 bg-forest-emerald/20 text-forest-emerald rounded-full text-xs font-bold flex items-center gap-1 transition-all">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            Dipilih Otomatis
+                        </div>
                     </div>
 
                     <x-select-field 
                         label="Kategori Sampah"
                         name="trash_category_id"
+                        x-model="selectedCategoryId"
                         required
                         :items="$trashCategories->map(fn($k) => [
                             'value' => $k->id,
@@ -136,6 +151,26 @@
     </div>
 
     <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('weighingForm', () => ({
+                selectedCategoryId: '{{ old('trash_category_id') }}',
+                aiDetectedCategory: null,
+                categories: @json($trashCategories->map(fn($k) => ['id' => $k->id, 'nama' => $k->nama])),
+
+                handleAI(detail) {
+                    const matchedCategory = this.categories.find(c => 
+                        detail.category.toLowerCase().includes(c.nama.toLowerCase()) || 
+                        c.nama.toLowerCase().includes(detail.category.toLowerCase())
+                    );
+                    
+                    if (matchedCategory && this.selectedCategoryId != matchedCategory.id) {
+                        this.selectedCategoryId = matchedCategory.id;
+                        this.aiDetectedCategory = detail.category;
+                    }
+                }
+            }));
+        });
+
         const fileInput = document.getElementById('foto_bukti');
         const preview = document.getElementById('preview');
         const previewImg = document.getElementById('previewImg');

@@ -22,6 +22,8 @@ class HomeController extends Controller
             'transaksi' => Transaction::where('status', 'selesai')->count(),
         ];
 
-        return view('home', compact('articles', 'stats'));
+        $categories = \App\Models\TrashCategory::active()->select('id', 'nama', 'harga_per_kg', 'satuan')->get();
+
+        return view('home', compact('articles', 'stats', 'categories'));
     }
 }

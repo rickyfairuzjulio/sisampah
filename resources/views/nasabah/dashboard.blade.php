@@ -66,6 +66,75 @@
         </a>
     </div>
 
+    {{-- ═══════════════ DAMPAK LINGKUNGAN (CARBON FOOTPRINT) ═══════════════ --}}
+    <div class="mb-10">
+        <div class="flex items-center justify-between mb-5">
+            <h2 class="text-xl font-bold text-on-surface">Dampak Lingkungan Anda</h2>
+            @if($impact['isGreenStarter'])
+                <div class="inline-flex items-center gap-1.5 px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold border border-green-200" title="Anda telah menyetor lebih dari 10kg sampah">
+                    <span>🌿</span> Green Starter
+                </div>
+            @endif
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {{-- Metrik Counter --}}
+            <div class="lg:col-span-1 grid grid-cols-2 gap-4" x-data="{
+                animateValue(obj, start, end, duration) {
+                    let startTimestamp = null;
+                    const step = (timestamp) => {
+                        if (!startTimestamp) startTimestamp = timestamp;
+                        const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                        obj.innerHTML = (progress * (end - start) + start).toFixed(2).replace(/[.,]00$/, '');
+                        if (progress < 1) {
+                            window.requestAnimationFrame(step);
+                        }
+                    };
+                    window.requestAnimationFrame(step);
+                }
+            }" x-init="
+                $nextTick(() => {
+                    animateValue($refs.co2, 0, {{ $impact['co2'] }}, 2000);
+                    animateValue($refs.pohon, 0, {{ $impact['pohon'] }}, 2000);
+                    animateValue($refs.energi, 0, {{ $impact['energi'] }}, 2000);
+                    animateValue($refs.air, 0, {{ $impact['air'] }}, 2000);
+                });
+            ">
+                <x-card class="border-t-4 border-t-gray-500 !p-5 flex flex-col justify-center text-center">
+                    <p class="text-3xl mb-2">☁️</p>
+                    <p class="text-2xl font-black text-on-surface"><span x-ref="co2">0</span> <span class="text-sm font-semibold">Kg</span></p>
+                    <p class="text-xs text-on-surface-variant font-medium mt-1">CO₂ Dikurangi</p>
+                </x-card>
+                
+                <x-card class="border-t-4 border-t-forest-emerald !p-5 flex flex-col justify-center text-center">
+                    <p class="text-3xl mb-2">🌲</p>
+                    <p class="text-2xl font-black text-on-surface"><span x-ref="pohon">0</span></p>
+                    <p class="text-xs text-on-surface-variant font-medium mt-1">Pohon Diselamatkan</p>
+                </x-card>
+
+                <x-card class="border-t-4 border-t-amber-500 !p-5 flex flex-col justify-center text-center">
+                    <p class="text-3xl mb-2">⚡</p>
+                    <p class="text-2xl font-black text-on-surface"><span x-ref="energi">0</span> <span class="text-sm font-semibold">kWh</span></p>
+                    <p class="text-xs text-on-surface-variant font-medium mt-1">Energi Dihemat</p>
+                </x-card>
+
+                <x-card class="border-t-4 border-t-blue-500 !p-5 flex flex-col justify-center text-center">
+                    <p class="text-3xl mb-2">💧</p>
+                    <p class="text-2xl font-black text-on-surface"><span x-ref="air">0</span> <span class="text-sm font-semibold">L</span></p>
+                    <p class="text-xs text-on-surface-variant font-medium mt-1">Air Dihemat</p>
+                </x-card>
+            </div>
+
+            {{-- Grafik Bulanan --}}
+            <x-card class="lg:col-span-2 border border-outline-variant/50 relative">
+                <p class="text-sm font-bold text-on-surface-variant mb-4">Aktivitas Setor Bulanan (Kg)</p>
+                <div class="h-56 w-full">
+                    <canvas id="impactChart"></canvas>
+                </div>
+            </x-card>
+        </div>
+    </div>
+
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div class="lg:col-span-2 space-y-6">
             <x-card class="border border-outline-variant/50">
@@ -153,4 +222,49 @@
         </div>
     </div>
 </div>
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const ctx = document.getElementById('impactChart');
+        if (ctx) {
+            const isDark = document.documentElement.classList.contains('dark');
+            const gridColor = isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)';
+            const textColor = isDark ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.7)';
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: {!! json_encode($chartData['labels']) !!},
+                    datasets: [{
+                        label: 'Sampah Terkelola (Kg)',
+                        data: {!! json_encode($chartData['data']) !!},
+                        backgroundColor: '#1D9E75',
+                        borderRadius: 6,
+                        barThickness: 24
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: gridColor },
+                            ticks: { color: textColor, font: { family: 'Inter' } }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: textColor, font: { family: 'Inter' } }
+                        }
+                    }
+                }
+            });
+        }
+    });
+</script>
+@endpush
 @endsection

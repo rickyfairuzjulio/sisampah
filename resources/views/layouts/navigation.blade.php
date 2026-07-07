@@ -34,7 +34,10 @@
                 </div>
             </div>
 
-            <div class="hidden sm:flex sm:items-center sm:ms-6">
+            <div class="hidden sm:flex sm:items-center sm:ms-6 gap-2">
+                <!-- Theme Toggle -->
+                <x-theme-toggle />
+
                 @auth
                     <x-dropdown align="right" width="48">
                         <x-slot name="trigger">
@@ -87,7 +90,10 @@
                 @endauth
             </div>
 
-            <div class="-me-2 flex items-center sm:hidden">
+            <div class="-me-2 flex items-center sm:hidden gap-2">
+                <!-- Mobile Theme Toggle -->
+                <x-theme-toggle />
+
                 <button @click="open = ! open" class="inline-flex items-center justify-center p-2 rounded-md text-outline hover:text-on-surface hover:bg-surface-container focus:outline-none focus:bg-surface-container focus:text-on-surface transition duration-150 ease-in-out">
                     <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
                         <path :class="{'hidden': open, 'inline-flex': ! open }" class="inline-flex" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />

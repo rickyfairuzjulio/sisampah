@@ -12,9 +12,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intro.js/7.2.0/introjs.min.css">
     @stack('styles')
+    <script>
+        // On page load or when changing themes, best to add inline in `head` to avoid FOUC
+        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
 </head>
-<body class="font-sans antialiased bg-background text-on-surface overflow-x-hidden">
+<body class="font-sans antialiased bg-background text-on-surface overflow-x-hidden transition-colors duration-300">
     <div class="min-h-screen flex flex-col bg-background">
         @include('layouts.navigation')
 
@@ -79,6 +88,7 @@
         </footer>
     </div>
     <x-toast />
+    <x-intro-onboarding />
     @stack('scripts')
 </body>
 </html>
