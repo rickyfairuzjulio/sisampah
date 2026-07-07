@@ -156,4 +156,79 @@ class NasabahController extends Controller
         return redirect()->route('nasabah.wallet')
             ->with('success', 'Pengajuan penarikan dana berhasil dibuat. Tunggu persetujuan admin.');
     }
+
+    public function certificate()
+    {
+        $user = auth()->user();
+        
+        $totalBerat = $user->transactions()
+            ->where('status', 'selesai')
+            ->sum('berat_kg');
+            
+        $totalTransaksi = $user->transactions()
+            ->where('status', 'selesai')
+            ->count();
+            
+        $totalPoin = $user->leaderboard?->total_poin_lingkungan ?? 0;
+        
+        // Impact calculations
+        $impact = [
+            'co2' => $totalBerat * 1.5,
+            'pohon' => $totalBerat / 50,
+            'energi' => $totalBerat * 5,
+            'air' => $totalBerat * 20,
+        ];
+        
+        // Determine Badge & Level
+        if ($totalPoin >= 1000) {
+            $badge = 'Pahlawan Bumi 💎';
+            $levelText = 'Level 4 (Platinum)';
+        } elseif ($totalPoin >= 500) {
+            $badge = 'Pejuang Lingkungan 🥇';
+            $levelText = 'Level 3 (Emas)';
+        } elseif ($totalPoin >= 100) {
+            $badge = 'Penggerak Desa 🥈';
+            $levelText = 'Level 2 (Perak)';
+        } else {
+            $badge = 'Warga Peduli 🥉';
+            $levelText = 'Level 1 (Perunggu)';
+        }
+
+        // Get Rank Position
+        $rank = \App\Models\Leaderboard::where('total_poin_lingkungan', '>', $totalPoin)->count() + 1;
+
+        return view('nasabah.certificate', compact(
+            'user', 
+            'totalBerat', 
+            'totalTransaksi', 
+            'totalPoin', 
+            'impact', 
+            'badge', 
+            'levelText',
+            'rank'
+        ));
+    }
+    public function submitRating(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'rating' => 'required|integer|min:1|max:5',
+            'ulasan' => 'nullable|string|max:500'
+        ]);
+
+        $transaction = \App\Models\Transaction::where('id', $id)
+            ->where('user_id', auth()->id())
+            ->where('status', 'selesai')
+            ->firstOrFail();
+
+        if ($transaction->rating !== null) {
+            return back()->withErrors(['rating' => 'Anda sudah memberikan ulasan untuk transaksi ini.']);
+        }
+
+        $transaction->update([
+            'rating' => $validated['rating'],
+            'ulasan' => $validated['ulasan']
+        ]);
+
+        return back()->with('success', 'Terima kasih atas ulasan Anda!');
+    }
 }

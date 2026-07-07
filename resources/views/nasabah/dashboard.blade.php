@@ -68,13 +68,20 @@
 
     {{-- ═══════════════ DAMPAK LINGKUNGAN (CARBON FOOTPRINT) ═══════════════ --}}
     <div class="mb-10">
-        <div class="flex items-center justify-between mb-5">
-            <h2 class="text-xl font-bold text-on-surface">Dampak Lingkungan Anda</h2>
-            @if($impact['isGreenStarter'])
-                <div class="inline-flex items-center gap-1.5 px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold border border-green-200" title="Anda telah menyetor lebih dari 10kg sampah">
-                    <span>🌿</span> Green Starter
-                </div>
-            @endif
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-5 gap-3">
+            <div class="flex items-center gap-3">
+                <h2 class="text-xl font-bold text-on-surface">Dampak Lingkungan Anda</h2>
+                @if($impact['isGreenStarter'])
+                    <div class="inline-flex items-center gap-1.5 px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold border border-green-200" title="Anda telah menyetor lebih dari 10kg sampah">
+                        <span>🌿</span> Green Starter
+                    </div>
+                @endif
+            </div>
+            
+            <a href="{{ route('nasabah.certificate') }}" class="inline-flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white text-sm font-bold rounded-lg shadow-md transition-all hover:scale-105 active:scale-95">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>
+                Lihat Sertifikat Rapor
+            </a>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -168,9 +175,16 @@
                     <h2 class="text-xl font-bold text-on-surface">Riwayat Transaksi</h2>
                     <p class="text-sm text-on-surface-variant mt-1">Mutasi saldo dari setoran sampah</p>
                 </div>
-                <div class="space-y-3">
+                <div class="space-y-3" x-data="{ 
+                    openRating: false, 
+                    txId: null, 
+                    rating: 0, 
+                    hoverRating: 0,
+                    ulasan: '',
+                    openModal(id) { this.txId = id; this.rating = 0; this.hoverRating = 0; this.ulasan = ''; this.openRating = true; } 
+                }">
                     @forelse($transaksiTerbaru as $transaksi)
-                        <div class="flex items-center justify-between p-4 rounded-xl bg-surface-container-low border border-outline-variant/30">
+                        <div class="flex items-center justify-between p-4 rounded-xl bg-surface-container-low border border-outline-variant/30 flex-wrap gap-2">
                             <div class="flex items-center gap-3">
                                 <div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
                                     <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2"/></svg>
@@ -180,14 +194,65 @@
                                     <p class="text-xs text-on-surface-variant">{{ $transaksi->berat_kg }} Kg · {{ $transaksi->created_at->translatedFormat('d M Y') }}</p>
                                 </div>
                             </div>
-                            <div class="text-right">
+                            <div class="text-right flex flex-col items-end gap-1">
                                 <p class="font-bold text-primary text-sm">+Rp {{ number_format($transaksi->total_rp, 0, ',', '.') }}</p>
-                                <x-badge :status="$transaksi->status === 'selesai' ? 'completed' : 'pending'" :label="ucfirst($transaksi->status)" />
+                                <div class="flex items-center gap-2">
+                                    @if($transaksi->status === 'selesai')
+                                        @if($transaksi->rating)
+                                            <span class="text-xs text-amber-500 font-bold flex items-center gap-0.5">
+                                                {{ $transaksi->rating }} <svg class="w-3 h-3 fill-current" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                            </span>
+                                        @else
+                                            <button @click="openModal('{{ $transaksi->id }}')" class="text-xs text-amber-600 bg-amber-50 hover:bg-amber-100 px-2 py-0.5 rounded font-bold transition-colors">Beri Ulasan</button>
+                                        @endif
+                                    @endif
+                                    <x-badge :status="$transaksi->status === 'selesai' ? 'completed' : 'pending'" :label="ucfirst($transaksi->status)" />
+                                </div>
                             </div>
                         </div>
                     @empty
                         <p class="text-center py-8 text-on-surface-variant text-sm">Belum ada transaksi. Mulai dengan jadwalkan penjemputan!</p>
                     @endforelse
+
+                    <!-- Modal Ulasan -->
+                    <div x-show="openRating" class="fixed inset-0 z-50 overflow-y-auto" style="display: none;" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+                        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                            <div x-show="openRating" x-transition.opacity class="fixed inset-0 bg-gray-900/75 transition-opacity backdrop-blur-sm" @click="openRating = false"></div>
+                            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+                            
+                            <div x-show="openRating" x-transition.scale class="inline-block align-bottom bg-surface-container rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-md w-full border border-outline-variant/30">
+                                <form :action="`/nasabah/transaksi/${txId}/rating`" method="POST">
+                                    @csrf
+                                    <div class="px-6 pt-6 pb-4">
+                                        <div class="text-center mb-6">
+                                            <h3 class="text-xl leading-6 font-bold text-on-surface mb-2" id="modal-title">Penilaian Transaksi</h3>
+                                            <p class="text-sm text-on-surface-variant">Bagaimana pelayanan penjemputan/setoran Anda?</p>
+                                        </div>
+                                        
+                                        <!-- Bintang -->
+                                        <div class="flex justify-center gap-2 mb-6">
+                                            <input type="hidden" name="rating" :value="rating">
+                                            <template x-for="i in 5">
+                                                <button type="button" @click="rating = i" @mouseenter="hoverRating = i" @mouseleave="hoverRating = 0" class="focus:outline-none transition-transform hover:scale-110">
+                                                    <svg class="w-10 h-10" :class="(hoverRating >= i || rating >= i) ? 'text-amber-400 fill-current' : 'text-gray-300 stroke-current fill-transparent'" viewBox="0 0 20 20"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                                </button>
+                                            </template>
+                                        </div>
+
+                                        <!-- Textarea -->
+                                        <div>
+                                            <label for="ulasan" class="block text-sm font-medium text-on-surface mb-2">Ulasan (Opsional)</label>
+                                            <textarea name="ulasan" x-model="ulasan" rows="3" class="w-full bg-surface text-on-surface border border-outline-variant rounded-xl p-3 text-sm focus:ring-2 focus:ring-primary focus:border-primary transition-shadow resize-none" placeholder="Ceritakan pengalaman Anda..."></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="px-6 py-4 bg-surface-container-low flex justify-end gap-3 rounded-b-2xl">
+                                        <button type="button" @click="openRating = false" class="px-4 py-2 text-sm font-semibold text-on-surface-variant hover:text-on-surface transition-colors">Batal</button>
+                                        <button type="submit" :disabled="rating === 0" class="px-4 py-2 bg-primary text-white text-sm font-bold rounded-lg shadow-md hover:bg-primary-container transition-colors disabled:opacity-50 disabled:cursor-not-allowed">Kirim Ulasan</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <a href="{{ route('nasabah.wallet') }}" class="block mt-4 text-center text-sm font-semibold text-primary hover:underline">Lihat semua transaksi & penarikan →</a>
             </x-card>

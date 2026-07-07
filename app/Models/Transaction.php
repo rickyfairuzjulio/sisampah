@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-#[Fillable(['user_id', 'petugas_id', 'trash_category_id', 'berat_kg', 'harga_per_kg', 'total_rp', 'tipe_setoran', 'status', 'foto_bukti', 'koordinat_lat', 'koordinat_lng', 'catatan'])]
+#[Fillable(['user_id', 'petugas_id', 'trash_category_id', 'berat_kg', 'harga_per_kg', 'total_rp', 'tipe_setoran', 'status', 'foto_bukti', 'koordinat_lat', 'koordinat_lng', 'catatan', 'rating', 'ulasan'])]
 class Transaction extends Model
 {
     use HasUlids;

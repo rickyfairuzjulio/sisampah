@@ -41,6 +41,8 @@ Route::middleware(['auth', 'role:nasabah'])->prefix('nasabah')->name('nasabah.')
     Route::get('/prices/favorites', [\App\Http\Controllers\TrashPriceController::class, 'favorites'])->name('prices.favorites');
     Route::get('/prices/{id}', [\App\Http\Controllers\TrashPriceController::class, 'publicShow'])->name('prices.show');
     Route::post('/prices/{id}/favorite', [\App\Http\Controllers\TrashPriceController::class, 'toggleFavorite'])->name('prices.favorite');
+    Route::get('/sertifikat', [NasabahController::class, 'certificate'])->name('certificate');
+    Route::post('/transaksi/{id}/rating', [NasabahController::class, 'submitRating'])->name('transaction.rating');
 });
 
 Route::middleware(['auth', 'role:petugas'])->prefix('petugas')->name('petugas.')->group(function () {

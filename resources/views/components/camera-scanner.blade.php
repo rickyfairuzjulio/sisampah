@@ -12,6 +12,9 @@
         <video x-ref="video" autoplay playsinline class="absolute inset-0 w-full h-full object-cover z-0" 
                x-bind:class="{'opacity-100': !isLoading && isCameraActive, 'opacity-0': isLoading || !isCameraActive}"></video>
         
+        <!-- Hidden Canvas for Snapshot -->
+        <canvas x-ref="canvas" class="hidden"></canvas>
+
         <!-- Scanner Overlay Animation -->
         <div x-show="isCameraActive && !isLoading" class="absolute inset-0 z-10 pointer-events-none">
             <div class="w-full h-full relative">
@@ -48,9 +51,16 @@
                     <span x-show="confidence > 0" class="text-white/90 text-sm font-mono" x-text="Math.round(confidence * 100) + '% Akurasi'"></span>
                 </div>
             </div>
-            <button type="button" @click="stopCamera()" class="p-2 rounded-full bg-white/20 text-white hover:bg-white/30 backdrop-blur-sm transition-colors" title="Tutup Kamera">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-            </button>
+            <div class="flex items-center gap-2">
+                <!-- Capture Button -->
+                <button type="button" x-show="currentPrediction && confidence > 0.4" @click="captureAndUse()" class="px-4 py-2 bg-forest-emerald text-white text-sm font-bold rounded-lg hover:bg-forest-emerald/90 transition-colors shadow-lg flex items-center gap-1">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                    Ambil Foto
+                </button>
+                <button type="button" @click="stopCamera()" class="p-2 rounded-full bg-white/20 text-white hover:bg-white/30 backdrop-blur-sm transition-colors" title="Tutup Kamera">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
         </div>
     </div>
 </div>
@@ -58,7 +68,7 @@
 <style>
 @keyframes scan {
     0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(200px); } /* Adjust based on container height */
+    50% { transform: translateY(200px); }
 }
 </style>
 
@@ -101,17 +111,23 @@ document.addEventListener('alpine:init', () => {
             'strawberry': 'Organik',
             'apple': 'Organik',
             'orange': 'Organik',
-            'lemon': 'Organik'
+            'lemon': 'Organik',
+            'book': 'Kertas',
+            'magazine': 'Kertas',
+            'toilet tissue': 'Kertas',
+            'milk can': 'Logam',
+            'bucket': 'Plastik',
+            'flower pot': 'Kaca',
+            'cellular telephone': 'Elektronik',
+            'laptop': 'Elektronik'
         },
 
         async init() {
             this.isLoading = true;
             this.statusText = 'Mengunduh Model TF.js (Offline Cache)...';
             try {
-                // Load the model
-                this.model = await mobilenet.load({version: 2, alpha: 0.5}); // Lighter version for mobile
+                this.model = await mobilenet.load({version: 2, alpha: 0.5});
                 this.isLoading = false;
-                // Auto start camera if model loads successfully
                 this.startCamera();
             } catch (error) {
                 console.error("Error loading model:", error);
@@ -124,12 +140,11 @@ document.addEventListener('alpine:init', () => {
             if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                 try {
                     this.stream = await navigator.mediaDevices.getUserMedia({ 
-                        video: { facingMode: 'environment' } // Prefer back camera
+                        video: { facingMode: 'environment' }
                     });
                     this.$refs.video.srcObject = this.stream;
                     this.isCameraActive = true;
                     
-                    // Wait for video to be ready before starting detection
                     this.$refs.video.onloadeddata = () => {
                         this.detectFrame();
                     };
@@ -151,19 +166,43 @@ document.addEventListener('alpine:init', () => {
             this.isCameraActive = false;
         },
 
+        captureAndUse() {
+            if (!this.$refs.video || !this.$refs.canvas) return;
+            
+            const video = this.$refs.video;
+            const canvas = this.$refs.canvas;
+            
+            // Set canvas size to video frame size
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            
+            // Draw current video frame to canvas
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            
+            // Get Data URL
+            const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+            
+            // Dispatch event with the photo data and category
+            this.$dispatch('snapshot-taken', {
+                photoUrl: dataUrl,
+                category: this.lastEmittedCategory || this.currentPrediction
+            });
+
+            // Stop camera after taking photo
+            this.stopCamera();
+        },
+
         async detectFrame() {
             if (!this.isCameraActive || !this.model || !this.$refs.video) return;
 
             try {
-                // Perform prediction on the current video frame
                 const predictions = await this.model.classify(this.$refs.video);
                 
                 if (predictions && predictions.length > 0) {
-                    // MobileNet returns multiple predictions. We take the top one.
                     const topPrediction = predictions[0];
                     let detectedClass = topPrediction.className.split(',')[0].toLowerCase();
                     
-                    // Try to map to our local categories
                     let mappedCategory = null;
                     for (const [key, value] of Object.entries(this.classMap)) {
                         if (detectedClass.includes(key) || key.includes(detectedClass)) {
@@ -172,11 +211,9 @@ document.addEventListener('alpine:init', () => {
                         }
                     }
 
-                    this.currentPrediction = mappedCategory || detectedClass; // Fallback to raw if not mapped
+                    this.currentPrediction = mappedCategory || detectedClass;
                     this.confidence = topPrediction.probability;
 
-                    // If confidence is high enough, emit event to parent form
-                    // Debounce emission to prevent constant flickering
                     const now = Date.now();
                     if (this.confidence > 0.4 && mappedCategory) {
                         if (mappedCategory !== this.lastEmittedCategory || now - this.lastEmittedTime > 2000) {
@@ -194,7 +231,6 @@ document.addEventListener('alpine:init', () => {
                 console.error("Detection error", e);
             }
 
-            // Continue loop
             this.animationFrameId = requestAnimationFrame(() => this.detectFrame());
         }
     }));

@@ -33,7 +33,8 @@
 
             <form action="{{ route('petugas.self_deposit.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6"
                   x-data="selfDepositForm()" 
-                  @detected="handleAI($event.detail)">
+                  @detected="handleAI($event.detail)"
+                  @snapshot-taken="handleSnapshot($event.detail)">
                 @csrf
 
                 <div class="mb-6">
@@ -176,6 +177,26 @@
                         this.selectedCategoryId = matchedCategory.id;
                         this.aiDetectedCategory = detail.category;
                     }
+                },
+                
+                handleSnapshot(detail) {
+                    // Convert Data URL to Blob, then to File
+                    fetch(detail.photoUrl)
+                        .then(res => res.blob())
+                        .then(blob => {
+                            const file = new File([blob], "snapshot.jpg", { type: "image/jpeg" });
+                            const dataTransfer = new DataTransfer();
+                            dataTransfer.items.add(file);
+                            
+                            const fileInput = document.getElementById('foto_bukti');
+                            fileInput.files = dataTransfer.files;
+                            
+                            // Trigger change event for preview
+                            fileInput.dispatchEvent(new Event('change', { bubbles: true }));
+                            
+                            // Also select category if not selected
+                            this.handleAI({category: detail.category});
+                        });
                 }
             }));
         });
