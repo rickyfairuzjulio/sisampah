@@ -24,10 +24,10 @@
         value="{{ $value }}"
         placeholder="{{ $placeholder }}"
         {{ $attributes->merge([
-            'class' => 'w-full px-4 py-2 rounded-lg border ' . 
+            'class' => 'w-full px-4 py-2 rounded-lg border text-on-surface ' . 
             ($error 
-                ? 'border-red-500 bg-red-50 focus:ring-red-500' 
-                : 'border-outline-variant bg-surface-container-lowest focus:ring-primary'
+                ? 'border-red-500 bg-red-50 dark:bg-red-900/20 focus:ring-red-500' 
+                : 'border-outline-variant bg-surface-container-lowest focus:bg-surface-container focus:ring-primary'
             ) . 
             ' focus:outline-none focus:ring-2 transition-all duration-200'
         ]) }}

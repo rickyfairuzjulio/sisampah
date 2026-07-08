@@ -51,7 +51,7 @@
                     <h2 class="text-xl font-bold text-on-surface">Keamanan Password</h2>
                     <p class="text-sm text-on-surface-variant">Ubah password akun Anda</p>
                 </div>
-            </x-card>
+            </div>
             <x-card class="border border-outline-variant mt-3">
                 @include('profile.partials.update-password-form')
             </x-card>
@@ -69,7 +69,7 @@
                     <h2 class="text-xl font-bold text-red-600">Zona Berbahaya</h2>
                     <p class="text-sm text-on-surface-variant">Tindakan yang tidak dapat dibatalkan</p>
                 </div>
-            </x-card>
+            </div>
             <x-card class="border-2 border-red-200 bg-red-50/50 mt-3">
                 @include('profile.partials.delete-user-form')
             </x-card>

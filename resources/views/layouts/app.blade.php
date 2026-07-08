@@ -42,7 +42,7 @@
             {{ $slot ?? '' }}
         </main>
 
-        <footer class="bg-on-background text-white border-t border-outline-variant py-12 mt-auto">
+        <footer class="bg-[#1a1c1b] dark:bg-[#0d0f0e] text-white border-t border-outline-variant dark:border-white/10 py-12 mt-auto">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
                     <div>
@@ -87,6 +87,7 @@
             </div>
         </footer>
     </div>
+    <x-chatbot-widget />
     <x-toast />
     <x-intro-onboarding />
     @stack('scripts')

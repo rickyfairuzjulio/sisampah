@@ -50,7 +50,13 @@
                         </div>
 
                         <div class="flex gap-2">
-                            <button onclick="editArticle({{ $article->id }}, '{{ addslashes($article->judul) }}', '{{ addslashes($article->konten) }}', '{{ $article->kategori }}', {{ $article->is_published ? 'true' : 'false' }})" class="flex-1 px-3 py-2 bg-blue-600 text-white rounded font-semibold hover:bg-blue-700 text-sm">
+                            <button onclick="editArticle(this)" 
+                                    data-id="{{ $article->id }}" 
+                                    data-judul="{{ $article->judul }}" 
+                                    data-konten="{{ $article->konten }}" 
+                                    data-kategori="{{ $article->kategori }}" 
+                                    data-published="{{ $article->is_published ? 1 : 0 }}"
+                                    class="flex-1 px-3 py-2 bg-blue-600 text-white rounded font-semibold hover:bg-blue-700 text-sm">
                                 Edit
                             </button>
                             <form action="{{ route('admin.articles.destroy', $article->id) }}" method="POST" class="flex-1">
@@ -95,6 +101,7 @@
 
         <form id="createForm" action="{{ route('admin.articles.store') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
             @csrf
+            <div id="method-spoof"></div>
 
             <div>
                 <label for="judul" class="block text-sm font-semibold text-gray-900 mb-2">Judul Artikel</label>
@@ -139,6 +146,8 @@
     function openCreateModal() {
         document.getElementById('createForm').reset();
         document.getElementById('createForm').action = '{{ route("admin.articles.store") }}';
+        document.getElementById('method-spoof').innerHTML = '';
+        document.querySelector('h2').textContent = 'Buat Artikel Baru';
         document.getElementById('createModal').classList.remove('hidden');
     }
 
@@ -146,12 +155,19 @@
         document.getElementById('createModal').classList.add('hidden');
     }
 
-    function editArticle(id, judul, konten, kategori, isPublished) {
+    function editArticle(btn) {
+        let id = btn.dataset.id;
+        let judul = btn.dataset.judul;
+        let konten = btn.dataset.konten;
+        let kategori = btn.dataset.kategori;
+        let isPublished = btn.dataset.published == 1;
+
         document.getElementById('judul').value = judul;
         document.getElementById('konten').value = konten;
         document.getElementById('kategori').value = kategori;
         document.getElementById('is_published').checked = isPublished;
         document.getElementById('createForm').action = '/admin/articles/' + id;
+        document.getElementById('method-spoof').innerHTML = '<input type="hidden" name="_method" value="PUT">';
         document.querySelector('h2').textContent = 'Edit Artikel';
         document.getElementById('createModal').classList.remove('hidden');
     }

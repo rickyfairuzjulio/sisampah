@@ -47,6 +47,12 @@ class ArticleController extends Controller
         return view('articles.admin-index', compact('articles'));
     }
 
+    public function edit($id)
+    {
+        $article = Article::findOrFail($id);
+        return view('articles.edit', compact('article'));
+    }
+
     public function store(Request $request)
     {
         $validated = $request->validate([

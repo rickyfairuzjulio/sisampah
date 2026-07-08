@@ -1,6 +1,9 @@
 <x-app-layout title="Dompet Saya">
-    <div class="space-y-6 pb-8">
-        <!-- Header with Back Button -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <x-role-nav role="nasabah" />
+        
+        <div class="space-y-6">
+            <!-- Header with Back Button -->
         <div class="flex items-center gap-3">
             <a href="{{ route('nasabah.dashboard') }}" class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -241,6 +244,7 @@
                     </form>
                 </x-card>
             </div>
+        </div>
         </div>
     </div>
 </x-app-layout>

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ArticleController;
+use App\Http\Controllers\ChatbotController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\NasabahController;
 use App\Http\Controllers\PetugasController;
@@ -9,6 +10,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::post('/chat', [ChatbotController::class, 'chat'])->name('chat');
 Route::get('/edukasi', [ArticleController::class, 'publicIndex'])->name('edukasi.index');
 Route::get('/edukasi/{slug}', [ArticleController::class, 'publicShow'])->name('edukasi.show');
 
@@ -74,6 +76,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/laporan', [AdminController::class, 'reports'])->name('reports');
     Route::get('/laporan/export', [AdminController::class, 'exportReports'])->name('reports.export');
     Route::get('/articles', [ArticleController::class, 'adminIndex'])->name('articles.index');
+    Route::get('/articles/{id}/edit', [ArticleController::class, 'edit'])->name('articles.edit');
     Route::post('/articles', [ArticleController::class, 'store'])->name('articles.store');
     Route::put('/articles/{id}', [ArticleController::class, 'update'])->name('articles.update');
     Route::delete('/articles/{id}', [ArticleController::class, 'destroy'])->name('articles.destroy');

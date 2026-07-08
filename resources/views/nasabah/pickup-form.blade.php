@@ -1,4 +1,5 @@
 <x-app-layout title="Jadwalkan Penjemputan">
+    @push('styles')
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
     <style>
         #pickup-map { height: 280px; width: 100%; border-radius: 1rem; z-index: 0; }
@@ -7,6 +8,7 @@
     @endpush
 
     <div class="space-y-6 pb-8 max-w-3xl mx-auto px-4 sm:px-0">
+        <x-role-nav role="nasabah" />
         <div class="flex items-center gap-3">
             <a href="{{ route('nasabah.dashboard') }}" class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
