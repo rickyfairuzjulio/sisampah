@@ -16,6 +16,45 @@
         badge="Nasabah"
     />
 
+    @php
+        $userLeaderboard = Auth::user()->leaderboard;
+        $lvl = $userLeaderboard ? $userLeaderboard->level : 1;
+        $badgeName = $userLeaderboard ? $userLeaderboard->badge_name : 'Warga Peduli';
+        $badgeIcon = $userLeaderboard ? $userLeaderboard->badge_icon : '🥉';
+        $badgeColor = $userLeaderboard ? $userLeaderboard->badge_color : 'from-orange-700 to-orange-900';
+        $xpPercent = $userLeaderboard ? $userLeaderboard->xp_percentage : 0;
+        $nextXp = $userLeaderboard ? $userLeaderboard->next_level_xp : 100;
+        $currentXp = $userLeaderboard ? $userLeaderboard->total_poin_lingkungan : 0;
+    @endphp
+
+    <div class="mb-8 animate-slide-in" style="animation-delay: 0.1s;">
+        <div class="bg-surface border border-outline-variant/30 rounded-2xl p-5 sm:p-6 shadow-sm flex flex-col sm:flex-row items-center gap-6">
+            <div class="relative shrink-0">
+                <div class="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-br {{ $badgeColor }} flex items-center justify-center text-4xl sm:text-5xl shadow-lg border-4 border-surface">
+                    {{ $badgeIcon }}
+                </div>
+                <div class="absolute -bottom-2 -right-2 bg-surface text-on-surface text-xs font-black px-2.5 py-1 rounded-full border-2 border-surface shadow-sm">
+                    LV {{ $lvl }}
+                </div>
+            </div>
+            <div class="flex-1 w-full text-center sm:text-left">
+                <h3 class="text-xl sm:text-2xl font-black text-on-surface">{{ $badgeName }}</h3>
+                <p class="text-sm text-on-surface-variant font-medium mt-1 mb-4">{{ number_format($currentXp, 0) }} / {{ number_format($nextXp, 0) }} Poin Lingkungan</p>
+                
+                <div class="relative w-full h-3 sm:h-4 bg-surface-container-highest rounded-full overflow-hidden">
+                    <div class="absolute top-0 left-0 h-full bg-gradient-to-r {{ $badgeColor }} transition-all duration-1000 ease-out" style="width: {{ $xpPercent }}%;">
+                        <div class="absolute inset-0 bg-white/20" style="background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.1) 10px, rgba(255,255,255,0.1) 20px);"></div>
+                    </div>
+                </div>
+                @if($lvl < 4)
+                    <p class="text-xs text-on-surface-variant font-medium mt-2 text-right">{{ 100 - $xpPercent }}% menuju Level {{ $lvl + 1 }}</p>
+                @else
+                    <p class="text-xs text-primary font-bold mt-2 text-right">Maksimal Level Tercapai! 🎉</p>
+                @endif
+            </div>
+        </div>
+    </div>
+
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8 animate-slide-in">
         <x-stat-tile
             title="Rp {{ number_format($saldo, 0, ',', '.') }}"
@@ -263,11 +302,27 @@
                 <h3 class="text-lg font-bold text-on-surface mb-4">Papan Peringkat</h3>
                 <div class="space-y-3">
                     @forelse($leaderboard as $index => $entry)
-                        <div class="flex items-center gap-3 p-3 rounded-xl {{ $entry->user_id === Auth::id() ? 'bg-primary/10 border border-primary/20' : 'bg-surface-container-low' }}">
-                            <span class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold {{ $index < 3 ? 'bg-primary text-white' : 'bg-surface-container text-on-surface-variant' }}">{{ $index + 1 }}</span>
+                        <div class="flex items-center gap-3 p-3 rounded-xl {{ $entry->user_id === Auth::id() ? 'bg-primary/10 border border-primary/20 shadow-inner' : 'bg-surface-container-low' }} transition-colors">
+                            <div class="relative shrink-0">
+                                <span class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold shadow-sm {{ $index == 0 ? 'bg-gradient-to-br from-amber-300 to-amber-500 text-white' : ($index == 1 ? 'bg-gradient-to-br from-gray-300 to-gray-500 text-white' : ($index == 2 ? 'bg-gradient-to-br from-orange-400 to-orange-600 text-white' : 'bg-surface-container-highest text-on-surface-variant')) }}">
+                                    {{ $index + 1 }}
+                                </span>
+                                @if($index < 3)
+                                    <span class="absolute -top-1 -right-1 text-xs">{{ $entry->badge_icon }}</span>
+                                @endif
+                            </div>
                             <div class="flex-1 min-w-0">
-                                <p class="font-semibold text-sm truncate">{{ $entry->user->name }}</p>
-                                <p class="text-xs text-on-surface-variant">{{ number_format($entry->total_poin_lingkungan, 0) }} poin</p>
+                                <p class="font-semibold text-sm truncate text-on-surface flex items-center gap-1">
+                                    {{ $entry->user->name }}
+                                    @if($entry->user_id === Auth::id())
+                                        <span class="text-[10px] bg-primary text-white px-1.5 py-0.5 rounded-full font-bold ml-1">Anda</span>
+                                    @endif
+                                </p>
+                                <p class="text-xs font-medium bg-clip-text text-transparent bg-gradient-to-r {{ $entry->badge_color }} inline-block">{{ $entry->badge_name }}</p>
+                            </div>
+                            <div class="text-right shrink-0">
+                                <p class="text-xs font-bold text-on-surface">{{ number_format($entry->total_poin_lingkungan, 0) }}</p>
+                                <p class="text-[10px] text-on-surface-variant uppercase tracking-wider">Poin</p>
                             </div>
                         </div>
                     @empty

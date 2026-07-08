@@ -179,16 +179,10 @@ class NasabahController extends Controller
             'air' => $totalBerat * 20,
         ];
         
-        // Determine Badge & Level
-        if ($totalPoin >= 1000) {
-            $badge = 'Pahlawan Bumi 💎';
-            $levelText = 'Level 4 (Platinum)';
-        } elseif ($totalPoin >= 500) {
-            $badge = 'Pejuang Lingkungan 🥇';
-            $levelText = 'Level 3 (Emas)';
-        } elseif ($totalPoin >= 100) {
-            $badge = 'Penggerak Desa 🥈';
-            $levelText = 'Level 2 (Perak)';
+        // Determine Badge & Level using Model Accessors
+        if ($user->leaderboard) {
+            $badge = $user->leaderboard->badge_name . ' ' . $user->leaderboard->badge_icon;
+            $levelText = 'Level ' . $user->leaderboard->level;
         } else {
             $badge = 'Warga Peduli 🥉';
             $levelText = 'Level 1 (Perunggu)';
