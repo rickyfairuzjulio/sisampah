@@ -78,7 +78,7 @@
                         {{ $price->jenis ?: 'Kategori sampah ' . $price->kategori }}
                     </p>
 
-                    <div class="pt-4 border-t border-outline-variant/40 mt-auto">
+                    <div class="pt-4 border-t border-outline-variant mt-auto">
                         <p class="text-[10px] text-on-surface-variant font-semibold uppercase tracking-wider mb-1">Harga Beli Pengepul</p>
                         <div class="flex justify-between items-end">
                             <div>

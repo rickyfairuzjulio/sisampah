@@ -44,12 +44,14 @@ class ArticleController extends Controller
     public function adminIndex()
     {
         $articles = Article::latest()->paginate(15);
+
         return view('articles.admin-index', compact('articles'));
     }
 
     public function edit($id)
     {
         $article = Article::findOrFail($id);
+
         return view('articles.edit', compact('article'));
     }
 

@@ -13,6 +13,7 @@ class Transaction extends Model
     use HasUlids;
 
     public $incrementing = false;
+
     protected $keyType = 'string';
 
     protected function casts(): array

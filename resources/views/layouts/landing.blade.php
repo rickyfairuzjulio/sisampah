@@ -30,12 +30,8 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16 lg:h-20">
                 <a href="{{ route('home') }}" class="flex items-center gap-2.5 group">
-                    <div class="w-9 h-9 lg:w-10 lg:h-10 bg-primary rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
-                        </svg>
-                    </div>
-                    <span class="text-lg lg:text-xl font-bold">SiSampah<span class="text-forest-emerald">.</span></span>
+                    <img src="{{ asset('images/logo.png') }}" alt="SiSampah Logo" class="w-14 h-14 lg:w-16 lg:h-16 object-contain group-hover:scale-110 transition-transform">
+                    <span class="text-xl lg:text-2xl font-bold ml-1">SiSampah<span class="text-forest-emerald">.</span></span>
                 </a>
 
                 <nav class="hidden lg:flex items-center gap-8 text-sm font-medium text-white/70">
@@ -94,10 +90,8 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
                 <div class="sm:col-span-2 lg:col-span-1">
                     <div class="flex items-center gap-2 mb-4">
-                        <div class="w-9 h-9 bg-primary rounded-xl flex items-center justify-center">
-                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
-                        </div>
-                        <span class="text-xl font-bold">SiSampah</span>
+                        <img src="{{ asset('images/logo.png') }}" alt="SiSampah Logo" class="w-12 h-12 object-contain drop-shadow-sm">
+                        <span class="text-2xl font-bold ml-1">SiSampah</span>
                     </div>
                     <p class="text-white/50 text-sm leading-relaxed max-w-xs">Bank Sampah Digital untuk desa yang lebih bersih dan warga yang lebih sejahtera.</p>
                 </div>

@@ -13,7 +13,7 @@ class PricePredictionService
     public function predictPrice(int $categoryId, int $daysAhead = 1): array
     {
         $category = TrashCategory::find($categoryId);
-        if (!$category) {
+        if (! $category) {
             return ['status' => 'error', 'message' => 'Kategori tidak ditemukan.'];
         }
 
@@ -31,33 +31,33 @@ class PricePredictionService
                 'predicted_price' => $category->harga_per_kg,
                 'confidence' => 'Rendah',
                 'trend' => 'stabil',
-                'message' => 'Data historis belum cukup untuk prediksi akurat.'
+                'message' => 'Data historis belum cukup untuk prediksi akurat.',
             ];
         }
 
         // Simple algorithm: weighted moving average where recent prices have more weight
         $prices = $histories->pluck('harga_baru')->toArray();
         $prices = array_reverse($prices); // chronological order
-        
+
         $totalWeight = 0;
         $weightedSum = 0;
-        
+
         foreach ($prices as $index => $price) {
             $weight = $index + 1; // 1 to N
             $totalWeight += $weight;
             $weightedSum += ($price * $weight);
         }
-        
+
         $predictedPrice = $weightedSum / $totalWeight;
-        
+
         // Adjust based on current trend (momentum)
         $recentTrend = $prices[count($prices) - 1] - $prices[count($prices) - 4]; // change over last 3 updates
         $momentumAdjusted = $predictedPrice + ($recentTrend * 0.5 * $daysAhead);
-        
+
         // Ensure price is not negative and reasonable
         $momentumAdjusted = max($category->harga_per_kg * 0.5, $momentumAdjusted);
         $momentumAdjusted = round($momentumAdjusted / 100) * 100; // Round to nearest 100
-        
+
         $confidence = $this->getConfidenceLevel($prices);
         $trend = $momentumAdjusted > $category->harga_per_kg ? 'naik' : ($momentumAdjusted < $category->harga_per_kg ? 'turun' : 'stabil');
 
@@ -68,7 +68,7 @@ class PricePredictionService
             'confidence' => $confidence,
             'trend' => $trend,
             'days_ahead' => $daysAhead,
-            'message' => 'Prediksi berhasil dibuat berdasarkan data historis.'
+            'message' => 'Prediksi berhasil dibuat berdasarkan data historis.',
         ];
     }
 
@@ -77,24 +77,31 @@ class PricePredictionService
      */
     private function getConfidenceLevel(array $prices): string
     {
-        if (count($prices) < 10) return 'Rendah';
-        
+        if (count($prices) < 10) {
+            return 'Rendah';
+        }
+
         // Calculate standard deviation (volatility)
         $mean = array_sum($prices) / count($prices);
-        
+
         $carry = 0.0;
         foreach ($prices as $val) {
-            $d = ((double) $val) - $mean;
+            $d = ((float) $val) - $mean;
             $carry += $d * $d;
-        };
-        
+        }
+
         $variance = $carry / count($prices);
         $stdDev = sqrt($variance);
-        
+
         $volatilityPercent = ($stdDev / $mean) * 100;
-        
-        if ($volatilityPercent < 5) return 'Tinggi';
-        if ($volatilityPercent < 15) return 'Sedang';
+
+        if ($volatilityPercent < 5) {
+            return 'Tinggi';
+        }
+        if ($volatilityPercent < 15) {
+            return 'Sedang';
+        }
+
         return 'Rendah';
     }
 
@@ -111,14 +118,18 @@ class PricePredictionService
         if ($histories->isEmpty()) {
             return ['trend' => 'stabil', 'volatility' => 'rendah'];
         }
-        
+
         $first = $histories->last()->harga_baru; // Oldest of the 10
         $last = $histories->first()->harga_baru; // Newest
-        
+
         $trend = 'stabil';
-        if ($last > $first * 1.05) $trend = 'naik';
-        if ($last < $first * 0.95) $trend = 'turun';
-        
+        if ($last > $first * 1.05) {
+            $trend = 'naik';
+        }
+        if ($last < $first * 0.95) {
+            $trend = 'turun';
+        }
+
         return [
             'trend' => $trend,
             'change_amount' => abs($last - $first),

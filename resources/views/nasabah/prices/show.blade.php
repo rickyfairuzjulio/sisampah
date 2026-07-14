@@ -81,7 +81,7 @@
             
             {{-- Info Tabs (Implemented simply) --}}
             <div class="bg-surface rounded-3xl p-6 shadow-sm border border-outline-variant">
-                <h3 class="text-lg font-bold text-on-surface mb-4 border-b border-outline-variant/50 pb-2">Informasi Lengkap</h3>
+                <h3 class="text-lg font-bold text-on-surface mb-4 border-b border-outline-variant pb-2">Informasi Lengkap</h3>
                 
                 <p class="text-on-surface text-sm leading-relaxed mb-6">
                     {{ $category->deskripsi ?: 'Kategori ini tidak memiliki deskripsi spesifik.' }}

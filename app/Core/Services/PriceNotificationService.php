@@ -14,32 +14,32 @@ class PriceNotificationService
     public function createAdminNotification(string $type, TrashCategory $category, array $data = []): void
     {
         $admins = User::role('admin')->get();
-        
+
         $title = '';
         $message = '';
-        
+
         switch ($type) {
             case 'harga_drastis':
-                $title = 'Perubahan Harga Drastis: ' . $category->nama;
+                $title = 'Perubahan Harga Drastis: '.$category->nama;
                 $message = "Terdapat perubahan harga drastis sebesar {$data['persentase']}% pada kategori {$category->nama}.";
                 break;
             case 'belum_update':
-                $title = 'Kategori Belum Diupdate: ' . $category->nama;
+                $title = 'Kategori Belum Diupdate: '.$category->nama;
                 $message = "Harga untuk kategori {$category->nama} belum diupdate dalam waktu lama. Harap segera perbarui.";
                 break;
             case 'terlalu_rendah':
-                $title = 'Peringatan Harga Terlalu Rendah: ' . $category->nama;
+                $title = 'Peringatan Harga Terlalu Rendah: '.$category->nama;
                 $message = "Harga kategori {$category->nama} berada di bawah batas wajar.";
                 break;
             case 'terlalu_tinggi':
-                $title = 'Peringatan Harga Terlalu Tinggi: ' . $category->nama;
+                $title = 'Peringatan Harga Terlalu Tinggi: '.$category->nama;
                 $message = "Harga kategori {$category->nama} melebihi batas wajar. Mohon diverifikasi.";
                 break;
             default:
                 $title = 'Pemberitahuan Sistem';
                 $message = "Pemberitahuan terkait kategori {$category->nama}.";
         }
-        
+
         foreach ($admins as $admin) {
             PriceNotification::create([
                 'user_id' => $admin->id,
@@ -57,20 +57,20 @@ class PriceNotificationService
     public function createUserNotification(string $type, TrashCategory $category, float $persentase): void
     {
         $favorites = $category->favorites()->with('user')->get();
-        
+
         $title = '';
         $message = '';
-        
+
         if ($type === 'harga_naik') {
-            $title = 'Hore! Harga ' . $category->nama . ' Naik 📈';
+            $title = 'Hore! Harga '.$category->nama.' Naik 📈';
             $message = "Harga sampah favorit Anda, {$category->nama}, naik sebesar {$persentase}% hari ini! Ayo buruan jual.";
         } elseif ($type === 'harga_turun') {
-            $title = 'Info Harga: ' . $category->nama . ' Turun 📉';
+            $title = 'Info Harga: '.$category->nama.' Turun 📉';
             $message = "Harga sampah {$category->nama} sedang turun sebesar {$persentase}%. Simpan dulu atau pantau terus harganya.";
         } else {
             return; // Only process naik/turun for users
         }
-        
+
         foreach ($favorites as $favorite) {
             PriceNotification::create([
                 'user_id' => $favorite->user_id,

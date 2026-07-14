@@ -10,6 +10,8 @@
 @tailwind components;
 @tailwind utilities;
 
+[x-cloak] { display: none !important; }
+
 @layer base {
     :root {
         --color-surface: #f9f9f7;
@@ -410,9 +412,9 @@
     }
 
     .quick-action-card {
-        @apply flex items-center gap-4 p-4 rounded-xl border border-outline-variant
-               bg-surface-container-lowest hover:shadow-md hover:border-primary
-               hover:scale-[1.02] transition-all duration-200;
+        @apply flex items-center gap-4 p-4 rounded-2xl border border-outline-variant
+               bg-surface-container-lowest hover:shadow-lg hover:border-primary
+               hover:-translate-y-1 hover:bg-surface-container-low transition-all duration-300 cursor-pointer;
     }
 
     /* ─── LANDING PAGE ─── */

@@ -59,7 +59,7 @@
 
     <!-- Table -->
     <x-card class="overflow-hidden animate-slide-in" style="animation-delay: 100ms;">
-        <div class="overflow-x-auto">
+        <div class="overflow-x-auto hidden md:block">
             <table class="w-full text-left border-collapse">
                 <thead>
                     <tr class="bg-surface-container-low text-on-surface-variant text-sm border-b border-outline-variant">
@@ -107,6 +107,44 @@
                     @endforelse
                 </tbody>
             </table>
+        </div>
+
+        <!-- Mobile Card View -->
+        <div class="block md:hidden divide-y divide-outline-variant">
+            @forelse($transactions as $trx)
+                <div class="p-4 bg-surface-container-lowest">
+                    <div class="flex items-start justify-between mb-3">
+                        <div>
+                            <div class="text-sm font-bold text-primary">#{{ substr($trx->id, -6) }}</div>
+                            <div class="text-[10px] text-on-surface-variant mt-0.5">{{ $trx->created_at->format('d M Y, H:i') }}</div>
+                        </div>
+                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-surface-container-high text-on-surface-variant">
+                            {{ ucfirst($trx->tipe_setoran) }}
+                        </span>
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="text-sm font-bold text-on-surface">{{ $trx->user->name }}</div>
+                        <div class="text-xs text-on-surface-variant">RT {{ str_pad($trx->user->rt ?? 0, 3, '0', STR_PAD_LEFT) }} / RW {{ str_pad($trx->user->rw ?? 0, 3, '0', STR_PAD_LEFT) }}</div>
+                    </div>
+
+                    <div class="bg-surface-container-low p-3 rounded-xl border border-outline-variant">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-xs font-semibold text-on-surface">{{ $trx->trashCategory->nama }}</span>
+                            <span class="text-xs font-bold text-on-surface">{{ $trx->berat_kg }} Kg</span>
+                        </div>
+                        <div class="flex justify-between items-end border-t border-outline-variant pt-2">
+                            <div class="text-[10px] text-on-surface-variant">@ Rp {{ number_format($trx->harga_per_kg, 0, ',', '.') }}</div>
+                            <div class="text-sm font-extrabold text-primary">Rp {{ number_format($trx->total_rp, 0, ',', '.') }}</div>
+                        </div>
+                    </div>
+                </div>
+            @empty
+                <div class="p-8 text-center text-on-surface-variant">
+                    <svg class="w-12 h-12 mx-auto text-outline-variant mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    <p class="text-sm">Tidak ada data transaksi yang sesuai filter.</p>
+                </div>
+            @endforelse
         </div>
         @if($transactions->hasPages())
             <div class="p-4 border-t border-outline-variant bg-surface-container-lowest">

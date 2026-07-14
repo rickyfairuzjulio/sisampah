@@ -2,8 +2,8 @@
 
 namespace App\Core\Repositories;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 
 abstract class BaseRepository implements RepositoryInterface
 {
@@ -37,12 +37,14 @@ abstract class BaseRepository implements RepositoryInterface
     public function update(int|string $id, array $data): bool
     {
         $record = $this->findOrFail($id);
+
         return $record->update($data);
     }
 
     public function delete(int|string $id): bool
     {
         $record = $this->findOrFail($id);
+
         return $record->delete();
     }
 }

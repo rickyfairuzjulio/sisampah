@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Core\Services\TrashPriceService;
 use App\Core\Services\PricePredictionService;
+use App\Core\Services\TrashPriceService;
 use App\Http\Requests\StoreTrashPriceRequest;
 use App\Http\Requests\UpdateTrashPriceRequest;
 use App\Models\PriceHistory;
@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Auth;
 class TrashPriceController extends Controller
 {
     protected TrashPriceService $priceService;
+
     protected PricePredictionService $predictionService;
 
     public function __construct(TrashPriceService $priceService, PricePredictionService $predictionService)
@@ -40,7 +41,7 @@ class TrashPriceController extends Controller
         $category = TrashCategory::with('priceHistories.admin')->findOrFail($id);
         $prediction = $this->predictionService->predictPrice($id, 7); // Predict 7 days ahead
         $trend = $this->predictionService->getTrendAnalysis($id);
-        
+
         $histories = PriceHistory::where('trash_category_id', $id)
             ->with('admin')
             ->orderBy('created_at', 'desc')
@@ -52,6 +53,7 @@ class TrashPriceController extends Controller
     public function store(StoreTrashPriceRequest $request)
     {
         $this->priceService->createPrice($request->validated(), Auth::user());
+
         return redirect()->route('admin.trash_price.index')->with('success', 'Harga sampah berhasil ditambahkan.');
     }
 
@@ -59,36 +61,40 @@ class TrashPriceController extends Controller
     {
         $data = $request->validated();
         $alasan = $request->input('alasan');
-        
+
         $this->priceService->updatePrice($id, $data, Auth::user(), $alasan);
+
         return redirect()->route('admin.trash_price.index')->with('success', 'Harga sampah berhasil diperbarui.');
     }
 
     public function destroy($id)
     {
         $deleted = $this->priceService->deleteOrArchivePrice($id);
-        $message = $deleted 
+        $message = $deleted
             ? 'Harga sampah berhasil dihapus.'
             : 'Kategori ini memiliki transaksi, sehingga telah diarsipkan (soft delete).';
-            
+
         return redirect()->route('admin.trash_price.index')->with('success', $message);
     }
 
     public function archive($id)
     {
         $this->priceService->deleteOrArchivePrice($id, false);
+
         return redirect()->route('admin.trash_price.index')->with('success', 'Harga sampah berhasil diarsipkan.');
     }
 
     public function restore($id)
     {
         $this->priceService->restorePrice($id);
+
         return redirect()->route('admin.trash_price.index')->with('success', 'Harga sampah berhasil dikembalikan dari arsip.');
     }
 
     public function duplicate($id)
     {
         $this->priceService->duplicatePrice($id, Auth::user());
+
         return redirect()->route('admin.trash_price.index')->with('success', 'Data harga berhasil digandakan.');
     }
 
@@ -118,7 +124,7 @@ class TrashPriceController extends Controller
     {
         $filters = $request->only(['search', 'kategori']);
         $filters['is_archived'] = 'false';
-        
+
         $prices = $this->priceService->getFilteredPrices($filters, 12);
         $user = Auth::user();
         $favorites = $user ? $user->priceFavorites()->pluck('trash_category_id')->toArray() : [];
@@ -129,13 +135,13 @@ class TrashPriceController extends Controller
     public function publicShow($id)
     {
         $category = TrashCategory::active()->findOrFail($id);
-        
+
         // Data for chart
         $histories = PriceHistory::where('trash_category_id', $id)
             ->orderBy('created_at', 'asc')
             ->take(30)
             ->get();
-            
+
         $user = Auth::user();
         $isFavorite = $user ? $user->priceFavorites()->where('trash_category_id', $id)->exists() : false;
 
@@ -146,12 +152,14 @@ class TrashPriceController extends Controller
     {
         $user = Auth::user();
         $exists = $user->priceFavorites()->where('trash_category_id', $id)->exists();
-        
+
         if ($exists) {
             $user->priceFavorites()->where('trash_category_id', $id)->delete();
+
             return response()->json(['status' => 'removed', 'message' => 'Dihapus dari favorit']);
         } else {
             $user->priceFavorites()->create(['trash_category_id' => $id]);
+
             return response()->json(['status' => 'added', 'message' => 'Ditambahkan ke favorit']);
         }
     }
@@ -160,7 +168,7 @@ class TrashPriceController extends Controller
     {
         $user = Auth::user();
         $favorites = $user->priceFavorites()->with('trashCategory')->get();
-        
+
         return view('nasabah.prices.favorites', compact('favorites'));
     }
 }

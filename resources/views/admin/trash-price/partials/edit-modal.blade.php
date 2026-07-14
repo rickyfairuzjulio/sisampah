@@ -1,6 +1,6 @@
 <x-modal name="edit-modal" maxWidth="2xl">
     <div class="p-6">
-        <div class="flex items-center justify-between mb-5 border-b border-outline-variant/30 pb-4">
+        <div class="flex items-center justify-between mb-5 border-b border-outline-variant pb-4">
             <h2 class="text-xl font-bold text-on-surface">Edit Harga Sampah</h2>
             <button @click="$dispatch('close-modal', 'edit-modal')" class="text-on-surface-variant hover:text-on-surface">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -41,7 +41,7 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-surface-container-low rounded-xl border border-outline-variant/50">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-surface-container-low rounded-xl border border-outline-variant">
                 <div class="relative">
                     <label class="block text-sm font-medium text-on-surface mb-2">Harga Baru <span class="text-red-500">*</span></label>
                     <div class="absolute inset-y-0 left-0 pt-7 pl-3 flex items-center pointer-events-none text-on-surface-variant">Rp</div>
@@ -96,7 +96,7 @@
                             "
                             x-ref="photo">
                         
-                        <button type="button" @click="$refs.photo.click()" class="px-4 py-2 bg-surface-container-high hover:bg-surface-container-highest text-on-surface text-sm font-semibold rounded-lg transition-colors border border-outline-variant/50">
+                        <button type="button" @click="$refs.photo.click()" class="px-4 py-2 bg-surface-container-high hover:bg-surface-container-highest text-on-surface text-sm font-semibold rounded-lg transition-colors border border-outline-variant">
                             Pilih Foto Baru
                         </button>
                         <p class="text-[10px] text-on-surface-variant mt-2">Biarkan kosong jika tidak ingin mengubah foto. Format: JPG, PNG, WEBP. Maks: 2MB.</p>
@@ -115,7 +115,7 @@
                 </div>
             </div>
 
-            <div class="flex justify-end gap-3 mt-6 pt-4 border-t border-outline-variant/30">
+            <div class="flex justify-end gap-3 mt-6 pt-4 border-t border-outline-variant">
                 <button type="button" @click="$dispatch('close-modal', 'edit-modal')" class="px-5 py-2.5 bg-surface-container hover:bg-surface-container-high text-on-surface font-semibold rounded-xl transition-colors text-sm">
                     Batal
                 </button>

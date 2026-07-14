@@ -7,8 +7,11 @@
     </style>
     @endpush
 
-    <div class="space-y-6 pb-8 max-w-3xl mx-auto px-4 sm:px-0">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
         <x-role-nav role="nasabah" />
+    </div>
+
+    <div class="space-y-6 pb-8 max-w-3xl mx-auto px-4 sm:px-0 mt-4">
         <div class="flex items-center gap-3">
             <a href="{{ route('nasabah.dashboard') }}" class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
@@ -30,104 +33,95 @@
                 </x-alert>
             @endif
 
-            <form action="{{ route('nasabah.pickup.store') }}" method="POST" class="space-y-6">
+            <form action="{{ route('nasabah.pickup.store') }}" method="POST">
                 @csrf
 
-                <div class="space-y-4">
-                    <h3 class="font-semibold text-on-surface flex items-center gap-2">
-                        <span class="w-7 h-7 rounded-full bg-primary/10 text-primary text-sm font-bold flex items-center justify-center">1</span>
-                        Kategori Sampah
-                    </h3>
-                    <x-select-field
-                        label="Kategori Sampah"
-                        name="trash_category_id"
-                        required
-                        :items="$trashCategories->map(fn($k) => [
-                            'value' => $k->id,
-                            'label' => $k->nama . ' (Rp ' . number_format($k->harga_per_kg, 0, ',', '.') . '/Kg)'
-                        ])->toArray()"
-                        :error="$errors->has('trash_category_id') ? $errors->first('trash_category_id') : false"
-                    />
-                </div>
-
-                <div class="space-y-4">
-                    <h3 class="font-semibold text-on-surface flex items-center gap-2">
-                        <span class="w-7 h-7 rounded-full bg-primary/10 text-primary text-sm font-bold flex items-center justify-center">2</span>
-                        Estimasi Berat
-                    </h3>
-                    <x-input-field
-                        label="Perkiraan Berat (Kg)"
-                        name="perkiraan_berat"
-                        type="number"
-                        placeholder="Minimal 5 Kg"
-                        step="0.5"
-                        min="5"
-                        required
-                        :value="old('perkiraan_berat')"
-                        :error="$errors->has('perkiraan_berat') ? $errors->first('perkiraan_berat') : false"
-                    />
-                </div>
-
-                <div class="space-y-4">
-                    <h3 class="font-semibold text-on-surface flex items-center gap-2">
-                        <span class="w-7 h-7 rounded-full bg-primary/10 text-primary text-sm font-bold flex items-center justify-center">3</span>
-                        Lokasi Penjemputan
-                    </h3>
-
-                    <div id="pickup-map" class="border border-outline-variant shadow-sm"></div>
-
-                    <p class="text-xs text-on-surface-variant">Klik peta untuk menandai lokasi, atau geser penanda. Gunakan tombol GPS untuk deteksi otomatis.</p>
-
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <x-input-field
-                            label="Latitude"
-                            name="koordinat_lat"
-                            id="koordinat_lat"
-                            type="number"
-                            placeholder="-6.208800"
-                            step="0.000001"
-                            required
-                            :value="old('koordinat_lat')"
-                            :error="$errors->has('koordinat_lat') ? $errors->first('koordinat_lat') : false"
-                        />
-                        <x-input-field
-                            label="Longitude"
-                            name="koordinat_lng"
-                            id="koordinat_lng"
-                            type="number"
-                            placeholder="106.845600"
-                            step="0.000001"
-                            required
-                            :value="old('koordinat_lng')"
-                            :error="$errors->has('koordinat_lng') ? $errors->first('koordinat_lng') : false"
-                        />
+                <div class="relative ml-3.5 space-y-10 mt-4">
+                    <!-- Stepper Line -->
+                    <div class="absolute left-0 top-2 bottom-6 w-0.5 bg-outline-variant/30"></div>
+                    
+                    <!-- Step 1 -->
+                    <div class="relative pl-8">
+                        <div class="absolute -left-[17px] top-0 w-8 h-8 rounded-full bg-primary text-white text-sm font-bold flex items-center justify-center shadow-md border-4 border-surface">1</div>
+                        <h3 class="font-bold text-lg text-on-surface mb-4">Kategori Sampah</h3>
+                        <div class="bg-surface-container-lowest p-5 sm:p-6 rounded-2xl border border-outline-variant shadow-sm transition-all hover:shadow-md">
+                            <p class="text-sm text-on-surface-variant mb-4">Pilih jenis sampah yang akan dijemput. Harga per kilogram dapat berubah sesuai dengan harga pasar terbaru.</p>
+                            <x-select-field
+                                label=""
+                                name="trash_category_id"
+                                required
+                                :items="$trashCategories->map(fn($k) => [
+                                    'value' => $k->id,
+                                    'label' => $k->nama . ' (Rp ' . number_format($k->harga_per_kg, 0, ',', '.') . '/Kg)'
+                                ])->toArray()"
+                                :error="$errors->has('trash_category_id') ? $errors->first('trash_category_id') : false"
+                            />
+                        </div>
                     </div>
 
-                    <button type="button" id="btn-gps" class="w-full sm:w-auto py-3 px-6 bg-surface-container-high hover:bg-surface-container text-on-surface font-semibold rounded-xl transition-colors flex items-center justify-center gap-2">
-                        <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
-                        </svg>
-                        Deteksi GPS Saya
-                    </button>
+                    <!-- Step 2 -->
+                    <div class="relative pl-8">
+                        <div class="absolute -left-[17px] top-0 w-8 h-8 rounded-full bg-primary text-white text-sm font-bold flex items-center justify-center shadow-md border-4 border-surface">2</div>
+                        <h3 class="font-bold text-lg text-on-surface mb-4">Estimasi Berat</h3>
+                        <div class="bg-surface-container-lowest p-5 sm:p-6 rounded-2xl border border-outline-variant shadow-sm transition-all hover:shadow-md">
+                            <div class="flex items-start gap-4 flex-col sm:flex-row">
+                                <div class="flex-1 w-full">
+                                    <x-input-field
+                                        label="Perkiraan Berat (Kg)"
+                                        name="perkiraan_berat"
+                                        type="number"
+                                        placeholder="Contoh: 5.5"
+                                        step="0.5"
+                                        min="5"
+                                        required
+                                        :value="old('perkiraan_berat')"
+                                        :error="$errors->has('perkiraan_berat') ? $errors->first('perkiraan_berat') : false"
+                                    />
+                                </div>
+                                <div class="sm:w-1/3 bg-amber-50 text-amber-800 p-3 rounded-xl border border-amber-200 text-xs mt-2 sm:mt-0">
+                                    <strong class="block mb-1 text-sm">⚠️ Info Penting</strong>
+                                    Minimal penjemputan adalah <strong>5 Kg</strong>. Berat pasti akan ditimbang ulang oleh petugas di lokasi.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 3 -->
+                    <div class="relative pl-8">
+                        <div class="absolute -left-[17px] top-0 w-8 h-8 rounded-full bg-primary text-white text-sm font-bold flex items-center justify-center shadow-md border-4 border-surface">3</div>
+                        <h3 class="font-bold text-lg text-on-surface mb-4">Lokasi Penjemputan</h3>
+                        <div class="bg-surface-container-lowest p-5 sm:p-6 rounded-2xl border border-outline-variant shadow-sm transition-all hover:shadow-md">
+                            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
+                                <p class="text-sm text-on-surface-variant flex-1">Geser penanda merah pada peta ke lokasi rumah Anda secara akurat.</p>
+                                <button type="button" id="btn-gps" class="w-full sm:w-auto py-2.5 px-4 bg-primary/10 hover:bg-primary/20 text-primary font-bold rounded-xl transition-colors flex items-center justify-center gap-2 text-sm border border-primary/20">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                    Gunakan GPS
+                                </button>
+                            </div>
+
+                            <div id="pickup-map" class="border border-outline-variant shadow-sm mb-4"></div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 hidden">
+                                <x-input-field label="Latitude" name="koordinat_lat" id="koordinat_lat" type="number" step="0.000001" required :value="old('koordinat_lat')" />
+                                <x-input-field label="Longitude" name="koordinat_lng" id="koordinat_lng" type="number" step="0.000001" required :value="old('koordinat_lng')" />
+                            </div>
+                            
+                            <div class="mt-4 pt-4 border-t border-outline-variant">
+                                <label for="catatan" class="block text-sm font-semibold text-on-surface mb-2">Catatan Detail Lokasi (Opsional)</label>
+                                <textarea id="catatan" name="catatan" rows="2"
+                                        class="w-full px-4 py-3 rounded-xl border border-outline-variant bg-surface focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary resize-none text-sm transition-shadow shadow-sm hover:border-primary/50"
+                                        placeholder="Contoh: Rumah cat biru pagar hitam, masuk gang sebelah masjid">{{ old('catatan') }}</textarea>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="space-y-4">
-                    <h3 class="font-semibold text-on-surface flex items-center gap-2">
-                        <span class="w-7 h-7 rounded-full bg-primary/10 text-primary text-sm font-bold flex items-center justify-center">4</span>
-                        Catatan (Opsional)
-                    </h3>
-                    <textarea id="catatan" name="catatan" rows="3"
-                              class="w-full px-4 py-3 rounded-xl border border-outline-variant bg-surface-container-lowest focus:outline-none focus:ring-2 focus:ring-primary resize-none text-sm"
-                              placeholder="Contoh: Sampah sudah dikemas di depan rumah">{{ old('catatan') }}</textarea>
-                </div>
-
-                <div class="flex flex-col sm:flex-row gap-3 pt-4 border-t border-outline-variant">
+                <div class="flex flex-col sm:flex-row gap-3 pt-6 border-t border-outline-variant mt-2">
                     <a href="{{ route('nasabah.dashboard') }}" class="flex-1 py-3 px-6 text-center border border-outline-variant text-on-surface font-semibold rounded-xl hover:bg-surface-container-low transition-colors">
                         Batal
                     </a>
-                    <button type="submit" class="flex-1 py-3 px-6 bg-primary hover:bg-primary-container text-white font-bold rounded-xl transition-colors">
-                        Jadwalkan Penjemputan
+                    <button type="submit" class="flex-1 py-3 px-6 bg-gradient-to-r from-primary to-forest-emerald hover:from-primary-container hover:to-primary text-white font-bold rounded-xl transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5">
+                        Konfirmasi Penjemputan
                     </button>
                 </div>
             </form>

@@ -1,6 +1,6 @@
 <x-modal name="create-modal" maxWidth="2xl">
     <div class="p-6">
-        <div class="flex items-center justify-between mb-5 border-b border-outline-variant/30 pb-4">
+        <div class="flex items-center justify-between mb-5 border-b border-outline-variant pb-4">
             <h2 class="text-xl font-bold text-on-surface">Tambah Harga Sampah</h2>
             <button @click="$dispatch('close-modal', 'create-modal')" class="text-on-surface-variant hover:text-on-surface">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -70,7 +70,7 @@
                             "
                             x-ref="photo">
                         
-                        <button type="button" @click="$refs.photo.click()" class="px-4 py-2 bg-surface-container-high hover:bg-surface-container-highest text-on-surface text-sm font-semibold rounded-lg transition-colors border border-outline-variant/50">
+                        <button type="button" @click="$refs.photo.click()" class="px-4 py-2 bg-surface-container-high hover:bg-surface-container-highest text-on-surface text-sm font-semibold rounded-lg transition-colors border border-outline-variant">
                             Pilih Foto
                         </button>
                         <p class="text-[10px] text-on-surface-variant mt-2">Format: JPG, PNG, WEBP. Maks: 2MB.</p>
@@ -102,7 +102,7 @@
             
             <x-input-field label="Nilai Daur Ulang Ekonomi (Opsional)" name="nilai_daur_ulang" placeholder="Sangat Tinggi / Tinggi / Sedang / Rendah" />
 
-            <div class="flex justify-end gap-3 mt-6 pt-4 border-t border-outline-variant/30">
+            <div class="flex justify-end gap-3 mt-6 pt-4 border-t border-outline-variant">
                 <button type="button" @click="$dispatch('close-modal', 'create-modal')" class="px-5 py-2.5 bg-surface-container hover:bg-surface-container-high text-on-surface font-semibold rounded-xl transition-colors text-sm">
                     Batal
                 </button>

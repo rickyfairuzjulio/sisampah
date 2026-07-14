@@ -24,12 +24,16 @@ $links = match($role) {
 };
 @endphp
 
-<nav class="mb-6 overflow-x-auto">
+<nav class="mb-6 overflow-x-auto no-scrollbar">
+    <style>
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
     <div class="flex gap-2 min-w-max pb-1">
         @foreach($links as $link)
             <a href="{{ route($link['route']) }}"
                class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all
-                      {{ request()->routeIs($link['pattern']) ? 'bg-primary text-white shadow-sm' : 'bg-surface-container-low text-on-surface-variant hover:bg-surface-container hover:text-on-surface border border-outline-variant/50' }}">
+                      {{ request()->routeIs($link['pattern']) ? 'bg-primary text-white shadow-sm' : 'bg-surface-container-low text-on-surface-variant hover:bg-surface-container hover:text-on-surface border border-outline-variant' }}">
                 <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $link['icon'] }}"/>
                 </svg>

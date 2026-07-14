@@ -20,8 +20,6 @@
     @endforelse
   </div>
 
-  @if($articles->hasPages())
-    <div class="mt-10">{{ $articles->links() }}</div>
-  @endif
+  <div class="mt-10">{{ $articles->links() }}</div>
 </div>
 @endsection

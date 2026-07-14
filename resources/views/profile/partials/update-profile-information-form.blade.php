@@ -1,8 +1,4 @@
 <section class="space-y-5">
-    <header>
-        <h2 class="text-headline-sm text-on-surface">Informasi Profil</h2>
-        <p class="mt-1 text-sm text-on-surface-variant">Perbarui nama dan alamat email akun kamu.</p>
-    </header>
 
     <form id="send-verification" method="post" action="{{ route('verification.send') }}">@csrf</form>
 

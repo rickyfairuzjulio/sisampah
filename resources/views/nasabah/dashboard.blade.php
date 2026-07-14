@@ -28,7 +28,7 @@
     @endphp
 
     <div class="mb-8 animate-slide-in" style="animation-delay: 0.1s;">
-        <div class="bg-surface border border-outline-variant/30 rounded-2xl p-5 sm:p-6 shadow-sm flex flex-col sm:flex-row items-center gap-6">
+        <div class="bg-surface border border-outline-variant rounded-2xl p-5 sm:p-6 shadow-sm flex flex-col sm:flex-row items-center gap-6">
             <div class="relative shrink-0">
                 <div class="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-br {{ $badgeColor }} flex items-center justify-center text-4xl sm:text-5xl shadow-lg border-4 border-surface">
                     {{ $badgeIcon }}
@@ -55,54 +55,98 @@
         </div>
     </div>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8 animate-slide-in">
-        <x-stat-tile
-            title="Rp {{ number_format($saldo, 0, ',', '.') }}"
-            subtitle="Saldo Aktif"
-            icon='<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>'
-        />
-        <x-stat-tile
-            title="{{ number_format($totalBerat, 1) }} Kg"
-            subtitle="Total Berat Setor"
-            icon='<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2"/></svg>'
-        />
-        <x-stat-tile
-            title="{{ number_format($totalPoin, 0) }}"
-            subtitle="Poin Lingkungan"
-            icon='<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>'
-        />
-        <x-stat-tile
-            title="{{ $transaksiTerbaru->count() }}"
-            subtitle="Transaksi Terbaru"
-            icon='<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>'
-        />
-    </div>
+    <!-- E-Wallet & Quick Actions Section -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-8 animate-slide-in">
+        
+        <!-- Saldo Card (E-Wallet Style) -->
+        <div class="lg:col-span-5 relative rounded-3xl overflow-hidden bg-gradient-to-br from-[#0f2027] via-[#203a43] to-[#2c5364] shadow-xl p-7 text-white flex flex-col justify-between group cursor-pointer hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
+            <!-- Glass effect overlay -->
+            <div class="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <div class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -mr-10 -mt-10"></div>
+            <div class="absolute bottom-0 left-0 w-24 h-24 bg-primary/30 rounded-full blur-2xl -ml-10 -mb-10"></div>
+            
+            <div class="relative z-10 flex justify-between items-start mb-6">
+                <div>
+                    <p class="text-white/70 text-sm font-medium mb-1">Total Saldo Aktif</p>
+                    <h2 class="text-3xl font-black tracking-tight">Rp {{ number_format($saldo, 0, ',', '.') }}</h2>
+                </div>
+                <div class="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20 shadow-inner">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                </div>
+            </div>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <a href="{{ route('nasabah.pickup.form') }}" class="quick-action-card">
-            <div class="w-11 h-11 bg-blue-100 rounded-xl flex items-center justify-center">
-                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            <div class="relative z-10 flex items-center justify-between mt-auto pt-6 border-t border-white/10">
+                <div class="flex items-center gap-2">
+                    <div class="w-6 h-6 rounded-full bg-primary/80"></div>
+                    <div class="w-6 h-6 rounded-full bg-forest-emerald/80 -ml-3"></div>
+                    <span class="text-xs font-semibold tracking-wider opacity-80 ml-2">SiSampah Pay</span>
+                </div>
+                <a href="{{ route('nasabah.wallet') }}#withdrawal-form" class="inline-flex items-center justify-center px-4 py-2 bg-white text-[#0f2027] text-xs font-bold rounded-full hover:bg-gray-100 transition-colors shadow-sm">
+                    Tarik Dana
+                </a>
             </div>
-            <div><p class="font-semibold text-sm">Jemput Sampah</p><p class="text-xs text-on-surface-variant">GPS & penjadwalan</p></div>
-        </a>
-        <a href="{{ route('nasabah.wallet') }}" class="quick-action-card">
-            <div class="w-11 h-11 bg-primary/15 rounded-xl flex items-center justify-center">
-                <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+        </div>
+
+        <!-- Right Side: Stats & Quick Actions -->
+        <div class="lg:col-span-7 flex flex-col gap-6">
+            <!-- 3 Mini Stats -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+                <x-stat-tile
+                    title="{{ number_format($totalBerat, 1) }} Kg"
+                    subtitle="Berat Setor"
+                    icon='<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2"/></svg>'
+                />
+                <x-stat-tile
+                    title="{{ number_format($totalPoin, 0) }}"
+                    subtitle="Total Poin"
+                    icon='<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>'
+                />
+                <x-stat-tile
+                    title="{{ collect($transaksiTerbaru)->count() }}"
+                    subtitle="Transaksi"
+                    icon='<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>'
+                />
             </div>
-            <div><p class="font-semibold text-sm">Dompet & Penarikan</p><p class="text-xs text-on-surface-variant">Tunai / transfer</p></div>
-        </a>
-        <a href="{{ route('nasabah.wallet') }}#withdrawal-form" class="quick-action-card">
-            <div class="w-11 h-11 bg-amber-100 rounded-xl flex items-center justify-center">
-                <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+
+            <!-- 4 Quick Actions -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 flex-1">
+                <a href="{{ route('nasabah.pickup.form') }}" class="group relative bg-surface-container-low hover:bg-surface-container border border-outline-variant hover:border-blue-500/50 rounded-2xl p-4 flex flex-col items-center justify-center text-center transition-all duration-300 hover:-translate-y-1 hover:shadow-lg overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-b from-blue-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 bg-blue-100 dark:bg-blue-900/40 rounded-full flex items-center justify-center mb-2 sm:mb-3 group-hover:scale-110 transition-transform shadow-inner">
+                        <svg class="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                    </div>
+                    <p class="font-bold text-sm text-on-surface mb-0.5">Jemput</p>
+                    <p class="text-[10px] text-on-surface-variant uppercase tracking-wider hidden sm:block">GPS & Jadwal</p>
+                </a>
+                
+                <a href="{{ route('nasabah.wallet') }}" class="group relative bg-surface-container-low hover:bg-surface-container border border-outline-variant hover:border-primary/50 rounded-2xl p-4 flex flex-col items-center justify-center text-center transition-all duration-300 hover:-translate-y-1 hover:shadow-lg overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 bg-primary/15 dark:bg-primary/20 rounded-full flex items-center justify-center mb-2 sm:mb-3 group-hover:scale-110 transition-transform shadow-inner">
+                        <svg class="w-5 h-5 sm:w-6 sm:h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+                    </div>
+                    <p class="font-bold text-sm text-on-surface mb-0.5">Dompet</p>
+                    <p class="text-[10px] text-on-surface-variant uppercase tracking-wider hidden sm:block">Tunai / Tf</p>
+                </a>
+
+                <a href="{{ route('nasabah.wallet') }}#withdrawal-form" class="group relative bg-surface-container-low hover:bg-surface-container border border-outline-variant hover:border-amber-500/50 rounded-2xl p-4 flex flex-col items-center justify-center text-center transition-all duration-300 hover:-translate-y-1 hover:shadow-lg overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-b from-amber-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 bg-amber-100 dark:bg-amber-900/40 rounded-full flex items-center justify-center mb-2 sm:mb-3 group-hover:scale-110 transition-transform shadow-inner">
+                        <svg class="w-5 h-5 sm:w-6 sm:h-6 text-amber-600 dark:text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                    </div>
+                    <p class="font-bold text-sm text-on-surface mb-0.5">Tarik Dana</p>
+                    <p class="text-[10px] text-on-surface-variant uppercase tracking-wider hidden sm:block">Ajukan Tarik</p>
+                </a>
+
+                <a href="{{ route('nasabah.edukasi') }}" class="group relative bg-surface-container-low hover:bg-surface-container border border-outline-variant hover:border-green-500/50 rounded-2xl p-4 flex flex-col items-center justify-center text-center transition-all duration-300 hover:-translate-y-1 hover:shadow-lg overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-b from-green-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 bg-green-100 dark:bg-green-900/40 rounded-full flex items-center justify-center mb-2 sm:mb-3 group-hover:scale-110 transition-transform shadow-inner">
+                        <svg class="w-5 h-5 sm:w-6 sm:h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                    </div>
+                    <p class="font-bold text-sm text-on-surface mb-0.5">Edukasi</p>
+                    <p class="text-[10px] text-on-surface-variant uppercase tracking-wider hidden sm:block">Artikel Tips</p>
+                </a>
             </div>
-            <div><p class="font-semibold text-sm">Tarik Dana</p><p class="text-xs text-on-surface-variant">Ajukan penarikan</p></div>
-        </a>
-        <a href="{{ route('nasabah.edukasi') }}" class="quick-action-card">
-            <div class="w-11 h-11 bg-green-100 rounded-xl flex items-center justify-center">
-                <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
-            </div>
-            <div><p class="font-semibold text-sm">Edukasi Daur Ulang</p><p class="text-xs text-on-surface-variant">Artikel & tips</p></div>
-        </a>
+        </div>
     </div>
 
     {{-- ═══════════════ DAMPAK LINGKUNGAN (CARBON FOOTPRINT) ═══════════════ --}}
@@ -172,7 +216,7 @@
             </div>
 
             {{-- Grafik Bulanan --}}
-            <x-card class="lg:col-span-2 border border-outline-variant/50 relative">
+            <x-card class="lg:col-span-2 border border-outline-variant relative">
                 <p class="text-sm font-bold text-on-surface-variant mb-4">Aktivitas Setor Bulanan (Kg)</p>
                 <div class="h-56 w-full">
                     <canvas id="impactChart"></canvas>
@@ -183,7 +227,7 @@
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div class="lg:col-span-2 space-y-6">
-            <x-card class="border border-outline-variant/50">
+            <x-card class="border border-outline-variant">
                 <div class="flex items-center justify-between mb-5">
                     <div>
                         <h2 class="text-xl font-bold text-on-surface">Harga Sampah Terkini</h2>
@@ -209,7 +253,7 @@
                 </div>
             </x-card>
 
-            <x-card class="border border-outline-variant/50">
+            <x-card class="border border-outline-variant">
                 <div class="mb-5">
                     <h2 class="text-xl font-bold text-on-surface">Riwayat Transaksi</h2>
                     <p class="text-sm text-on-surface-variant mt-1">Mutasi saldo dari setoran sampah</p>
@@ -223,9 +267,9 @@
                     openModal(id) { this.txId = id; this.rating = 0; this.hoverRating = 0; this.ulasan = ''; this.openRating = true; } 
                 }">
                     @forelse($transaksiTerbaru as $transaksi)
-                        <div class="flex items-center justify-between p-4 rounded-xl bg-surface-container-low border border-outline-variant/30 flex-wrap gap-2">
+                        <div class="group flex items-center justify-between p-4 rounded-2xl bg-surface-container-low hover:bg-surface border border-transparent hover:border-outline-variant transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 cursor-default flex-wrap gap-2">
                             <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
+                                <div class="w-10 h-10 bg-primary/10 group-hover:bg-primary/20 rounded-full flex items-center justify-center transition-colors">
                                     <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2"/></svg>
                                 </div>
                                 <div>
@@ -259,7 +303,7 @@
                             <div x-show="openRating" x-transition.opacity class="fixed inset-0 bg-gray-900/75 transition-opacity backdrop-blur-sm" @click="openRating = false"></div>
                             <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
                             
-                            <div x-show="openRating" x-transition.scale class="inline-block align-bottom bg-surface-container rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-md w-full border border-outline-variant/30">
+                            <div x-show="openRating" x-transition.scale class="inline-block align-bottom bg-surface-container rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-md w-full border border-outline-variant">
                                 <form :action="`/nasabah/transaksi/${txId}/rating`" method="POST">
                                     @csrf
                                     <div class="px-6 pt-6 pb-4">
@@ -298,7 +342,7 @@
         </div>
 
         <div class="space-y-6">
-            <x-card class="border border-outline-variant/50">
+            <x-card class="border border-outline-variant">
                 <h3 class="text-lg font-bold text-on-surface mb-4">Papan Peringkat</h3>
                 <div class="space-y-3">
                     @forelse($leaderboard as $index => $entry)

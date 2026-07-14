@@ -8,7 +8,7 @@
     Kembali ke Pusat Edukasi
   </a>
 
-  <article class="bg-surface-container-lowest rounded-2xl lg:rounded-3xl border border-outline-variant/50 overflow-hidden shadow-ambient animate-fade-in">
+  <article class="bg-surface-container-lowest rounded-2xl lg:rounded-3xl border border-outline-variant overflow-hidden shadow-ambient animate-fade-in">
     @if($article->image_url)
       <div class="relative h-56 sm:h-72 lg:h-96">
         <img src="{{ $article->image_url }}" alt="{{ $article->judul }}" class="w-full h-full object-cover">
@@ -19,13 +19,13 @@
         </div>
       </div>
     @else
-      <div class="p-6 sm:p-8 border-b border-outline-variant/50">
+      <div class="p-6 sm:p-8 border-b border-outline-variant">
         <span class="inline-block px-3 py-1 text-xs font-bold bg-primary/10 text-primary rounded-full mb-3">{{ $article->kategori }}</span>
         <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-on-surface">{{ $article->judul }}</h1>
       </div>
     @endif
 
-    <div class="px-6 sm:px-8 lg:px-10 py-6 border-b border-outline-variant/30 flex flex-wrap items-center gap-4 text-sm text-on-surface-variant">
+    <div class="px-6 sm:px-8 lg:px-10 py-6 border-b border-outline-variant flex flex-wrap items-center gap-4 text-sm text-on-surface-variant">
       <span class="flex items-center gap-2">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
         {{ $article->creator->name ?? 'Tim SiSampah' }}

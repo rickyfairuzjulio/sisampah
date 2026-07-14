@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreTransactionRequest;
 use App\Models\Leaderboard;
-use App\Models\TrashCategory;
 use App\Models\Transaction;
+use App\Models\TrashCategory;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -98,6 +98,7 @@ class PetugasController extends Controller
     public function showSelfDepositForm()
     {
         $trashCategories = TrashCategory::all();
+
         return view('petugas.self-deposit-form', compact('trashCategories'));
     }
 

@@ -1,10 +1,4 @@
 <section class="space-y-5">
-    <header>
-        <h2 class="text-headline-sm text-on-surface">Hapus Akun</h2>
-        <p class="mt-1 text-sm text-on-surface-variant">
-            Setelah akun dihapus, semua data dan sumber daya akan hilang secara permanen. Unduh data Anda sebelum melanjutkan.
-        </p>
-    </header>
 
     <button
         class="btn-danger"

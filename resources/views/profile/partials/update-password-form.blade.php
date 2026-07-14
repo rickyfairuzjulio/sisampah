@@ -1,8 +1,4 @@
 <section class="space-y-6">
-    <header>
-        <h2 class="text-headline-sm text-on-surface">Ubah Password</h2>
-        <p class="mt-1 text-sm text-on-surface-variant">Pastikan akun kamu menggunakan password yang panjang dan acak agar tetap aman.</p>
-    </header>
 
     <form method="post" action="{{ route('password.update') }}" class="space-y-5">
         @csrf

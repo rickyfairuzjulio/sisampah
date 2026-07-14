@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Article;
 use App\Models\Transaction;
+use App\Models\TrashCategory;
 use App\Models\User;
 
 class HomeController extends Controller
@@ -22,7 +23,7 @@ class HomeController extends Controller
             'transaksi' => Transaction::where('status', 'selesai')->count(),
         ];
 
-        $categories = \App\Models\TrashCategory::active()->select('id', 'nama', 'harga_per_kg', 'satuan')->get();
+        $categories = TrashCategory::active()->select('id', 'nama', 'harga_per_kg', 'satuan')->get();
 
         return view('home', compact('articles', 'stats', 'categories'));
     }

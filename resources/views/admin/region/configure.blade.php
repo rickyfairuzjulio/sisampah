@@ -31,7 +31,7 @@
                 @else
                     <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
                         @foreach($rtList->sort() as $rt)
-                        <div class="bg-surface-container hover:bg-surface-container-high transition-colors p-4 rounded-xl border border-outline-variant/50 text-center flex flex-col items-center justify-center">
+                        <div class="bg-surface-container hover:bg-surface-container-high transition-colors p-4 rounded-xl border border-outline-variant text-center flex flex-col items-center justify-center">
                             <span class="text-2xl font-black text-primary">{{ str_pad($rt, 3, '0', STR_PAD_LEFT) }}</span>
                             <span class="text-[10px] uppercase font-bold tracking-wider text-on-surface-variant mt-1">RT</span>
                         </div>
@@ -58,7 +58,7 @@
                 @else
                     <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
                         @foreach($rwList->sort() as $rw)
-                        <div class="bg-surface-container hover:bg-surface-container-high transition-colors p-4 rounded-xl border border-outline-variant/50 text-center flex flex-col items-center justify-center">
+                        <div class="bg-surface-container hover:bg-surface-container-high transition-colors p-4 rounded-xl border border-outline-variant text-center flex flex-col items-center justify-center">
                             <span class="text-2xl font-black text-forest-emerald">{{ str_pad($rw, 3, '0', STR_PAD_LEFT) }}</span>
                             <span class="text-[10px] uppercase font-bold tracking-wider text-on-surface-variant mt-1">RW</span>
                         </div>

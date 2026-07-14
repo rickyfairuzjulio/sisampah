@@ -13,11 +13,11 @@ $paddingClasses = match($padding) {
     default => 'p-4 md:p-6',
 };
 
-$shadowClasses = $shadow ? 'shadow-ambient' : '';
+$shadowClasses = $shadow ? 'shadow-sm shadow-black/5 hover:shadow-md transition-shadow duration-300' : '';
 $borderClasses = $border ? 'border border-outline-variant' : '';
-$hoverClasses = $hover ? 'hover:shadow-lg transition-shadow duration-200 cursor-pointer' : '';
+$hoverClasses = $hover ? 'hover:-translate-y-1 hover:shadow-lg transition-all duration-300 cursor-pointer' : '';
 
-$classes = "bg-surface-container-lowest rounded-xl {$paddingClasses} {$shadowClasses} {$borderClasses} {$hoverClasses}";
+$classes = "bg-surface-container-lowest rounded-2xl {$paddingClasses} {$shadowClasses} {$borderClasses} {$hoverClasses}";
 @endphp
 
 <div {{ $attributes->merge(['class' => $classes]) }}>

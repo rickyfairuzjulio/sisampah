@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
-use App\Core\Services\TrashPriceService;
 use App\Core\Services\PricePredictionService;
+use App\Core\Services\TrashPriceService;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreTrashPriceRequest;
 use App\Http\Requests\UpdateTrashPriceRequest;
+use App\Models\PriceHistory;
 use App\Models\TrashCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -14,6 +15,7 @@ use Illuminate\Support\Facades\Auth;
 class TrashPriceApiController extends Controller
 {
     protected TrashPriceService $priceService;
+
     protected PricePredictionService $predictionService;
 
     public function __construct(TrashPriceService $priceService, PricePredictionService $predictionService)
@@ -26,74 +28,74 @@ class TrashPriceApiController extends Controller
     {
         $filters = $request->only(['search', 'kategori', 'status_harga', 'kualitas', 'min_price', 'max_price', 'sort', 'is_archived']);
         $perPage = $request->input('per_page', 15);
-        
+
         $prices = $this->priceService->getFilteredPrices($filters, $perPage);
-        
+
         return response()->json([
             'status' => 'success',
-            'data' => $prices
+            'data' => $prices,
         ]);
     }
 
     public function show($id)
     {
         $category = TrashCategory::with('priceHistories')->findOrFail($id);
-        
+
         return response()->json([
             'status' => 'success',
-            'data' => $category
+            'data' => $category,
         ]);
     }
 
     public function store(StoreTrashPriceRequest $request)
     {
         $category = $this->priceService->createPrice($request->validated(), Auth::user());
-        
+
         return response()->json([
             'status' => 'success',
             'message' => 'Harga berhasil dibuat',
-            'data' => $category
+            'data' => $category,
         ], 201);
     }
 
     public function update(UpdateTrashPriceRequest $request, $id)
     {
         $category = $this->priceService->updatePrice(
-            $id, 
-            $request->validated(), 
-            Auth::user(), 
+            $id,
+            $request->validated(),
+            Auth::user(),
             $request->input('alasan')
         );
-        
+
         return response()->json([
             'status' => 'success',
             'message' => 'Harga berhasil diperbarui',
-            'data' => $category
+            'data' => $category,
         ]);
     }
 
     public function destroy($id)
     {
         $deleted = $this->priceService->deleteOrArchivePrice($id);
-        
+
         return response()->json([
             'status' => 'success',
-            'message' => $deleted ? 'Dihapus sepenuhnya' : 'Diarsipkan karena memiliki transaksi'
+            'message' => $deleted ? 'Dihapus sepenuhnya' : 'Diarsipkan karena memiliki transaksi',
         ]);
     }
 
     public function history(Request $request)
     {
         $categoryId = $request->input('category_id');
-        $query = \App\Models\PriceHistory::with('admin')->orderBy('created_at', 'desc');
-        
+        $query = PriceHistory::with('admin')->orderBy('created_at', 'desc');
+
         if ($categoryId) {
             $query->where('trash_category_id', $categoryId);
         }
-        
+
         return response()->json([
             'status' => 'success',
-            'data' => $query->paginate(20)
+            'data' => $query->paginate(20),
         ]);
     }
 
@@ -101,7 +103,7 @@ class TrashPriceApiController extends Controller
     {
         return response()->json([
             'status' => 'success',
-            'data' => $this->priceService->getStatistics()
+            'data' => $this->priceService->getStatistics(),
         ]);
     }
 
@@ -109,13 +111,14 @@ class TrashPriceApiController extends Controller
     {
         return response()->json([
             'status' => 'success',
-            'data' => $this->predictionService->getTrendAnalysis($id)
+            'data' => $this->predictionService->getTrendAnalysis($id),
         ]);
     }
 
     public function prediction(Request $request, $id)
     {
         $days = $request->input('days_ahead', 7);
+
         return response()->json(
             $this->predictionService->predictPrice($id, $days)
         );

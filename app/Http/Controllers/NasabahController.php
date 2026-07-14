@@ -4,11 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StorePickupRequest;
 use App\Http\Requests\StoreWithdrawalRequest;
-use App\Models\TrashCategory;
+use App\Models\Leaderboard;
 use App\Models\Transaction;
+use App\Models\TrashCategory;
 use App\Models\Withdrawal;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class NasabahController extends Controller
 {
@@ -32,7 +32,7 @@ class NasabahController extends Controller
 
         $totalPoin = $user->leaderboard?->total_poin_lingkungan ?? 0;
 
-        $leaderboard = \App\Models\Leaderboard::orderByDesc('total_poin_lingkungan')
+        $leaderboard = Leaderboard::orderByDesc('total_poin_lingkungan')
             ->take(5)
             ->with('user')
             ->get();
@@ -43,7 +43,7 @@ class NasabahController extends Controller
             'pohon' => $totalBerat / 50,
             'energi' => $totalBerat * 5,
             'air' => $totalBerat * 20,
-            'isGreenStarter' => $totalBerat > 10
+            'isGreenStarter' => $totalBerat > 10,
         ];
 
         // Monthly Data (Last 6 Months)
@@ -59,18 +59,18 @@ class NasabahController extends Controller
 
         $chartData = [
             'labels' => [],
-            'data' => []
+            'data' => [],
         ];
 
         for ($i = 5; $i >= 0; $i--) {
             $date = now()->subMonths($i);
             $chartData['labels'][] = $date->translatedFormat('M Y');
-            
+
             // Find data for this month
             $stat = $monthlyStats->first(function ($item) use ($date) {
                 return $item->year == $date->year && $item->month == $date->month;
             });
-            
+
             $chartData['data'][] = $stat ? (float) $stat->total_berat : 0;
         }
 
@@ -89,6 +89,7 @@ class NasabahController extends Controller
     public function showPickupForm()
     {
         $trashCategories = TrashCategory::all();
+
         return view('nasabah.pickup-form', compact('trashCategories'));
     }
 
@@ -160,17 +161,17 @@ class NasabahController extends Controller
     public function certificate()
     {
         $user = auth()->user();
-        
+
         $totalBerat = $user->transactions()
             ->where('status', 'selesai')
             ->sum('berat_kg');
-            
+
         $totalTransaksi = $user->transactions()
             ->where('status', 'selesai')
             ->count();
-            
+
         $totalPoin = $user->leaderboard?->total_poin_lingkungan ?? 0;
-        
+
         // Impact calculations
         $impact = [
             'co2' => $totalBerat * 1.5,
@@ -178,38 +179,39 @@ class NasabahController extends Controller
             'energi' => $totalBerat * 5,
             'air' => $totalBerat * 20,
         ];
-        
+
         // Determine Badge & Level using Model Accessors
         if ($user->leaderboard) {
-            $badge = $user->leaderboard->badge_name . ' ' . $user->leaderboard->badge_icon;
-            $levelText = 'Level ' . $user->leaderboard->level;
+            $badge = $user->leaderboard->badge_name.' '.$user->leaderboard->badge_icon;
+            $levelText = 'Level '.$user->leaderboard->level;
         } else {
             $badge = 'Warga Peduli 🥉';
             $levelText = 'Level 1 (Perunggu)';
         }
 
         // Get Rank Position
-        $rank = \App\Models\Leaderboard::where('total_poin_lingkungan', '>', $totalPoin)->count() + 1;
+        $rank = Leaderboard::where('total_poin_lingkungan', '>', $totalPoin)->count() + 1;
 
         return view('nasabah.certificate', compact(
-            'user', 
-            'totalBerat', 
-            'totalTransaksi', 
-            'totalPoin', 
-            'impact', 
-            'badge', 
+            'user',
+            'totalBerat',
+            'totalTransaksi',
+            'totalPoin',
+            'impact',
+            'badge',
             'levelText',
             'rank'
         ));
     }
+
     public function submitRating(Request $request, $id)
     {
         $validated = $request->validate([
             'rating' => 'required|integer|min:1|max:5',
-            'ulasan' => 'nullable|string|max:500'
+            'ulasan' => 'nullable|string|max:500',
         ]);
 
-        $transaction = \App\Models\Transaction::where('id', $id)
+        $transaction = Transaction::where('id', $id)
             ->where('user_id', auth()->id())
             ->where('status', 'selesai')
             ->firstOrFail();
@@ -220,7 +222,7 @@ class NasabahController extends Controller
 
         $transaction->update([
             'rating' => $validated['rating'],
-            'ulasan' => $validated['ulasan']
+            'ulasan' => $validated['ulasan'],
         ]);
 
         return back()->with('success', 'Terima kasih atas ulasan Anda!');

@@ -57,12 +57,12 @@
     </div>
 
     {{-- Grid Catalog --}}
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 animate-slide-in">
+    <div class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6 animate-slide-in">
         @forelse($prices as $price)
             <div class="group bg-surface rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 border border-outline-variant overflow-hidden flex flex-col h-full hover:-translate-y-1 relative">
                 
                 {{-- Card Image / Header --}}
-                <a href="{{ route('nasabah.prices.show', $price->id) }}" class="block relative h-48 overflow-hidden bg-surface-container-high">
+                <a href="{{ route('nasabah.prices.show', $price->id) }}" class="block relative h-32 sm:h-48 overflow-hidden bg-surface-container-high">
                     @if($price->image_url)
                         <img src="{{ $price->image_url }}" alt="{{ $price->nama }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
                     @else
@@ -94,9 +94,9 @@
                 </button>
 
                 {{-- Card Body --}}
-                <div class="p-5 flex-1 flex flex-col">
-                    <div class="flex justify-between items-start mb-2 gap-2">
-                        <a href="{{ route('nasabah.prices.show', $price->id) }}" class="text-lg font-bold text-on-surface hover:text-primary transition-colors line-clamp-1 flex-1">
+                <div class="p-3 sm:p-5 flex-1 flex flex-col">
+                    <div class="flex justify-between items-start mb-2 gap-1 sm:gap-2">
+                        <a href="{{ route('nasabah.prices.show', $price->id) }}" class="text-sm sm:text-lg font-bold text-on-surface hover:text-primary transition-colors line-clamp-1 flex-1">
                             {{ $price->nama }}
                         </a>
                         <span class="text-[10px] font-mono bg-surface-container px-1.5 py-0.5 rounded text-on-surface-variant flex-shrink-0">{{ $price->kode }}</span>
@@ -106,12 +106,12 @@
                         {{ $price->jenis ?: 'Kategori sampah ' . $price->kategori }}
                     </p>
 
-                    <div class="pt-4 border-t border-outline-variant/40 mt-auto">
-                        <p class="text-[10px] text-on-surface-variant font-semibold uppercase tracking-wider mb-1">Harga Beli Pengepul</p>
-                        <div class="flex justify-between items-end">
+                    <div class="pt-3 sm:pt-4 border-t border-outline-variant mt-auto">
+                        <p class="text-[9px] sm:text-[10px] text-on-surface-variant font-semibold uppercase tracking-wider mb-1 hidden sm:block">Harga Beli Pengepul</p>
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-1 sm:gap-0">
                             <div>
-                                <span class="text-2xl font-black text-primary leading-none">Rp {{ number_format($price->harga_per_kg, 0, ',', '.') }}</span>
-                                <span class="text-xs font-medium text-on-surface-variant">/{{ $price->satuan }}</span>
+                                <span class="text-base sm:text-2xl font-black text-primary leading-none">Rp {{ number_format($price->harga_per_kg, 0, ',', '.') }}</span>
+                                <span class="text-[10px] sm:text-xs font-medium text-on-surface-variant">/{{ $price->satuan }}</span>
                             </div>
                             
                             <div class="inline-flex items-center gap-1 px-2 py-1 rounded text-[10px] font-bold {{ $price->price_status_bg }}">

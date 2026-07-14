@@ -24,9 +24,16 @@ class Leaderboard extends Model
     public function getLevelAttribute(): int
     {
         $poin = (float) $this->total_poin_lingkungan;
-        if ($poin >= 1000) return 4;
-        if ($poin >= 500) return 3;
-        if ($poin >= 100) return 2;
+        if ($poin >= 1000) {
+            return 4;
+        }
+        if ($poin >= 500) {
+            return 3;
+        }
+        if ($poin >= 100) {
+            return 2;
+        }
+
         return 1;
     }
 
@@ -73,23 +80,28 @@ class Leaderboard extends Model
     public function getXpPercentageAttribute(): int
     {
         $poin = (float) $this->total_poin_lingkungan;
-        
-        if ($this->level === 4) return 100;
-        
+
+        if ($this->level === 4) {
+            return 100;
+        }
+
         $currentLevelBase = match ($this->level) {
             1 => 0,
             2 => 100,
             3 => 500,
         };
-        
+
         $nextLevelGoal = $this->next_level_xp;
-        
+
         $progress = $poin - $currentLevelBase;
         $required = $nextLevelGoal - $currentLevelBase;
-        
-        if ($required == 0) return 100;
-        
+
+        if ($required == 0) {
+            return 100;
+        }
+
         $percentage = ($progress / $required) * 100;
+
         return min(100, max(0, (int) round($percentage)));
     }
 }

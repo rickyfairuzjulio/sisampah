@@ -7,6 +7,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\NasabahController;
 use App\Http\Controllers\PetugasController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\TrashPriceController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -29,6 +30,7 @@ Route::get('/dashboard', function () {
     } elseif ($user->hasRole('nasabah')) {
         return redirect()->route('nasabah.dashboard');
     }
+
     return redirect()->route('home');
 })->middleware(['auth'])->name('dashboard');
 
@@ -39,10 +41,10 @@ Route::middleware(['auth', 'role:nasabah'])->prefix('nasabah')->name('nasabah.')
     Route::get('/dompet', [NasabahController::class, 'wallet'])->name('wallet');
     Route::post('/withdrawal', [NasabahController::class, 'requestWithdrawal'])->name('withdrawal.request');
     Route::get('/edukasi', [ArticleController::class, 'nasabahIndex'])->name('edukasi');
-    Route::get('/prices', [\App\Http\Controllers\TrashPriceController::class, 'publicIndex'])->name('prices.index');
-    Route::get('/prices/favorites', [\App\Http\Controllers\TrashPriceController::class, 'favorites'])->name('prices.favorites');
-    Route::get('/prices/{id}', [\App\Http\Controllers\TrashPriceController::class, 'publicShow'])->name('prices.show');
-    Route::post('/prices/{id}/favorite', [\App\Http\Controllers\TrashPriceController::class, 'toggleFavorite'])->name('prices.favorite');
+    Route::get('/prices', [TrashPriceController::class, 'publicIndex'])->name('prices.index');
+    Route::get('/prices/favorites', [TrashPriceController::class, 'favorites'])->name('prices.favorites');
+    Route::get('/prices/{id}', [TrashPriceController::class, 'publicShow'])->name('prices.show');
+    Route::post('/prices/{id}/favorite', [TrashPriceController::class, 'toggleFavorite'])->name('prices.favorite');
     Route::get('/sertifikat', [NasabahController::class, 'certificate'])->name('certificate');
     Route::post('/transaksi/{id}/rating', [NasabahController::class, 'submitRating'])->name('transaction.rating');
 });
@@ -59,15 +61,15 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
     // Modul Harga Sampah (Admin)
     Route::prefix('trash-price')->name('trash_price.')->group(function () {
-        Route::get('/', [\App\Http\Controllers\TrashPriceController::class, 'index'])->name('index');
-        Route::post('/', [\App\Http\Controllers\TrashPriceController::class, 'store'])->name('store');
-        Route::get('/history', [\App\Http\Controllers\TrashPriceController::class, 'history'])->name('history');
-        Route::get('/{id}', [\App\Http\Controllers\TrashPriceController::class, 'show'])->name('show');
-        Route::put('/{id}', [\App\Http\Controllers\TrashPriceController::class, 'update'])->name('update');
-        Route::delete('/{id}', [\App\Http\Controllers\TrashPriceController::class, 'destroy'])->name('destroy');
-        Route::post('/{id}/archive', [\App\Http\Controllers\TrashPriceController::class, 'archive'])->name('archive');
-        Route::post('/{id}/restore', [\App\Http\Controllers\TrashPriceController::class, 'restore'])->name('restore');
-        Route::post('/{id}/duplicate', [\App\Http\Controllers\TrashPriceController::class, 'duplicate'])->name('duplicate');
+        Route::get('/', [TrashPriceController::class, 'index'])->name('index');
+        Route::post('/', [TrashPriceController::class, 'store'])->name('store');
+        Route::get('/history', [TrashPriceController::class, 'history'])->name('history');
+        Route::get('/{id}', [TrashPriceController::class, 'show'])->name('show');
+        Route::put('/{id}', [TrashPriceController::class, 'update'])->name('update');
+        Route::delete('/{id}', [TrashPriceController::class, 'destroy'])->name('destroy');
+        Route::post('/{id}/archive', [TrashPriceController::class, 'archive'])->name('archive');
+        Route::post('/{id}/restore', [TrashPriceController::class, 'restore'])->name('restore');
+        Route::post('/{id}/duplicate', [TrashPriceController::class, 'duplicate'])->name('duplicate');
     });
     Route::get('/validasi-keuangan', [AdminController::class, 'validateFinance'])->name('finance.validate');
     Route::post('/validasi-keuangan/{id}', [AdminController::class, 'approveWithdrawal'])->name('finance.approve');

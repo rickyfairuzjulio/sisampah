@@ -47,12 +47,8 @@
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
                     <div>
                         <div class="flex items-center gap-2 mb-4">
-                            <div class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
-                                </svg>
-                            </div>
-                            <span class="text-xl font-bold">SiSampah</span>
+                            <img src="{{ asset('images/logo.png') }}" alt="SiSampah Logo" class="w-12 h-12 object-contain drop-shadow-sm">
+                            <span class="text-2xl font-bold ml-1">SiSampah</span>
                         </div>
                         <p class="text-white/70 text-sm">Mengubah sampah menjadi berkah bagi semua orang</p>
                     </div>

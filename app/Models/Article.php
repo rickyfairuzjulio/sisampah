@@ -5,11 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 
 #[Fillable(['judul', 'slug', 'konten', 'kategori', 'gambar', 'created_by', 'is_published'])]
 class Article extends Model
 {
+    use SoftDeletes;
+
     protected static function boot(): void
     {
         parent::boot();
@@ -41,6 +44,6 @@ class Article extends Model
 
     public function getExcerptAttribute(): string
     {
-        return \Illuminate\Support\Str::limit(strip_tags($this->konten), 160);
+        return Str::limit(strip_tags($this->konten), 160);
     }
 }

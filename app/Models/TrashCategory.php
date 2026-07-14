@@ -4,8 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 #[Fillable([
     'nama', 'kode', 'kategori', 'jenis', 'gambar', 'harga_per_kg', 'harga_per_gram',
@@ -15,6 +15,10 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 ])]
 class TrashCategory extends Model
 {
+    use SoftDeletes;
+
+    protected $appends = ['image_url', 'kategori_label', 'price_status_bg', 'price_status_icon', 'price_status_color'];
+
     protected function casts(): array
     {
         return [
@@ -60,7 +64,7 @@ class TrashCategory extends Model
             return $this->gambar;
         }
 
-        return asset('storage/' . $this->gambar);
+        return asset('storage/'.$this->gambar);
     }
 
     public function getPriceStatusColorAttribute(): string
@@ -150,9 +154,9 @@ class TrashCategory extends Model
 
         return $query->where(function ($q) use ($search) {
             $q->where('nama', 'like', "%{$search}%")
-              ->orWhere('kode', 'like', "%{$search}%")
-              ->orWhere('jenis', 'like', "%{$search}%")
-              ->orWhere('deskripsi', 'like', "%{$search}%");
+                ->orWhere('kode', 'like', "%{$search}%")
+                ->orWhere('jenis', 'like', "%{$search}%")
+                ->orWhere('deskripsi', 'like', "%{$search}%");
         });
     }
 
@@ -163,7 +167,7 @@ class TrashCategory extends Model
         $prefix = strtoupper(substr(preg_replace('/[^A-Za-z]/', '', $nama), 0, 3));
         $count = static::where('kode', 'like', "{$prefix}-%")->count() + 1;
 
-        return "{$prefix}-" . str_pad($count, 3, '0', STR_PAD_LEFT);
+        return "{$prefix}-".str_pad($count, 3, '0', STR_PAD_LEFT);
     }
 
     public function syncHargaPerGram(): void

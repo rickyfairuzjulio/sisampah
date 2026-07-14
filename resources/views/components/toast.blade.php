@@ -15,7 +15,7 @@
              x-transition:leave="transition ease-in duration-200"
              x-transition:leave-start="opacity-100"
              x-transition:leave-end="opacity-0 scale-90"
-             class="max-w-sm w-full bg-surface-container-high shadow-lg rounded-xl pointer-events-auto overflow-hidden border border-outline-variant/30 backdrop-blur-md">
+             class="max-w-sm w-full bg-surface-container-high shadow-lg rounded-xl pointer-events-auto overflow-hidden border border-outline-variant backdrop-blur-md">
             <div class="p-4 flex items-start gap-3">
                 <div class="flex-shrink-0">
                     <!-- Success Icon -->

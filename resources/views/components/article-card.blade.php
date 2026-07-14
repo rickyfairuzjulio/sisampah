@@ -1,10 +1,10 @@
 @props(['article'])
 
-<article class="group bg-surface-container-lowest rounded-2xl border border-outline-variant/50 overflow-hidden hover:shadow-ambient-md hover:border-primary/20 transition-all duration-300 flex flex-col h-full">
+<article class="group bg-surface-container-lowest rounded-3xl border border-outline-variant overflow-hidden hover:shadow-xl hover:border-primary/40 hover:-translate-y-1.5 transition-all duration-300 flex flex-col h-full w-full">
     <div class="relative h-48 sm:h-52 overflow-hidden">
         @if($article->image_url)
             <img src="{{ $article->image_url }}" alt="{{ $article->judul }}"
-                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                 class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
                  loading="lazy">
         @else
             <div class="w-full h-full bg-gradient-to-br from-primary to-forest-emerald flex items-center justify-center">
@@ -21,7 +21,7 @@
     <div class="p-5 sm:p-6 flex flex-col flex-1">
         <h3 class="text-lg font-bold text-on-surface mb-2 group-hover:text-primary transition-colors line-clamp-2">{{ $article->judul }}</h3>
         <p class="text-sm text-on-surface-variant leading-relaxed flex-1 line-clamp-3">{{ $article->excerpt }}</p>
-        <div class="flex items-center justify-between mt-5 pt-4 border-t border-outline-variant/50">
+        <div class="flex items-center justify-between mt-5 pt-4 border-t border-outline-variant">
             <span class="text-xs text-on-surface-variant">{{ $article->created_at->translatedFormat('d M Y') }}</span>
             <a href="{{ route('edukasi.show', $article->slug) }}" class="inline-flex items-center gap-1 text-sm font-bold text-primary hover:gap-2 transition-all">
                 Baca

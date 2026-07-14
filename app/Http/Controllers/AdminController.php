@@ -3,27 +3,28 @@
 namespace App\Http\Controllers;
 
 use App\Models\Leaderboard;
-use App\Models\TrashCategory;
 use App\Models\Transaction;
 use App\Models\User;
 use App\Models\Withdrawal;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class AdminController extends Controller
 {
     public function dashboard()
     {
-        $totalNasabah = User::role('nasabah')->count();
-        $totalPetugas = User::role('petugas')->count();
-        $totalTransaksi = Transaction::count();
-        $totalSampahKg = Transaction::where('status', 'selesai')->sum('berat_kg');
+        $totalNasabah = Cache::remember('admin.dashboard.total_nasabah', 600, fn () => User::role('nasabah')->count());
+        $totalPetugas = Cache::remember('admin.dashboard.total_petugas', 600, fn () => User::role('petugas')->count());
+        $totalTransaksi = Cache::remember('admin.dashboard.total_transaksi', 600, fn () => Transaction::count());
+        $totalSampahKg = Cache::remember('admin.dashboard.total_sampah_kg', 600, fn () => Transaction::where('status', 'selesai')->sum('berat_kg'));
 
-        $transaksiHariIni = Transaction::where('status', 'selesai')
+        $transaksiHariIni = Cache::remember('admin.dashboard.transaksi_hari_ini', 600, fn () => Transaction::where('status', 'selesai')
             ->whereDate('updated_at', today())
-            ->sum('berat_kg');
+            ->sum('berat_kg'));
 
-        $pendingWithdrawals = Withdrawal::where('status', 'pending')->count();
+        $pendingWithdrawals = Cache::remember('admin.dashboard.pending_withdrawals', 600, fn () => Withdrawal::where('status', 'pending')->count());
 
         $topContributors = Leaderboard::orderByDesc('total_poin_lingkungan')
             ->with('user')
@@ -53,8 +54,6 @@ class AdminController extends Controller
         ));
     }
 
-
-
     public function validateFinance()
     {
         $withdrawals = Withdrawal::where('status', 'pending')
@@ -79,7 +78,7 @@ class AdminController extends Controller
             'foto_resi' => 'required|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
-        DB::transaction(function () use ($withdrawal, $validated, $request) {
+        DB::transaction(function () use ($withdrawal, $request) {
             if ($request->hasFile('foto_resi')) {
                 $withdrawal->foto_resi = $request->file('foto_resi')->store('receipts', 'public');
             }
@@ -114,15 +113,15 @@ class AdminController extends Controller
 
     public function configureRegion()
     {
-        $rtList = User::role('nasabah')
+        $rtList = Cache::remember('nasabah_rt_list', 86400, fn () => User::role('nasabah')
             ->selectRaw('DISTINCT rt')
             ->whereNotNull('rt')
-            ->pluck('rt');
+            ->pluck('rt'));
 
-        $rwList = User::role('nasabah')
+        $rwList = Cache::remember('nasabah_rw_list', 86400, fn () => User::role('nasabah')
             ->selectRaw('DISTINCT rw')
             ->whereNotNull('rw')
-            ->pluck('rw');
+            ->pluck('rw'));
 
         return view('admin.region.configure', compact('rtList', 'rwList'));
     }
@@ -184,23 +183,48 @@ class AdminController extends Controller
             $query->whereDate('created_at', '<=', $request->end_date);
         }
 
-        $transactions = $query->get();
+        $response = new StreamedResponse(function () use ($query) {
+            $handle = fopen('php://output', 'w');
 
-        $csv = "ID,Nama Nasabah,Kategori,Berat (Kg),Harga/Kg,Total (Rp),Tipe Setoran,Tanggal\n";
+            // Add BOM for Excel UTF-8 compatibility
+            fwrite($handle, "\xEF\xBB\xBF");
 
-        foreach ($transactions as $transaction) {
-            $csv .= "{$transaction->id},";
-            $csv .= "{$transaction->user->name},";
-            $csv .= "{$transaction->trashCategory->nama},";
-            $csv .= "{$transaction->berat_kg},";
-            $csv .= "{$transaction->harga_per_kg},";
-            $csv .= "{$transaction->total_rp},";
-            $csv .= "{$transaction->tipe_setoran},";
-            $csv .= "{$transaction->created_at->format('Y-m-d H:i:s')}\n";
-        }
+            // Write Header
+            fputcsv($handle, [
+                'ID',
+                'Nama Nasabah',
+                'Kategori',
+                'Berat (Kg)',
+                'Harga/Kg',
+                'Total (Rp)',
+                'Tipe Setoran',
+                'Tanggal',
+            ]);
 
-        return response($csv)
-            ->header('Content-Type', 'text/csv')
-            ->header('Content-Disposition', 'attachment; filename="laporan_sisampah_' . now()->format('Y-m-d') . '.csv"');
+            // Chunk through the data to prevent memory exhaustion
+            $query->chunk(500, function ($transactions) use ($handle) {
+                foreach ($transactions as $transaction) {
+                    fputcsv($handle, [
+                        $transaction->id,
+                        $transaction->user->name ?? '-',
+                        $transaction->trashCategory->nama ?? '-',
+                        $transaction->berat_kg,
+                        $transaction->harga_per_kg,
+                        $transaction->total_rp,
+                        $transaction->tipe_setoran,
+                        $transaction->created_at->format('Y-m-d H:i:s'),
+                    ]);
+                }
+            });
+
+            fclose($handle);
+        });
+
+        $filename = 'laporan_sisampah_'.now()->format('Y-m-d').'.csv';
+
+        $response->headers->set('Content-Type', 'text/csv');
+        $response->headers->set('Content-Disposition', 'attachment; filename="'.$filename.'"');
+
+        return $response;
     }
 }

@@ -11,7 +11,7 @@
 $trendColor = $trend === 'up' ? 'text-green-600' : ($trend === 'down' ? 'text-red-600' : '');
 @endphp
 
-<x-card class="!p-4">
+<x-card class="!p-4" hover="true">
     <div class="space-y-3">
         <div class="flex items-start justify-between">
             <div class="space-y-1 flex-1">

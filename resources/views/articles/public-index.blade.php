@@ -24,7 +24,7 @@
       ['Mengapa Daur Ulang?', 'Mengurangi sampah ke TPA, menghemat sumber daya alam, mencegah polusi, dan menciptakan lapangan kerja hijau di tingkat RT/RW.', 'M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15'],
       ['Peran SiSampah', 'Platform digital yang menghubungkan nasabah, petugas, dan admin agar proses setor, jemput, dan pencairan dana berjalan transparan.', 'M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z'],
     ] as [$title, $desc, $icon])
-      <div class="p-6 rounded-2xl bg-surface-container-lowest border border-outline-variant/50 hover:border-primary/20 transition-colors">
+      <div class="p-6 rounded-2xl bg-surface-container-lowest border border-outline-variant hover:border-primary/20 transition-colors">
         <div class="w-11 h-11 bg-primary/10 rounded-xl flex items-center justify-center mb-4">
           <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $icon }}"/></svg>
         </div>
@@ -40,7 +40,7 @@
     <p class="text-on-surface-variant text-sm">Baca penjelasan lengkap beserta ilustrasi untuk setiap topik edukasi.</p>
   </div>
 
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 animate-slide-in">
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 animate-slide-in items-stretch">
     @forelse($articles as $article)
       <x-article-card :article="$article" />
     @empty
@@ -50,8 +50,6 @@
     @endforelse
   </div>
 
-  @if($articles->hasPages())
-    <div class="mt-10">{{ $articles->links() }}</div>
-  @endif
+  <div class="mt-10">{{ $articles->links() }}</div>
 </div>
 @endsection

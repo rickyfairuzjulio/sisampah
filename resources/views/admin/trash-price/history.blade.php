@@ -78,7 +78,7 @@
     </x-card>
 
     <x-card class="border border-outline-variant p-0 overflow-hidden animate-slide-in">
-        <div class="overflow-x-auto">
+        <div class="overflow-x-auto hidden md:block">
             <table class="w-full text-sm text-left print-friendly-table">
                 <thead class="text-xs text-on-surface-variant uppercase bg-surface-container font-semibold border-b border-outline-variant">
                     <tr>
@@ -131,6 +131,65 @@
                     @endforelse
                 </tbody>
             </table>
+        </div>
+
+        {{-- Mobile Card View --}}
+        <div class="block md:hidden divide-y divide-outline-variant">
+            @forelse($histories as $history)
+                <div class="p-4 bg-surface-container-lowest">
+                    <div class="flex items-start justify-between mb-3">
+                        <div>
+                            <p class="font-bold text-on-surface">
+                                <a href="{{ route('admin.trash_price.show', $history->trash_category_id) }}" class="hover:text-primary">
+                                    {{ $history->trashCategory->nama ?? 'Dihapus' }}
+                                </a>
+                            </p>
+                            <p class="text-[10px] text-on-surface-variant flex items-center gap-1 mt-0.5">
+                                <span class="font-mono bg-surface-container-high px-1 rounded">{{ $history->trashCategory->kode ?? '-' }}</span>
+                                · {{ $history->created_at->format('d M Y, H:i') }}
+                            </p>
+                        </div>
+                        <div class="text-right">
+                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold {{ $history->change_bg }}">
+                                @if($history->change_direction == 'naik') ↑
+                                @elseif($history->change_direction == 'turun') ↓
+                                @else → @endif
+                                {{ abs($history->persentase_perubahan) }}%
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center justify-between bg-surface-container-low p-3 rounded-xl border border-outline-variant mb-3">
+                        <div>
+                            <p class="text-[10px] text-on-surface-variant uppercase font-semibold">Harga Lama</p>
+                            <p class="font-bold text-on-surface-variant line-through text-sm">Rp {{ number_format($history->harga_lama, 0, ',', '.') }}</p>
+                        </div>
+                        <div class="text-on-surface-variant">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-[10px] text-on-surface-variant uppercase font-semibold">Harga Baru</p>
+                            <p class="font-extrabold text-primary text-sm">Rp {{ number_format($history->harga_baru, 0, ',', '.') }}</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center justify-between text-xs">
+                        <div class="flex items-center gap-1.5">
+                            <div class="w-5 h-5 rounded-full bg-primary/10 text-primary flex items-center justify-center text-[10px] font-bold uppercase">
+                                {{ substr($history->admin->name ?? 'A', 0, 1) }}
+                            </div>
+                            <span class="text-on-surface font-medium">{{ $history->admin->name ?? 'System' }}</span>
+                        </div>
+                        <div class="text-on-surface-variant italic text-[10px] truncate max-w-[150px]">
+                            {{ $history->alasan ?: 'Tanpa alasan' }}
+                        </div>
+                    </div>
+                </div>
+            @empty
+                <div class="px-4 py-8 text-center text-on-surface-variant text-sm">
+                    Tidak ada data riwayat harga.
+                </div>
+            @endforelse
         </div>
         
         @if($histories->hasPages())

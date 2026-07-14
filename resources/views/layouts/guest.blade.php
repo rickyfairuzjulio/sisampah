@@ -20,12 +20,8 @@
             {{-- Top Nav --}}
             <header class="flex items-center justify-between px-6 sm:px-10 lg:px-16 py-6">
                 <a href="{{ route('home') }}" class="flex items-center gap-3 group">
-                    <div class="w-9 h-9 bg-primary rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
-                        </svg>
-                    </div>
-                    <span class="text-lg font-semibold text-white">SiSampah<span class="text-primary">.</span></span>
+                    <img src="{{ asset('images/logo.png') }}" alt="SiSampah Logo" class="w-14 h-14 object-contain drop-shadow-sm group-hover:scale-110 transition-transform">
+                    <span class="text-2xl font-semibold text-white">SiSampah<span class="text-primary">.</span></span>
                 </a>
                 <nav class="hidden sm:flex items-center gap-6 text-sm">
                     <a href="{{ route('home') }}" class="text-gray-400 hover:text-white transition-colors">Beranda</a>
@@ -61,6 +57,15 @@
             <div class="relative z-10 flex flex-col justify-between p-12 w-full">
                 <div></div>
 
+                @php
+                    $nasabahAktif = Cache::remember('guest_stats_nasabah', 3600, fn() => \App\Models\User::role('nasabah')->count());
+                    
+                    $sampahTerolah = Cache::remember('guest_stats_sampah', 3600, fn() => \App\Models\Transaction::where('status', 'selesai')->sum('berat_kg'));
+                    $sampahFormatted = $sampahTerolah >= 1000 ? number_format($sampahTerolah / 1000, 1) . ' Ton' : number_format($sampahTerolah, 1) . ' Kg';
+                    
+                    $transaksiSukses = Cache::remember('guest_stats_transaksi', 3600, fn() => \App\Models\Transaction::where('status', 'selesai')->count());
+                @endphp
+
                 <div class="space-y-6">
                     <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-sm text-white/90">
                         <svg class="w-4 h-4 text-forest-emerald" fill="currentColor" viewBox="0 0 20 20">
@@ -78,26 +83,24 @@
                     {{-- Stats --}}
                     <div class="flex gap-8 pt-4">
                         <div>
-                            <p class="text-3xl font-bold text-white">500+</p>
+                            <p class="text-3xl font-bold text-white">{{ number_format($nasabahAktif) }}+</p>
                             <p class="text-sm text-white/60">Nasabah Aktif</p>
                         </div>
                         <div>
-                            <p class="text-3xl font-bold text-white">12 Ton</p>
+                            <p class="text-3xl font-bold text-white">{{ $sampahFormatted }}</p>
                             <p class="text-sm text-white/60">Sampah Terolah</p>
                         </div>
                         <div>
-                            <p class="text-3xl font-bold text-white">98%</p>
-                            <p class="text-sm text-white/60">Kepuasan</p>
+                            <p class="text-3xl font-bold text-white">{{ number_format($transaksiSukses) }}</p>
+                            <p class="text-sm text-white/60">Transaksi Sukses</p>
                         </div>
                     </div>
                 </div>
 
                 {{-- Bottom logo --}}
                 <div class="flex justify-end">
-                    <div class="w-16 h-16 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center">
-                        <svg class="w-8 h-8 text-white/80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
-                        </svg>
+                    <div class="w-16 h-16 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center overflow-hidden">
+                        <img src="{{ asset('images/logo.png') }}" alt="SiSampah" class="w-10 h-10 object-contain drop-shadow-sm">
                     </div>
                 </div>
             </div>

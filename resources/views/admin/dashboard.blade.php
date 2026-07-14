@@ -62,8 +62,11 @@
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        <x-card class="border border-outline-variant/50">
-            <h2 class="text-xl font-bold text-on-surface mb-5">Perbandingan Sampah per RT</h2>
+        <x-card class="border border-outline-variant" hover="true">
+            <h2 class="text-xl font-extrabold text-on-surface mb-5 flex items-center gap-2">
+                <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                Perbandingan Sampah per RT
+            </h2>
             @php $maxSaldo = $rtComparison->max('total_saldo') ?: 1; @endphp
             <div class="space-y-4">
                 @forelse($rtComparison as $rt)
@@ -82,15 +85,20 @@
             </div>
         </x-card>
 
-        <x-card class="border border-outline-variant/50">
-            <h2 class="text-xl font-bold text-on-surface mb-5">Top Kontributor</h2>
+        <x-card class="border border-outline-variant" hover="true">
+            <h2 class="text-xl font-extrabold text-on-surface mb-5 flex items-center gap-2">
+                <svg class="w-6 h-6 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
+                Top Kontributor
+            </h2>
             <div class="space-y-3">
                 @forelse($topContributors->take(5) as $index => $contributor)
-                    <div class="flex items-center gap-3 p-3 rounded-xl bg-surface-container-low">
-                        <span class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold bg-primary text-white">{{ $index + 1 }}</span>
+                    <div class="flex items-center gap-4 p-3.5 rounded-2xl bg-surface-container-low border border-outline-variant hover:border-primary hover:bg-surface-container transition-all duration-300">
+                        <div class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-extrabold {{ $index == 0 ? 'bg-amber-100 text-amber-700 border border-amber-300' : ($index == 1 ? 'bg-slate-100 text-slate-700 border border-slate-300' : ($index == 2 ? 'bg-orange-100 text-orange-800 border border-orange-300' : 'bg-primary/10 text-primary')) }}">
+                            #{{ $index + 1 }}
+                        </div>
                         <div class="flex-1">
-                            <p class="font-semibold text-sm">{{ $contributor->user->name ?? '-' }}</p>
-                            <p class="text-xs text-on-surface-variant">{{ number_format($contributor->total_berat_kg, 1) }} Kg · {{ number_format($contributor->total_poin_lingkungan, 0) }} poin</p>
+                            <p class="font-bold text-sm text-on-surface">{{ $contributor->user->name ?? '-' }}</p>
+                            <p class="text-xs text-on-surface-variant font-medium mt-0.5">{{ number_format($contributor->total_berat_kg, 1) }} Kg · <span class="text-primary">{{ number_format($contributor->total_poin_lingkungan, 0) }} poin</span></p>
                         </div>
                     </div>
                 @empty
@@ -100,11 +108,14 @@
         </x-card>
     </div>
 
-    <x-card class="border border-outline-variant/50">
-        <div class="flex items-center justify-between mb-5">
+    <x-card class="border border-outline-variant" hover="true">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
             <div>
-                <h2 class="text-xl font-bold text-on-surface">Ringkasan Sistem</h2>
-                <p class="text-sm text-on-surface-variant mt-1">{{ $totalPetugas }} petugas aktif · {{ $pendingWithdrawals }} penarikan menunggu validasi</p>
+                <h2 class="text-xl font-extrabold text-on-surface flex items-center gap-2">
+                    <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                    Ringkasan Sistem
+                </h2>
+                <p class="text-sm text-on-surface-variant font-medium mt-1">{{ $totalPetugas }} petugas aktif · {{ $pendingWithdrawals }} penarikan menunggu validasi</p>
             </div>
             <a href="{{ route('admin.reports.export') }}" class="px-4 py-2 bg-primary text-white text-sm font-semibold rounded-xl hover:bg-primary-container transition-colors">
                 Ekspor CSV

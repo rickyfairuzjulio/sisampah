@@ -68,7 +68,7 @@
                     </div>
 
                     <div class="prose prose-sm max-w-none text-on-surface">
-                        <h4 class="text-base font-bold text-on-surface mb-2 border-b border-outline-variant/30 pb-2">Deskripsi</h4>
+                        <h4 class="text-base font-bold text-on-surface mb-2 border-b border-outline-variant pb-2">Deskripsi</h4>
                         <p class="mb-4">{{ $category->deskripsi ?: 'Tidak ada deskripsi tersedia.' }}</p>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
@@ -180,11 +180,11 @@
                 </div>
 
                 <div class="space-y-3 mb-4">
-                    <div class="flex justify-between items-center text-sm border-b border-outline-variant/30 pb-2">
+                    <div class="flex justify-between items-center text-sm border-b border-outline-variant pb-2">
                         <span class="text-on-surface-variant">Tingkat Kepercayaan</span>
                         <span class="font-semibold px-2 py-0.5 rounded text-xs {{ ($prediction['confidence'] ?? '') == 'Tinggi' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800' }}">{{ $prediction['confidence'] ?? '-' }}</span>
                     </div>
-                    <div class="flex justify-between items-center text-sm border-b border-outline-variant/30 pb-2">
+                    <div class="flex justify-between items-center text-sm border-b border-outline-variant pb-2">
                         <span class="text-on-surface-variant">Analisis Tren</span>
                         <span class="font-semibold text-on-surface capitalize">{{ $trend['trend'] ?? '-' }}</span>
                     </div>
@@ -226,7 +226,7 @@
             <div class="flex flex-col gap-2">
                 <form action="{{ route('admin.trash_price.duplicate', $category->id) }}" method="POST">
                     @csrf
-                    <button type="submit" class="w-full py-2.5 px-4 bg-surface-container hover:bg-surface-container-high text-on-surface font-semibold rounded-xl transition-colors border border-outline-variant/50 flex items-center justify-center gap-2 text-sm">
+                    <button type="submit" class="w-full py-2.5 px-4 bg-surface-container hover:bg-surface-container-high text-on-surface font-semibold rounded-xl transition-colors border border-outline-variant flex items-center justify-center gap-2 text-sm">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
                         Gandakan Data
                     </button>

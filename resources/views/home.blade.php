@@ -225,89 +225,6 @@
     </div>
 </section>
 
-{{-- ═══════════════ KALKULATOR ESTIMASI ═══════════════ --}}
-<section id="kalkulator" class="py-16 sm:py-20 lg:py-28" x-data="kalkulatorSampah()" x-intersect.once.margin.-100px="shown = true">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8"
-         :class="shown ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'"
-         class="transition-all duration-1000 ease-out opacity-0 translate-y-8">
-        
-        <div class="landing-card !p-8 sm:!p-12 !bg-gradient-to-br from-[#0a1f17] to-[#051410] border-forest-emerald/30 shadow-2xl relative overflow-hidden">
-            <div class="absolute top-0 right-0 w-64 h-64 bg-primary/20 rounded-full blur-3xl"></div>
-            <div class="absolute bottom-0 left-0 w-48 h-48 bg-amber-500/10 rounded-full blur-3xl"></div>
-            
-            <div class="relative z-10 text-center mb-10">
-                <p class="text-forest-emerald text-sm font-semibold uppercase tracking-widest mb-3">Kalkulator</p>
-                <h2 class="text-3xl sm:text-4xl font-bold mb-4">Cek Potensi Penghasilanmu</h2>
-                <p class="text-white/50">Hitung estimasi saldo yang akan kamu dapatkan dari menyetor sampah.</p>
-            </div>
-
-            <div class="relative z-10 grid grid-cols-1 sm:grid-cols-2 gap-6 items-start">
-                <div class="space-y-5">
-                    <div>
-                        <label class="block text-sm font-semibold text-white/80 mb-2">Pilih Jenis Sampah</label>
-                        <div class="relative">
-                            <select x-model="kategoriId" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3.5 text-white appearance-none focus:outline-none focus:border-forest-emerald focus:ring-1 focus:ring-forest-emerald transition-colors">
-                                <option value="" class="bg-[#051410] text-white">-- Pilih Jenis --</option>
-                                <template x-for="cat in categories" :key="cat.id">
-                                    <option :value="cat.id" x-text="cat.nama + ' (Rp ' + formatRupiah(cat.harga_per_kg) + ' / ' + cat.satuan + ')'" class="bg-[#051410] text-white"></option>
-                                </template>
-                            </select>
-                            <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none">
-                                <svg class="w-5 h-5 text-white/50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-                            </div>
-                        </div>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-semibold text-white/80 mb-2">Berat (Kg)</label>
-                        <input type="number" x-model.number="berat" min="0" step="0.1" placeholder="Contoh: 5.5" class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3.5 text-white focus:outline-none focus:border-forest-emerald focus:ring-1 focus:ring-forest-emerald transition-colors">
-                    </div>
-                </div>
-
-                <div class="bg-primary/10 border border-primary/20 rounded-2xl p-6 sm:p-8 flex flex-col justify-center h-full text-center sm:text-left">
-                    <p class="text-sm font-semibold text-primary mb-2">Estimasi Saldo Didapat</p>
-                    <p class="text-4xl sm:text-5xl font-black text-white tracking-tight mb-2" x-text="formatEstimasi"></p>
-                    <p class="text-sm text-white/50" x-show="kategoriId && berat > 0" x-transition>
-                        Berdasarkan <span x-text="berat" class="font-bold text-white"></span> Kg <span x-text="selectedCatName" class="font-bold text-white"></span>
-                    </p>
-                    <p class="text-sm text-white/50" x-show="!kategoriId || !berat">Masukkan kategori dan berat untuk melihat hasil.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-@push('scripts')
-<script>
-    document.addEventListener('alpine:init', () => {
-        Alpine.data('kalkulatorSampah', () => ({
-            shown: false,
-            kategoriId: '',
-            berat: '',
-            categories: @json($categories),
-            
-            get estimasi() {
-                if(!this.kategoriId || !this.berat || this.berat <= 0) return 0;
-                const cat = this.categories.find(c => c.id == this.kategoriId);
-                return cat ? cat.harga_per_kg * this.berat : 0;
-            },
-            
-            get formatEstimasi() {
-                return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(this.estimasi);
-            },
-            
-            get selectedCatName() {
-                if(!this.kategoriId) return '';
-                const cat = this.categories.find(c => c.id == this.kategoriId);
-                return cat ? cat.nama : '';
-            },
-
-            formatRupiah(number) {
-                return new Intl.NumberFormat('id-ID').format(number);
-            }
-        }))
-    })
-</script>
-@endpush
 
 {{-- ═══════════════ EDUKASI ═══════════════ --}}
 @if($articles->count())
@@ -345,39 +262,6 @@
 </section>
 @endif
 
-{{-- ═══════════════ TESTIMONI ═══════════════ --}}
-<section class="py-16 sm:py-20 lg:py-28" x-data="{ shown: false }" x-intersect.once.margin.-100px="shown = true">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
-         :class="shown ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'"
-         class="transition-all duration-1000 ease-out opacity-0 translate-y-8">
-        <div class="text-center max-w-2xl mx-auto mb-12 lg:mb-16">
-            <p class="text-forest-emerald text-sm font-semibold uppercase tracking-widest mb-3">Testimoni Warga</p>
-            <h2 class="landing-section-title font-bold mb-4">Apa Kata Mereka?</h2>
-            <p class="text-white/50 text-base sm:text-lg">Kisah sukses warga desa dalam mengelola sampah menjadi berkah.</p>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            @foreach([
-                ['Budi Santoso', 'Nasabah Aktif', 'Sangat memudahkan! Dulu malas ke bank sampah karena jauh, sekarang tinggal jadwalkan jemputan di aplikasi. Saldo juga transparan.'],
-                ['Siti Aminah', 'Petugas Lapangan', 'Input timbangan jadi sangat cepat. Tinggal klik-klik, harga otomatis terhitung, dan foto bukti langsung tersimpan. Tidak perlu catat manual lagi.'],
-                ['Pak Kades', 'Admin', 'Laporan statistik per RT sangat membantu desa dalam mengambil kebijakan lingkungan. Sistemnya rapi dan profesional.'],
-            ] as [$name, $role, $quote])
-                <div class="landing-card !p-8 flex flex-col justify-between">
-                    <p class="text-white/80 italic mb-6">"{{ $quote }}"</p>
-                    <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center text-forest-emerald font-bold text-lg">
-                            {{ substr($name, 0, 1) }}
-                        </div>
-                        <div>
-                            <p class="font-bold text-white">{{ $name }}</p>
-                            <p class="text-xs text-white/50">{{ $role }}</p>
-                        </div>
-                    </div>
-                </div>
-            @endforeach
-        </div>
-    </div>
-</section>
 
 {{-- ═══════════════ FAQ ═══════════════ --}}
 <section class="py-16 sm:py-20 lg:py-28 bg-[#0a1f17]/50" x-data="{ shown: false }" x-intersect.once.margin.-100px="shown = true">

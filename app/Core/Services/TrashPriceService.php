@@ -5,13 +5,14 @@ namespace App\Core\Services;
 use App\Models\PriceHistory;
 use App\Models\TrashCategory;
 use App\Models\User;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Pagination\LengthAwarePaginator;
 use Carbon\Carbon;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\DB;
 
 class TrashPriceService
 {
     protected PriceNotificationService $notificationService;
+
     protected PricePredictionService $predictionService;
 
     public function __construct(
@@ -37,22 +38,22 @@ class TrashPriceService
         }
 
         // Search
-        if (!empty($filters['search'])) {
+        if (! empty($filters['search'])) {
             $query->search($filters['search']);
         }
 
         // Filter by Kategori
-        if (!empty($filters['kategori'])) {
+        if (! empty($filters['kategori'])) {
             $query->byKategori($filters['kategori']);
         }
 
         // Filter by Status Harga
-        if (!empty($filters['status_harga'])) {
+        if (! empty($filters['status_harga'])) {
             $query->byStatusHarga($filters['status_harga']);
         }
 
         // Filter by Kualitas
-        if (!empty($filters['kualitas'])) {
+        if (! empty($filters['kualitas'])) {
             $query->where('kualitas', $filters['kualitas']);
         }
 
@@ -92,7 +93,7 @@ class TrashPriceService
         return DB::transaction(function () use ($data, $admin) {
             $data['kode'] = TrashCategory::generateKode($data['nama']);
             $data['harga_per_gram'] = $data['harga_per_kg'] / 1000;
-            
+
             // Handle image upload if exists
             if (isset($data['gambar_file'])) {
                 $path = $data['gambar_file']->store('trash_categories', 'public');
@@ -136,7 +137,7 @@ class TrashPriceService
             if ($oldPrice != $newPrice) {
                 $diff = $newPrice - $oldPrice;
                 $persentase = $oldPrice > 0 ? ($diff / $oldPrice) * 100 : 100;
-                
+
                 $data['perubahan_persen'] = round(abs($persentase), 2);
                 $data['status_harga'] = $newPrice > $oldPrice ? 'naik' : 'turun';
                 $data['harga_per_gram'] = $newPrice / 1000;
@@ -158,6 +159,7 @@ class TrashPriceService
             }
 
             $category->update($data);
+
             return $category;
         });
     }
@@ -168,14 +170,16 @@ class TrashPriceService
     public function deleteOrArchivePrice(int $id, bool $force = false): bool
     {
         $category = TrashCategory::findOrFail($id);
-        
+
         // If there are transactions, we can only soft archive
-        if ($category->transactions()->exists() && !$force) {
+        if ($category->transactions()->exists() && ! $force) {
             $category->update(['is_archived' => true]);
+
             return false; // Indicates it was archived, not deleted
         }
-        
+
         $category->delete();
+
         return true; // Indicates it was deleted
     }
 
@@ -185,6 +189,7 @@ class TrashPriceService
     public function restorePrice(int $id): bool
     {
         $category = TrashCategory::findOrFail($id);
+
         return $category->update(['is_archived' => false]);
     }
 
@@ -196,9 +201,9 @@ class TrashPriceService
         $category = TrashCategory::findOrFail($id);
         $newCategoryData = $category->toArray();
         unset($newCategoryData['id'], $newCategoryData['kode'], $newCategoryData['created_at'], $newCategoryData['updated_at']);
-        
-        $newCategoryData['nama'] = $newCategoryData['nama'] . ' (Copy)';
-        
+
+        $newCategoryData['nama'] = $newCategoryData['nama'].' (Copy)';
+
         return $this->createPrice($newCategoryData, $admin);
     }
 
@@ -211,7 +216,7 @@ class TrashPriceService
         if ($percent > 20) {
             $this->notificationService->createAdminNotification('harga_drastis', $category, ['persentase' => $percent]);
         }
-        
+
         // 2. Alert users if price goes up or down
         $type = $new > $old ? 'harga_naik' : 'harga_turun';
         $this->notificationService->createUserNotification($type, $category, $percent);
@@ -223,7 +228,7 @@ class TrashPriceService
     public function getStatistics(): array
     {
         $activeCategories = TrashCategory::active()->get();
-        
+
         $stats = [
             'total_jenis' => $activeCategories->count(),
             'harga_tertinggi' => $activeCategories->max('harga_per_kg') ?? 0,
@@ -233,7 +238,7 @@ class TrashPriceService
             'harga_turun' => $activeCategories->where('status_harga', 'turun')->count(),
             'update_hari_ini' => PriceHistory::whereDate('created_at', Carbon::today())->count(),
         ];
-        
+
         return $stats;
     }
 }
