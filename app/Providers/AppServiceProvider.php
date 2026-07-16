@@ -6,6 +6,7 @@ use App\Core\Services\PriceNotificationService;
 use App\Core\Services\PricePredictionService;
 use App\Core\Services\TrashPriceService;
 use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\URL;
@@ -31,6 +32,8 @@ class AppServiceProvider extends ServiceProvider
         if (config('app.env') === 'production') {
             URL::forceScheme('https');
         }
+
+        Model::preventLazyLoading(!app()->isProduction());
         RateLimiter::for('chatbot', function (Request $request) {
             return Limit::perMinutes(5, 10)->by($request->user()?->id ?: $request->ip())->response(function (Request $request, array $headers) {
                 return response()->json([

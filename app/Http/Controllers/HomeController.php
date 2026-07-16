@@ -16,12 +16,14 @@ class HomeController extends Controller
             ->take(3)
             ->get();
 
-        $stats = [
-            'nasabah' => User::role('nasabah')->count(),
-            'petugas' => User::role('petugas')->count(),
-            'sampah_kg' => (float) Transaction::where('status', 'selesai')->sum('berat_kg'),
-            'transaksi' => Transaction::where('status', 'selesai')->count(),
-        ];
+        $stats = \Illuminate\Support\Facades\Cache::remember('home.stats', 600, function () {
+            return [
+                'nasabah' => User::role('nasabah')->count(),
+                'petugas' => User::role('petugas')->count(),
+                'sampah_kg' => (float) Transaction::where('status', 'selesai')->sum('berat_kg'),
+                'transaksi' => Transaction::where('status', 'selesai')->count(),
+            ];
+        });
 
         $categories = TrashCategory::active()->select('id', 'nama', 'harga_per_kg', 'satuan')->get();
 
