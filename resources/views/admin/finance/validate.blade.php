@@ -50,7 +50,7 @@
     <!-- Pending Tab -->
     <div x-show="activeTab === 'pending'" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0">
         <x-card class="overflow-hidden !p-0 border border-outline-variant shadow-sm">
-            <div class="overflow-x-auto hidden md:block">
+            <div class="overflow-x-auto hidden lg:block">
                 <table class="w-full text-left border-collapse">
                     <thead>
                         <tr class="bg-surface-container-low text-on-surface-variant text-xs uppercase tracking-wider border-b border-outline-variant">
@@ -85,10 +85,16 @@
                                 </div>
                             </td>
                             <td class="p-5">
-                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200 capitalize shadow-sm">
+                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200 shadow-sm mb-2">
                                     <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
-                                    {{ $item->metode }}
+                                    {{ $item->metode === 'tunai' ? 'Tunai' : strtoupper($item->metode) }}
                                 </span>
+                                @if($item->metode !== 'tunai')
+                                <div class="text-xs mt-1">
+                                    <div class="font-bold text-on-surface">{{ $item->rekening_tujuan }}</div>
+                                    <div class="text-on-surface-variant uppercase text-[10px]">A.N. {{ $item->nama_penerima }}</div>
+                                </div>
+                                @endif
                             </td>
                             <td class="p-5 text-right space-x-2">
                                 <button @click="approveId = '{{ $item->id }}'; $dispatch('open-modal', 'approve-modal')" class="px-3.5 py-2 bg-green-500 hover:bg-green-600 hover:shadow-md hover:-translate-y-0.5 text-white text-xs font-bold rounded-xl transition-all inline-flex items-center gap-1.5">
@@ -113,7 +119,7 @@
             </div>
 
             <!-- Mobile Card View for Pending -->
-            <div class="block md:hidden divide-y divide-outline-variant">
+            <div class="block lg:hidden divide-y divide-outline-variant">
                 @forelse($withdrawals as $item)
                     <div class="p-4 bg-surface-container-lowest">
                         <div class="flex items-start justify-between mb-3">
@@ -126,14 +132,22 @@
                                     <div class="text-[10px] text-on-surface-variant font-medium">{{ $item->created_at->format('d M Y, H:i') }}</div>
                                 </div>
                             </div>
-                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200 capitalize shadow-sm">
+                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200 shadow-sm">
                                 <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
-                                {{ $item->metode }}
+                                {{ $item->metode === 'tunai' ? 'Tunai' : strtoupper($item->metode) }}
                             </span>
                         </div>
                         
                         <div class="flex items-center justify-between mb-4 bg-surface-container-low p-3 rounded-xl border border-outline-variant">
-                            <span class="text-xs text-on-surface-variant font-semibold uppercase">Nominal Penarikan</span>
+                            <div>
+                                <span class="text-xs text-on-surface-variant font-semibold uppercase block">Nominal Penarikan</span>
+                                @if($item->metode !== 'tunai')
+                                <div class="text-[10px] mt-1">
+                                    <span class="font-bold text-on-surface">{{ $item->rekening_tujuan }}</span><br>
+                                    <span class="text-on-surface-variant">A.N. {{ $item->nama_penerima }}</span>
+                                </div>
+                                @endif
+                            </div>
                             <span class="text-base font-extrabold text-green-600">Rp {{ number_format($item->nominal, 0, ',', '.') }}</span>
                         </div>
 
@@ -165,7 +179,7 @@
     <!-- Approved Tab -->
     <div x-show="activeTab === 'approved'" style="display: none;" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0">
         <x-card class="overflow-hidden !p-0 border border-outline-variant shadow-sm">
-            <div class="overflow-x-auto hidden md:block">
+            <div class="overflow-x-auto hidden lg:block">
                 <table class="w-full text-left border-collapse">
                     <thead>
                         <tr class="bg-surface-container-low text-on-surface-variant text-xs uppercase tracking-wider border-b border-outline-variant">
@@ -199,10 +213,16 @@
                                 </div>
                             </td>
                             <td class="p-5">
-                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200 capitalize shadow-sm">
+                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200 shadow-sm">
                                     <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
-                                    {{ $item->metode }}
+                                    {{ $item->metode === 'tunai' ? 'Tunai' : strtoupper($item->metode) }}
                                 </span>
+                                @if($item->metode !== 'tunai')
+                                <div class="text-xs mt-1">
+                                    <div class="font-bold text-on-surface">{{ $item->rekening_tujuan }}</div>
+                                    <div class="text-on-surface-variant uppercase text-[10px]">A.N. {{ $item->nama_penerima }}</div>
+                                </div>
+                                @endif
                             </td>
                             <td class="p-5 text-center">
                                 @if($item->foto_resi)
@@ -226,7 +246,7 @@
             </div>
 
             <!-- Mobile Card View for Approved -->
-            <div class="block md:hidden divide-y divide-outline-variant">
+            <div class="block lg:hidden divide-y divide-outline-variant">
                 @forelse($approved as $item)
                     <div class="p-4 bg-surface-container-lowest">
                         <div class="flex items-start justify-between mb-3">
@@ -239,14 +259,22 @@
                                     <div class="text-[10px] text-on-surface-variant font-medium">{{ $item->updated_at->format('d M Y, H:i') }}</div>
                                 </div>
                             </div>
-                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200 capitalize shadow-sm">
+                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200 shadow-sm">
                                 <span class="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
-                                {{ $item->metode }}
+                                {{ $item->metode === 'tunai' ? 'Tunai' : strtoupper($item->metode) }}
                             </span>
                         </div>
                         
                         <div class="flex items-center justify-between mb-4 bg-surface-container-low p-3 rounded-xl border border-outline-variant">
-                            <span class="text-xs text-on-surface-variant font-semibold uppercase">Nominal</span>
+                            <div>
+                                <span class="text-xs text-on-surface-variant font-semibold uppercase block">Nominal</span>
+                                @if($item->metode !== 'tunai')
+                                <div class="text-[10px] mt-1">
+                                    <span class="font-bold text-on-surface">{{ $item->rekening_tujuan }}</span><br>
+                                    <span class="text-on-surface-variant">A.N. {{ $item->nama_penerima }}</span>
+                                </div>
+                                @endif
+                            </div>
                             <span class="text-base font-extrabold text-green-600">Rp {{ number_format($item->nominal, 0, ',', '.') }}</span>
                         </div>
 

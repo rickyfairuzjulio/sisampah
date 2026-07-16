@@ -248,8 +248,8 @@
                 <article class="landing-card group flex flex-col h-full !p-0 overflow-hidden">
                     <div class="p-6 flex-1 flex flex-col">
                         <span class="inline-block self-start px-3 py-1 text-xs font-bold bg-primary/20 text-forest-emerald rounded-full mb-4">{{ $article->kategori }}</span>
-                        <h3 class="text-lg font-bold mb-3 group-hover:text-forest-emerald transition-colors line-clamp-2">{{ $article->judul }}</h3>
-                        <p class="text-sm text-white/50 leading-relaxed flex-1 line-clamp-3">{{ Str::limit(strip_tags($article->konten), 120) }}</p>
+                        <h3 class="text-lg font-bold mb-3 group-hover:text-forest-emerald transition-colors line-clamp-2 min-h-[56px]">{{ $article->judul }}</h3>
+                        <p class="text-sm text-white/50 leading-relaxed flex-1 line-clamp-3 min-h-[60px]">{{ Str::limit(strip_tags($article->konten), 120) }}</p>
                         <a href="{{ route('edukasi.show', $article->slug) }}" class="inline-flex items-center gap-2 text-sm font-bold text-forest-emerald mt-5 group-hover:gap-3 transition-all">
                             Baca artikel
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>

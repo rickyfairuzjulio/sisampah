@@ -160,8 +160,20 @@
                                         :label="ucfirst($withdrawal->status)"
                                     />
                                 </div>
-                                <p class="text-xs text-on-surface-variant mb-1">{{ ucfirst($withdrawal->metode) }}</p>
-                                <p class="text-xs text-outline">{{ $withdrawal->created_at->format('d M Y H:i') }}</p>
+                                <p class="text-xs text-on-surface-variant mb-1">{{ $withdrawal->metode === 'tunai' ? 'Tunai' : strtoupper($withdrawal->metode) }}</p>
+                                <p class="text-xs text-outline mb-2">{{ $withdrawal->created_at->format('d M Y H:i') }}</p>
+
+                                @if($withdrawal->status === 'disetujui' && $withdrawal->foto_resi)
+                                    <a href="{{ Storage::url($withdrawal->foto_resi) }}" target="_blank" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-semibold rounded-lg transition-colors border border-blue-200 w-fit">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                        Lihat Bukti Transfer
+                                    </a>
+                                @elseif($withdrawal->status === 'ditolak' && $withdrawal->catatan_admin)
+                                    <div class="mt-2 p-2 bg-red-50 rounded-md border border-red-100">
+                                        <p class="text-xs text-red-700 font-semibold mb-0.5">Alasan Penolakan:</p>
+                                        <p class="text-xs text-red-600">{{ $withdrawal->catatan_admin }}</p>
+                                    </div>
+                                @endif
                             </div>
                         @empty
                             <div class="text-center py-8">
@@ -197,7 +209,7 @@
                         </x-alert>
                     @endif
 
-                    <form action="{{ route('nasabah.withdrawal.request') }}" method="POST" class="space-y-4">
+                    <form action="{{ route('nasabah.withdrawal.request') }}" method="POST" class="space-y-4" x-data="{ method: '{{ old('metode', '') }}' }">
                         @csrf
 
                         <x-input-field 
@@ -214,29 +226,36 @@
                         <x-select-field 
                             label="Metode Penarikan"
                             name="metode"
+                            x-model="method"
                             :items="[
                                 ['value' => 'tunai', 'label' => '💵 Tunai'],
-                                ['value' => 'transfer', 'label' => '🏦 Transfer Bank'],
+                                ['value' => 'bca', 'label' => '🏦 Transfer BCA'],
+                                ['value' => 'bri', 'label' => '🏦 Transfer BRI'],
+                                ['value' => 'bsi', 'label' => '🏦 Transfer BSI'],
+                                ['value' => 'dana', 'label' => '📱 E-Wallet DANA'],
+                                ['value' => 'gopay', 'label' => '📱 E-Wallet GoPay'],
                             ]"
                             required
                             :error="$errors->has('metode') ? $errors->first('metode') : false"
                         />
 
-                        <x-input-field 
-                            label="Nomor Rekening (Transfer)"
-                            name="rekening_tujuan"
-                            type="text"
-                            placeholder="1234567890"
-                            :error="$errors->has('rekening_tujuan') ? $errors->first('rekening_tujuan') : false"
-                        />
+                        <div x-show="method && method !== 'tunai'" x-transition class="space-y-4" style="display: none;">
+                            <x-input-field 
+                                label="Nomor Rekening / No. E-Wallet"
+                                name="rekening_tujuan"
+                                type="text"
+                                placeholder="1234567890"
+                                :error="$errors->has('rekening_tujuan') ? $errors->first('rekening_tujuan') : false"
+                            />
 
-                        <x-input-field 
-                            label="Nama Penerima (Transfer)"
-                            name="nama_penerima"
-                            type="text"
-                            placeholder="Nama pemilik rekening"
-                            :error="$errors->has('nama_penerima') ? $errors->first('nama_penerima') : false"
-                        />
+                            <x-input-field 
+                                label="Nama Pemilik Rekening/E-Wallet"
+                                name="nama_penerima"
+                                type="text"
+                                placeholder="A.N. Nama Anda"
+                                :error="$errors->has('nama_penerima') ? $errors->first('nama_penerima') : false"
+                            />
+                        </div>
 
                         <x-button type="submit" variant="primary" class="w-full">
                             Ajukan Penarikan

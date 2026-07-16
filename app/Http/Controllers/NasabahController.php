@@ -9,6 +9,7 @@ use App\Models\Transaction;
 use App\Models\TrashCategory;
 use App\Models\Withdrawal;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class NasabahController extends Controller
 {
@@ -147,12 +148,18 @@ class NasabahController extends Controller
             return back()->withErrors(['nominal' => 'Saldo Anda tidak cukup.']);
         }
 
-        Withdrawal::create([
-            'user_id' => $user->id,
-            'nominal' => $validated['nominal'],
-            'metode' => $validated['metode'],
-            'status' => 'pending',
-        ]);
+        DB::transaction(function () use ($user, $validated) {
+            Withdrawal::create([
+                'user_id' => $user->id,
+                'nominal' => $validated['nominal'],
+                'metode' => $validated['metode'],
+                'rekening_tujuan' => $validated['metode'] !== 'tunai' ? ($validated['rekening_tujuan'] ?? null) : null,
+                'nama_penerima' => $validated['metode'] !== 'tunai' ? ($validated['nama_penerima'] ?? null) : null,
+                'status' => 'pending',
+            ]);
+
+            $user->decrement('saldo', $validated['nominal']);
+        });
 
         return redirect()->route('nasabah.wallet')
             ->with('success', 'Pengajuan penarikan dana berhasil dibuat. Tunggu persetujuan admin.');

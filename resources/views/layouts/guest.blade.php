@@ -4,9 +4,23 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <link rel="icon" href="{{ asset('images/logo.png') }}" type="image/png">
 
-    <title>{{ config('app.name', 'SiSampah') }}</title>
+    <!-- Primary Meta Tags -->
+    <title>{{ config('app.name', 'SiSampah') }} - Bersih Desa, Sejahtera Bersama</title>
+    <meta name="title" content="{{ config('app.name', 'SiSampah') }} - Bersih Desa, Sejahtera Bersama">
+    <meta name="description" content="Sistem Informasi Manajemen Bank Sampah (SiSampah) untuk mewujudkan lingkungan desa yang bersih, hijau, dan memberikan nilai ekonomis bagi masyarakat.">
+    <meta name="keywords" content="bank sampah, sisampah, daur ulang, peduli lingkungan, sampah desa, ekonomi sirkular">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ config('app.url') }}">
+    <meta property="og:title" content="{{ config('app.name', 'SiSampah') }} - Bersih Desa, Sejahtera Bersama">
+    <meta property="og:description" content="Sistem Informasi Manajemen Bank Sampah (SiSampah) untuk mewujudkan lingkungan desa yang bersih, hijau, dan memberikan nilai ekonomis bagi masyarakat.">
+    <meta property="og:image" content="{{ asset('images/logo.png') }}">
 
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />

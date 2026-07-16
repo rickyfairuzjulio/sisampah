@@ -62,7 +62,7 @@
         </div>
 
         <button type="submit"
-                class="w-full py-3.5 px-4 text-sm font-bold text-white bg-primary hover:bg-primary-container rounded-xl transition-all hover:shadow-lg hover:shadow-primary/20 mt-2">
+                class="w-full py-3.5 px-4 text-sm font-bold text-white bg-gradient-to-r from-primary to-forest-emerald hover:from-forest-emerald hover:to-primary rounded-xl transition-all duration-300 hover:shadow-lg hover:shadow-primary/30 mt-2 hover:-translate-y-0.5">
             Masuk ke Dashboard
         </button>
     </form>

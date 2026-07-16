@@ -10,8 +10,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="icon" href="{{ asset('images/logo.png') }}" type="image/png">
 
-    @vite([''resources/css/app.css'', ''resources/css/animations.css'', ''resources/js/app.js''])
+    @vite(['resources/css/app.css', 'resources/css/animations.css', 'resources/js/app.js'])
 </head>
 <body class="font-sans antialiased bg-background text-on-surface overflow-x-hidden">
     <!-- Navigation -->
@@ -20,11 +21,7 @@
             <div class="flex items-center justify-between">
                 <!-- Logo -->
                 <a href="/" class="flex items-center gap-3 group">
-                    <div class="w-10 h-10 bg-gradient-to-br from-primary to-forest-emerald rounded-lg flex items-center justify-center text-white group-hover:scale-110 transition-transform duration-300">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-                        </svg>
-                    </div>
+                    <img src="{{ asset('images/logo.png') }}" alt="SiSampah Logo" class="w-12 h-12 object-contain group-hover:scale-110 transition-transform duration-300">
                     <span class="font-bold text-lg text-on-surface">SiSampah</span>
                 </a>
 

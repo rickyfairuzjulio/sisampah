@@ -5,9 +5,9 @@
     <!-- Modern Header with Gradient -->
     <div class="mb-8 animate-fade-in">
         <div class="bg-gradient-to-r from-primary to-forest-emerald rounded-2xl p-8 shadow-lg text-white">
-            <div class="flex items-center gap-5">
-                <div class="relative group">
-                    <div class="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm border-2 border-white/40 overflow-hidden shadow-inner">
+            <div class="flex flex-col sm:flex-row items-center sm:items-start gap-5 text-center sm:text-left">
+                <div class="relative group shrink-0">
+                    <div class="w-24 h-24 sm:w-20 sm:h-20 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm border-2 border-white/40 overflow-hidden shadow-inner">
                         <img src="https://ui-avatars.com/api/?name={{ urlencode($user->name) }}&background=025e36&color=fff&size=128&bold=true" alt="{{ $user->name }}" class="w-full h-full object-cover">
                     </div>
                     <div class="absolute inset-0 bg-black/40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer backdrop-blur-[2px]">
@@ -15,7 +15,7 @@
                     </div>
                 </div>
                 <div>
-                    <h1 class="text-3xl font-bold mb-1 shadow-sm">{{ $user->name }}</h1>
+                    <h1 class="text-2xl sm:text-3xl font-bold mb-2 sm:mb-1 shadow-sm">{{ $user->name }}</h1>
                     <div class="flex items-center gap-2 text-white/90 text-sm font-medium">
                         <span class="px-2 py-0.5 bg-white/20 rounded-md backdrop-blur-sm border border-white/20 capitalize">{{ $user->roles->first()->name ?? 'User' }}</span>
                         <span>·</span>

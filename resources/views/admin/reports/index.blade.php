@@ -59,7 +59,7 @@
 
     <!-- Table -->
     <x-card class="overflow-hidden animate-slide-in" style="animation-delay: 100ms;">
-        <div class="overflow-x-auto hidden md:block">
+        <div class="overflow-x-auto hidden lg:block">
             <table class="w-full text-left border-collapse">
                 <thead>
                     <tr class="bg-surface-container-low text-on-surface-variant text-sm border-b border-outline-variant">
@@ -110,7 +110,7 @@
         </div>
 
         <!-- Mobile Card View -->
-        <div class="block md:hidden divide-y divide-outline-variant">
+        <div class="block lg:hidden divide-y divide-outline-variant">
             @forelse($transactions as $trx)
                 <div class="p-4 bg-surface-container-lowest">
                     <div class="flex items-start justify-between mb-3">

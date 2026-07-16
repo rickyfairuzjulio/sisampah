@@ -367,12 +367,13 @@
         @apply w-full px-4 py-3.5 rounded-xl text-white text-sm
                bg-[#1a1f2e] border border-gray-700
                placeholder:text-gray-500
-               transition-all duration-200;
+               transition-all duration-300
+               hover:border-gray-500 hover:bg-[#222836];
         outline: none;
     }
 
     .auth-input:focus {
-        @apply border-primary ring-2 ring-primary;
+        @apply border-primary ring-2 ring-primary bg-[#1a1f2e];
     }
 
     .auth-bg-panel {

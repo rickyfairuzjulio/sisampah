@@ -85,9 +85,6 @@ class AdminController extends Controller
 
             $withdrawal->status = 'disetujui';
             $withdrawal->save();
-
-            $user = $withdrawal->user;
-            $user->decrement('saldo', $withdrawal->nominal);
         });
 
         return redirect()->route('admin.finance.validate')
@@ -102,10 +99,14 @@ class AdminController extends Controller
             'catatan_admin' => 'required|string|max:500',
         ]);
 
-        $withdrawal->update([
-            'status' => 'ditolak',
-            'catatan_admin' => $validated['catatan_admin'],
-        ]);
+        DB::transaction(function () use ($withdrawal, $validated) {
+            $withdrawal->update([
+                'status' => 'ditolak',
+                'catatan_admin' => $validated['catatan_admin'],
+            ]);
+
+            $withdrawal->user->increment('saldo', $withdrawal->nominal);
+        });
 
         return redirect()->route('admin.finance.validate')
             ->with('success', 'Pengajuan penarikan dana berhasil ditolak.');

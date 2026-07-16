@@ -19,8 +19,8 @@
     </div>
 
     <div class="p-5 sm:p-6 flex flex-col flex-1">
-        <h3 class="text-lg font-bold text-on-surface mb-2 group-hover:text-primary transition-colors line-clamp-2">{{ $article->judul }}</h3>
-        <p class="text-sm text-on-surface-variant leading-relaxed flex-1 line-clamp-3">{{ $article->excerpt }}</p>
+        <h3 class="text-lg font-bold text-on-surface mb-2 group-hover:text-primary transition-colors line-clamp-2 min-h-[56px]">{{ $article->judul }}</h3>
+        <p class="text-sm text-on-surface-variant leading-relaxed flex-1 line-clamp-3 min-h-[60px]">{{ $article->excerpt }}</p>
         <div class="flex items-center justify-between mt-5 pt-4 border-t border-outline-variant">
             <span class="text-xs text-on-surface-variant">{{ $article->created_at->translatedFormat('d M Y') }}</span>
             <a href="{{ route('edukasi.show', $article->slug) }}" class="inline-flex items-center gap-1 text-sm font-bold text-primary hover:gap-2 transition-all">

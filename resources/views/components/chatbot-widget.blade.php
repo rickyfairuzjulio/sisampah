@@ -16,10 +16,8 @@
         <!-- Header -->
         <div class="bg-gradient-to-r from-primary to-forest-emerald p-4 flex items-center justify-between text-white">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center backdrop-blur-sm border border-white/30">
-                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
-                    </svg>
+                <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center backdrop-blur-sm border-2 border-primary-container p-1.5 shadow-sm">
+                    <img src="{{ asset('images/chatbot-icon.png') }}" class="w-full h-full object-contain" alt="AI">
                 </div>
                 <div>
                     <h3 class="font-bold text-lg leading-tight">SiSampah AI</h3>
@@ -38,8 +36,8 @@
             
             <!-- Welcome Message -->
             <div class="flex gap-3">
-                <div class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
-                    🤖
+                <div class="w-8 h-8 rounded-full bg-white border-2 border-primary flex items-center justify-center flex-shrink-0 p-1">
+                    <img src="{{ asset('images/chatbot-icon.png') }}" class="w-full h-full object-contain" alt="AI">
                 </div>
                 <div class="bg-surface-container rounded-2xl rounded-tl-none p-3 max-w-[85%] text-sm text-on-surface">
                     Halo! Saya SiSampah AI. Ada yang bisa saya bantu terkait pengelolaan sampah, harga, fitur aplikasi, atau daur ulang hari ini?
@@ -50,8 +48,9 @@
                 <div class="flex gap-3" :class="msg.role === 'user' ? 'flex-row-reverse' : ''">
                     <!-- Avatar -->
                     <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" 
-                         :class="msg.role === 'user' ? 'bg-forest-emerald text-white' : 'bg-primary/20 text-xl'">
-                        <span x-text="msg.role === 'user' ? '👤' : '🤖'"></span>
+                         :class="msg.role === 'user' ? 'bg-forest-emerald text-white' : 'bg-white border-2 border-primary p-1'">
+                        <span x-show="msg.role === 'user'">👤</span>
+                        <img x-show="msg.role !== 'user'" src="{{ asset('images/chatbot-icon.png') }}" class="w-full h-full object-contain" alt="AI">
                     </div>
                     
                     <!-- Bubble -->
@@ -65,8 +64,8 @@
 
             <!-- Loading Indicator -->
             <div x-show="isLoading" class="flex gap-3" x-cloak>
-                <div class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
-                    🤖
+                <div class="w-8 h-8 rounded-full bg-white border-2 border-primary flex items-center justify-center flex-shrink-0 p-1">
+                    <img src="{{ asset('images/chatbot-icon.png') }}" class="w-full h-full object-contain" alt="AI">
                 </div>
                 <div class="bg-surface-container rounded-2xl rounded-tl-none p-4 flex gap-1 items-center max-w-[85%]">
                     <div class="w-2 h-2 bg-on-surface-variant rounded-full animate-bounce" style="animation-delay: 0ms"></div>
@@ -103,11 +102,9 @@
 
     <!-- Toggle Button -->
     <button @click="isOpen = !isOpen" 
-            class="w-14 h-14 rounded-full bg-gradient-to-r from-primary to-forest-emerald text-white flex items-center justify-center shadow-2xl hover:shadow-primary/50 transition-all duration-300 hover:scale-110 relative z-50">
+            class="w-14 h-14 rounded-full bg-white border-2 border-primary text-primary flex items-center justify-center shadow-2xl hover:shadow-primary/50 transition-all duration-300 hover:scale-110 relative z-50">
         
-        <svg x-show="!isOpen" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
-        </svg>
+        <img x-show="!isOpen" src="{{ asset('images/chatbot-icon.png') }}" class="w-8 h-8 object-contain">
 
         <svg x-show="isOpen" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" x-cloak>
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>

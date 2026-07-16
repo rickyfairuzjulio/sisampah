@@ -8,6 +8,7 @@ use App\Core\Services\TrashPriceService;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -27,6 +28,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        if (config('app.env') === 'production') {
+            URL::forceScheme('https');
+        }
         RateLimiter::for('chatbot', function (Request $request) {
             return Limit::perMinutes(5, 10)->by($request->user()?->id ?: $request->ip())->response(function (Request $request, array $headers) {
                 return response()->json([

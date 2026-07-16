@@ -15,9 +15,9 @@ class StoreWithdrawalRequest extends FormRequest
     {
         return [
             'nominal' => 'required|numeric|min:10000',
-            'metode' => 'required|in:tunai,transfer',
-            'rekening_tujuan' => 'nullable|string|max:50',
-            'nama_penerima' => 'nullable|string|max:100',
+            'metode' => 'required|in:tunai,bca,bri,bsi,dana,gopay',
+            'rekening_tujuan' => 'required_unless:metode,tunai|nullable|string|max:50',
+            'nama_penerima' => 'required_unless:metode,tunai|nullable|string|max:100',
         ];
     }
 
@@ -26,6 +26,9 @@ class StoreWithdrawalRequest extends FormRequest
         return [
             'nominal.min' => 'Nominal penarikan minimal Rp 10.000.',
             'metode.required' => 'Metode penarikan harus dipilih.',
+            'metode.in' => 'Metode penarikan tidak valid.',
+            'rekening_tujuan.required_unless' => 'Nomor rekening/e-wallet wajib diisi untuk transfer.',
+            'nama_penerima.required_unless' => 'Nama penerima wajib diisi untuk transfer.',
         ];
     }
 }
