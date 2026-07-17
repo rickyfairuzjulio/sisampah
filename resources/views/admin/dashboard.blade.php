@@ -26,7 +26,7 @@
             title="{{ number_format($totalSampahKg, 1) }} Kg"
             subtitle="Sampah Terolah"
             trend="up"
-            trendValue="{{ number_format($transaksiHariIni, 1) }} Kg hari ini"
+            trendValue="{{ number_format($transaksiMingguIni, 1) }} Kg minggu ini"
             icon='<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2"/></svg>'
         />
         <x-stat-tile
@@ -131,8 +131,8 @@
                 <p class="text-xs text-blue-600 mt-1">Petugas Aktif</p>
             </div>
             <div class="p-4 rounded-xl bg-amber-50 border border-amber-100 text-center">
-                <p class="text-2xl font-bold text-amber-700">{{ number_format($transaksiHariIni, 1) }} Kg</p>
-                <p class="text-xs text-amber-600 mt-1">Sampah Hari Ini</p>
+                <p class="text-2xl font-bold text-amber-700">{{ number_format($transaksiMingguIni, 1) }} Kg</p>
+                <p class="text-xs text-amber-600 mt-1">Sampah Minggu Ini</p>
             </div>
         </div>
     </x-card>

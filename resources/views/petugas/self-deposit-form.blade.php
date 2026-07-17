@@ -1,45 +1,34 @@
 <x-app-layout title="Input Setoran Mandiri">
-    <div class="space-y-6 pb-8">
-        <!-- Header -->
-        <div class="flex items-center gap-3">
-            <a href="{{ route('petugas.dashboard') }}" class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-                </svg>
-            </a>
-            <div>
-                <h1 class="text-3xl font-bold text-on-surface">🏪 Input Setoran Mandiri</h1>
-                <p class="text-sm text-on-surface-variant">Sampah dibawa langsung oleh nasabah ke lokasi penyetoran</p>
-            </div>
-        </div>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
 
-        <!-- Progress Indicator -->
-        <div class="flex items-center gap-2">
-            <div class="flex-1 h-1.5 bg-primary rounded-full"></div>
-            <div class="flex-1 h-1.5 bg-outline-variant rounded-full"></div>
-        </div>
+        <x-role-nav role="petugas" />
 
-        <!-- Main Form Card -->
-        <x-card class="max-w-2xl">
-            @if ($errors->any())
-                <x-alert type="error" title="Ada Kesalahan" class="mb-6" dismissible>
-                    <ul class="list-disc list-inside space-y-1">
-                        @foreach ($errors->all() as $error)
-                            <li class="text-xs">{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </x-alert>
-            @endif
+        <!-- Main Form Grid -->
+        <form action="{{ route('petugas.self_deposit.store') }}" method="POST" enctype="multipart/form-data" 
+              x-data="selfDepositForm()" 
+              @detected="handleAI($event.detail)"
+              @snapshot-taken="handleSnapshot($event.detail)">
+            @csrf
 
-            <form action="{{ route('petugas.self_deposit.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6"
-                  x-data="selfDepositForm()" 
-                  @detected="handleAI($event.detail)"
-                  @snapshot-taken="handleSnapshot($event.detail)">
-                @csrf
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+                <!-- Left Side: Camera Scanner -->
+                <x-card class="sticky top-6">
 
-                <div class="mb-6">
+
                     <x-camera-scanner />
-                </div>
+                </x-card>
+
+                <!-- Right Side: Form Content -->
+                <x-card class="space-y-6">
+                    @if ($errors->any())
+                        <x-alert type="error" title="Ada Kesalahan" class="mb-6" dismissible>
+                            <ul class="list-disc list-inside space-y-1">
+                                @foreach ($errors->all() as $error)
+                                    <li class="text-xs">{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </x-alert>
+                    @endif
 
                 <!-- Form Section 1: Nasabah -->
                 <div class="space-y-4">
@@ -156,8 +145,9 @@
                         Simpan Setoran
                     </button>
                 </div>
-            </form>
-        </x-card>
+                </x-card>
+            </div>
+        </form>
     </div>
 
     <script>

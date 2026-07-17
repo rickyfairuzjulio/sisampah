@@ -20,8 +20,8 @@ class AdminController extends Controller
         $totalTransaksi = Cache::remember('admin.dashboard.total_transaksi', 600, fn () => Transaction::count());
         $totalSampahKg = Cache::remember('admin.dashboard.total_sampah_kg', 600, fn () => Transaction::where('status', 'selesai')->sum('berat_kg'));
 
-        $transaksiHariIni = Cache::remember('admin.dashboard.transaksi_hari_ini', 600, fn () => Transaction::where('status', 'selesai')
-            ->whereDate('updated_at', today())
+        $transaksiMingguIni = Cache::remember('admin.dashboard.transaksi_minggu_ini', 600, fn () => Transaction::where('status', 'selesai')
+            ->whereBetween('updated_at', [now()->startOfWeek(), now()->endOfWeek()])
             ->sum('berat_kg'));
 
         $pendingWithdrawals = Cache::remember('admin.dashboard.pending_withdrawals', 600, fn () => Withdrawal::where('status', 'pending')->count());
@@ -46,7 +46,7 @@ class AdminController extends Controller
             'totalPetugas',
             'totalTransaksi',
             'totalSampahKg',
-            'transaksiHariIni',
+            'transaksiMingguIni',
             'pendingWithdrawals',
             'topContributors',
             'rtComparison',

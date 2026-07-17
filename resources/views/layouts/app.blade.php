@@ -56,46 +56,80 @@
             {{ $slot ?? '' }}
         </main>
 
-        <footer class="bg-[#1a1c1b] dark:bg-[#0d0f0e] text-white border-t border-outline-variant dark:border-white/10 py-12 mt-auto">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
-                    <div>
-                        <div class="flex items-center gap-2 mb-4">
-                            <img src="{{ asset('images/logo.png') }}" alt="SiSampah Logo" class="w-12 h-12 object-contain drop-shadow-sm">
-                            <span class="text-2xl font-bold ml-1">SiSampah</span>
+        @if (request()->routeIs('home', 'edukasi.*'))
+            <!-- Fat Footer untuk Halaman Publik (Kompetisi Version) -->
+            <footer class="bg-[#1a1c1b] dark:bg-[#0d0f0e] text-white border-t border-outline-variant dark:border-white/10 py-12 mt-auto">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                        <div>
+                            <div class="flex items-center gap-2 mb-4">
+                                <img src="{{ asset('images/logo.png') }}" alt="SiSampah Logo" class="w-12 h-12 object-contain drop-shadow-sm">
+                                <span class="text-2xl font-bold ml-1 text-primary">SiSampah</span>
+                            </div>
+                            <p class="text-white/70 text-sm leading-relaxed mb-4">
+                                Platform pintar pengelolaan bank sampah untuk menciptakan lingkungan yang lebih bersih, desa yang mandiri, dan menyejahterakan masyarakat.
+                            </p>
                         </div>
-                        <p class="text-white/70 text-sm">Mengubah sampah menjadi berkah bagi semua orang</p>
+                        <div>
+                            <h4 class="font-bold text-lg mb-4 text-forest-emerald">Fitur Unggulan</h4>
+                            <ul class="space-y-2 text-sm text-white/70">
+                                <li>Klasifikasi Sampah AI</li>
+                                <li>Manifes Penjemputan Otomatis</li>
+                                <li>Dompet Digital (Poin)</li>
+                                <li>Edukasi Ramah Lingkungan</li>
+                                <li>Chatbot Pintar SiSampah</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-lg mb-4 text-forest-emerald">Teknologi Terapan</h4>
+                            <ul class="space-y-2 text-sm text-white/70">
+                                <li>Laravel 11 & PHP 8.2</li>
+                                <li>Tailwind CSS & Alpine.js</li>
+                                <li>Gemini Vision AI</li>
+                                <li>MySQL Relational DB</li>
+                                <li>Chart.js Analytics</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-lg mb-4 text-forest-emerald">Dikembangkan Oleh</h4>
+                            <ul class="space-y-3 text-sm text-white/70">
+                                <li class="flex items-start gap-2">
+                                    <svg class="w-5 h-5 flex-shrink-0 text-primary mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                                    <div>
+                                        <span class="block font-semibold text-white">Bodrex Developer</span>
+                                        <span class="text-xs">Walisongo Science Competition</span>
+                                    </div>
+                                </li>
+                                <li class="flex items-start gap-2">
+                                    <svg class="w-5 h-5 flex-shrink-0 text-primary mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                                    <span>Universitas Islam Negeri Walisongo (UIN)</span>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
-                    <div>
-                        <h4 class="font-semibold mb-4">Produk</h4>
-                        <ul class="space-y-2 text-sm text-white/70">
-                            <li><a href="#" class="hover:text-white transition-colors">Untuk Nasabah</a></li>
-                            <li><a href="#" class="hover:text-white transition-colors">Untuk Petugas</a></li>
-                            <li><a href="#" class="hover:text-white transition-colors">Untuk Admin</a></li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h4 class="font-semibold mb-4">Perusahaan</h4>
-                        <ul class="space-y-2 text-sm text-white/70">
-                            <li><a href="#" class="hover:text-white transition-colors">Tentang Kami</a></li>
-                            <li><a href="{{ route('edukasi.index') }}" class="hover:text-white transition-colors">Edukasi</a></li>
-                            <li><a href="#" class="hover:text-white transition-colors">Kontak</a></li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h4 class="font-semibold mb-4">Hubungi</h4>
-                        <ul class="space-y-2 text-sm text-white/70">
-                            <li>hello@sisampah.id</li>
-                            <li>+62 822 1234 5678</li>
-                            <li>Jakarta, Indonesia</li>
-                        </ul>
+                    <div class="border-t border-white/20 pt-8 mt-4 flex flex-col md:flex-row items-center justify-between text-white/50 text-xs">
+                        <p>&copy; {{ date('Y') }} Bodrex Developer. Semua hak cipta dilindungi.</p>
+                        <div class="mt-4 md:mt-0 flex gap-4">
+                            <span class="px-2 py-1 bg-white/10 rounded">V 1.0.0</span>
+                            <span class="px-2 py-1 bg-primary/20 text-primary font-bold rounded">Kompetisi Edition</span>
+                        </div>
                     </div>
                 </div>
-                <div class="border-t border-white/20 pt-8 text-center text-white/70 text-sm">
-                    <p>&copy; {{ date('Y') }} SiSampah. Semua hak cipta dilindungi. | Bersih Desa, Sejahtera Bersama.</p>
+            </footer>
+        @else
+            <!-- Micro Footer untuk Halaman Internal/Dashboard -->
+            <footer class="mt-auto py-6 px-4 border-t border-outline-variant bg-background">
+                <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+                    <p class="text-xs text-on-surface-variant text-center md:text-left">
+                        &copy; {{ date('Y') }} SiSampah. Dikembangkan oleh <span class="font-bold text-primary">Bodrex Developer</span> untuk <span class="font-semibold">Walisongo Science Competition</span>.
+                    </p>
+                    <div class="flex items-center gap-4 text-xs text-on-surface-variant font-medium">
+                        <span class="flex items-center gap-1"><svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg> UIN Walisongo</span>
+                        <a href="{{ route('home') }}" class="hover:text-primary transition-colors">Ke Beranda</a>
+                    </div>
                 </div>
-            </div>
-        </footer>
+            </footer>
+        @endif
     </div>
     <x-chatbot-widget />
     <x-toast />

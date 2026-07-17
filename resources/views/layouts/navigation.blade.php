@@ -16,21 +16,6 @@
                     <a href="{{ route('edukasi.index') }}" class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-semibold tracking-wide transition-colors duration-200 {{ request()->routeIs('edukasi.*') ? 'border-primary text-on-surface' : 'border-transparent text-on-surface-variant hover:text-on-surface hover:border-outline-variant' }}">
                         Edukasi
                     </a>
-                    @auth
-                        @if(Auth::user()->hasRole('nasabah'))
-                            <a href="{{ route('nasabah.dashboard') }}" class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-semibold tracking-wide transition-colors duration-200 {{ request()->routeIs('nasabah.*') ? 'border-primary text-on-surface' : 'border-transparent text-on-surface-variant hover:text-on-surface hover:border-outline-variant' }}">
-                                Dashboard
-                            </a>
-                        @elseif(Auth::user()->hasRole('petugas'))
-                            <a href="{{ route('petugas.dashboard') }}" class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-semibold tracking-wide transition-colors duration-200 {{ request()->routeIs('petugas.*') ? 'border-primary text-on-surface' : 'border-transparent text-on-surface-variant hover:text-on-surface hover:border-outline-variant' }}">
-                                Dashboard
-                            </a>
-                        @elseif(Auth::user()->hasRole('admin'))
-                            <a href="{{ route('admin.dashboard') }}" class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-semibold tracking-wide transition-colors duration-200 {{ request()->routeIs('admin.*') ? 'border-primary text-on-surface' : 'border-transparent text-on-surface-variant hover:text-on-surface hover:border-outline-variant' }}">
-                                Dashboard
-                            </a>
-                        @endif
-                    @endauth
                 </div>
             </div>
 
