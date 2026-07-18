@@ -97,23 +97,29 @@ class NasabahController extends Controller
     public function storePickup(StorePickupRequest $request)
     {
         $validated = $request->validated();
+        
+        $items = $validated['items'];
+        $transactions = [];
 
-        $totalWeight = (float) $validated['perkiraan_berat'];
+        DB::transaction(function () use ($items, $validated) {
+            foreach ($items as $item) {
+                $trashCategory = TrashCategory::findOrFail($item['trash_category_id']);
+                $weight = (float) $item['perkiraan_berat'];
 
-        $trashCategory = TrashCategory::findOrFail($validated['trash_category_id']);
-
-        Transaction::create([
-            'user_id' => auth()->id(),
-            'trash_category_id' => $validated['trash_category_id'],
-            'berat_kg' => $totalWeight,
-            'harga_per_kg' => $trashCategory->harga_per_kg,
-            'total_rp' => $totalWeight * $trashCategory->harga_per_kg,
-            'tipe_setoran' => 'jemput',
-            'status' => 'pending',
-            'koordinat_lat' => $validated['koordinat_lat'],
-            'koordinat_lng' => $validated['koordinat_lng'],
-            'catatan' => $validated['catatan'] ?? null,
-        ]);
+                Transaction::create([
+                    'user_id' => auth()->id(),
+                    'trash_category_id' => $trashCategory->id,
+                    'berat_kg' => $weight,
+                    'harga_per_kg' => $trashCategory->harga_per_kg,
+                    'total_rp' => $weight * $trashCategory->harga_per_kg,
+                    'tipe_setoran' => 'jemput',
+                    'status' => 'pending',
+                    'koordinat_lat' => $validated['koordinat_lat'],
+                    'koordinat_lng' => $validated['koordinat_lng'],
+                    'catatan' => $validated['catatan'] ?? null,
+                ]);
+            }
+        });
 
         return redirect()->route('nasabah.dashboard')
             ->with('success', 'Jadwal penjemputan sampah berhasil dibuat. Tunggu konfirmasi petugas.');
@@ -145,7 +151,7 @@ class NasabahController extends Controller
         $user = auth()->user();
 
         if ($user->saldo < $validated['nominal']) {
-            return back()->withErrors(['nominal' => 'Saldo Anda tidak cukup.']);
+            return back()->with('error', 'Saldo Anda tidak cukup untuk penarikan sebesar Rp ' . number_format($validated['nominal'], 0, ',', '.'));
         }
 
         DB::transaction(function () use ($user, $validated) {

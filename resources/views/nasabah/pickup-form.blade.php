@@ -40,51 +40,58 @@
                     <!-- Stepper Line -->
                     <div class="absolute left-0 top-2 bottom-6 w-0.5 bg-outline-variant/30"></div>
                     
-                    <!-- Step 1 -->
-                    <div class="relative pl-8">
-                        <div class="absolute -left-[17px] top-0 w-8 h-8 rounded-full bg-primary text-white text-sm font-bold flex items-center justify-center shadow-md border-4 border-surface">1</div>
-                        <h3 class="font-bold text-lg text-on-surface mb-4">Kategori Sampah</h3>
-                        <div class="bg-surface-container-lowest p-5 sm:p-6 rounded-2xl border border-outline-variant shadow-sm transition-all hover:shadow-md">
-                            <p class="text-sm text-on-surface-variant mb-4">Pilih jenis sampah yang akan dijemput. Harga per kilogram dapat berubah sesuai dengan harga pasar terbaru.</p>
-                            <x-select-field
-                                label=""
-                                name="trash_category_id"
-                                required
-                                :items="$trashCategories->map(fn($k) => [
-                                    'value' => $k->id,
-                                    'label' => $k->nama . ' (Rp ' . number_format($k->harga_per_kg, 0, ',', '.') . '/Kg)'
-                                ])->toArray()"
-                                :error="$errors->has('trash_category_id') ? $errors->first('trash_category_id') : false"
-                            />
-                        </div>
-                    </div>
-
-                    <!-- Step 2 -->
-                    <div class="relative pl-8">
-                        <div class="absolute -left-[17px] top-0 w-8 h-8 rounded-full bg-primary text-white text-sm font-bold flex items-center justify-center shadow-md border-4 border-surface">2</div>
-                        <h3 class="font-bold text-lg text-on-surface mb-4">Estimasi Berat</h3>
-                        <div class="bg-surface-container-lowest p-5 sm:p-6 rounded-2xl border border-outline-variant shadow-sm transition-all hover:shadow-md">
-                            <div class="flex items-start gap-4 flex-col sm:flex-row">
-                                <div class="flex-1 w-full">
-                                    <x-input-field
-                                        label="Perkiraan Berat (Kg)"
-                                        name="perkiraan_berat"
-                                        type="number"
-                                        placeholder="Contoh: 5.5"
-                                        step="0.5"
-                                        min="5"
-                                        required
-                                        :value="old('perkiraan_berat')"
-                                        :error="$errors->has('perkiraan_berat') ? $errors->first('perkiraan_berat') : false"
-                                    />
+                    <div x-data="pickupForm()">
+                        <!-- Step 1: Detail Sampah -->
+                        <div class="relative pl-8 mb-10">
+                            <div class="absolute -left-[17px] top-0 w-8 h-8 rounded-full bg-primary text-white text-sm font-bold flex items-center justify-center shadow-md border-4 border-surface">1</div>
+                            <h3 class="font-bold text-lg text-on-surface mb-4">Daftar Sampah</h3>
+                            <div class="bg-surface-container-lowest p-5 sm:p-6 rounded-2xl border border-outline-variant shadow-sm transition-all">
+                                <p class="text-sm text-on-surface-variant mb-4">Tambahkan jenis sampah yang akan dijemput beserta estimasi beratnya (Minimal total 5 Kg).</p>
+                                
+                                <!-- Items List -->
+                                <div class="space-y-4">
+                                    <template x-for="(item, index) in items" :key="item.id">
+                                        <div class="flex flex-col sm:flex-row gap-4 p-4 border border-outline-variant rounded-xl bg-surface relative group">
+                                            <!-- Kategori -->
+                                            <div class="flex-1">
+                                                <label class="block text-sm font-medium text-on-surface mb-1">Kategori Sampah <span class="text-error">*</span></label>
+                                                <select x-model="item.trash_category_id" :name="'items['+index+'][trash_category_id]'" required class="w-full px-4 py-3 rounded-xl border border-outline-variant bg-surface focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-sm appearance-none transition-shadow shadow-sm hover:border-primary/50">
+                                                    <option value="" disabled selected>Pilih Kategori</option>
+                                                    @foreach($trashCategories as $k)
+                                                        <option value="{{ $k->id }}">{{ $k->nama }} (Rp {{ number_format($k->harga_per_kg, 0, ',', '.') }}/Kg)</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                            
+                                            <!-- Berat -->
+                                            <div class="sm:w-40">
+                                                <label class="block text-sm font-medium text-on-surface mb-1">Berat (Kg) <span class="text-error">*</span></label>
+                                                <input type="number" x-model="item.perkiraan_berat" :name="'items['+index+'][perkiraan_berat]'" required min="0.1" step="0.1" placeholder="Contoh: 5.5" class="w-full px-4 py-3 rounded-xl border border-outline-variant bg-surface focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-sm transition-shadow shadow-sm hover:border-primary/50">
+                                            </div>
+                                            
+                                            <!-- Hapus Button -->
+                                            <div class="flex sm:self-end sm:mb-0.5">
+                                                <button type="button" @click="removeItem(index)" x-show="items.length > 1" class="w-full sm:w-12 h-[3.25rem] bg-error/10 text-error hover:bg-error hover:text-white rounded-xl flex items-center justify-center transition-colors shadow-sm mt-2 sm:mt-0" title="Hapus Sampah">
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                                    <span class="sm:hidden ml-2 font-medium">Hapus</span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </template>
                                 </div>
-                                <div class="sm:w-1/3 bg-amber-50 text-amber-800 p-3 rounded-xl border border-amber-200 text-xs mt-2 sm:mt-0">
+
+                                <!-- Tambah Button -->
+                                <button type="button" @click="addItem()" class="mt-4 py-2 px-4 border-2 border-dashed border-primary text-primary hover:bg-primary/5 font-bold rounded-xl transition-colors flex items-center justify-center gap-2 w-full">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                                    Tambah Jenis Sampah Lain
+                                </button>
+                                
+                                <div class="bg-amber-50 text-amber-800 p-3 rounded-xl border border-amber-200 text-xs mt-4">
                                     <strong class="block mb-1 text-sm">⚠️ Info Penting</strong>
-                                    Minimal penjemputan adalah <strong>5 Kg</strong>. Berat pasti akan ditimbang ulang oleh petugas di lokasi.
+                                    Total keseluruhan minimal penjemputan adalah <strong>5 Kg</strong>. Berat pasti akan ditimbang ulang oleh petugas di lokasi.
                                 </div>
                             </div>
                         </div>
-                    </div>
 
                     <!-- Step 3 -->
                     <div class="relative pl-8">
@@ -114,6 +121,7 @@
                             </div>
                         </div>
                     </div>
+                    </div>
                 </div>
 
                 <div class="flex flex-col sm:flex-row gap-3 pt-6 border-t border-outline-variant mt-2">
@@ -131,6 +139,20 @@
     @push('scripts')
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('pickupForm', () => ({
+                items: [
+                    { id: Date.now(), trash_category_id: '', perkiraan_berat: '' }
+                ],
+                addItem() {
+                    this.items.push({ id: Date.now(), trash_category_id: '', perkiraan_berat: '' });
+                },
+                removeItem(index) {
+                    this.items.splice(index, 1);
+                }
+            }));
+        });
+        
         document.addEventListener('DOMContentLoaded', function () {
             const defaultLat = parseFloat(document.getElementById('koordinat_lat').value) || -6.2088;
             const defaultLng = parseFloat(document.getElementById('koordinat_lng').value) || 106.8456;

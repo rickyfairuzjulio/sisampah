@@ -48,6 +48,6 @@ class RegisteredUserController extends Controller
 
         Auth::login($user);
 
-        return redirect(route('nasabah.dashboard', absolute: false));
+        return redirect(route('nasabah.dashboard', absolute: false))->with('welcome', 'Selamat bergabung di SiSampah, ' . explode(' ', $user->name)[0] . '! Mari mulai kelola sampahmu.');
     }
 }

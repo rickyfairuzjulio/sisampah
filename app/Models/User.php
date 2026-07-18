@@ -11,7 +11,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 
-#[Fillable(['name', 'email', 'password', 'saldo', 'rt', 'rw', 'alamat_lengkap', 'nomor_telepon'])]
+#[Fillable(['name', 'email', 'password', 'saldo', 'avatar', 'rt', 'rw', 'alamat_lengkap', 'nomor_telepon'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -64,5 +64,14 @@ class User extends Authenticatable
     public function priceHistories(): HasMany
     {
         return $this->hasMany(PriceHistory::class, 'admin_id');
+    }
+
+    public function getAvatarUrlAttribute(): string
+    {
+        if ($this->avatar) {
+            return \Illuminate\Support\Facades\Storage::url($this->avatar);
+        }
+        
+        return 'https://ui-avatars.com/api/?name=' . urlencode($this->name) . '&background=059669&color=fff&rounded=true&bold=true';
     }
 }

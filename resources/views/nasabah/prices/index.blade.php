@@ -54,8 +54,6 @@
                 <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari botol, kardus, dll..." class="w-full pl-11 pr-4 py-3 rounded-full border border-outline-variant focus:ring-primary focus:border-primary shadow-sm text-sm font-medium transition-all hover:border-gray-400">
             </div>
         </form>
-    </div>
-
     {{-- Grid Catalog --}}
     <div class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6 animate-slide-in">
         @forelse($prices as $price)

@@ -1,26 +1,29 @@
 <x-app-layout title="Input Timbangan">
-    <div class="space-y-6 pb-8">
-        <!-- Header -->
-        <div class="flex items-center gap-3">
-            <a href="{{ route('petugas.dashboard') }}" class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-                </svg>
-            </a>
-            <div>
-                <h1 class="text-3xl font-bold text-on-surface">⚖️ Input Timbangan</h1>
-                <p class="text-sm text-on-surface-variant">Nasabah: <span class="font-semibold text-on-surface">{{ $user->name }}</span></p>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+        <!-- Header & Progress -->
+        <div class="max-w-3xl mx-auto w-full space-y-6">
+            <div class="flex items-center gap-3">
+                <a href="{{ route('petugas.dashboard') }}" class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                    </svg>
+                </a>
+                <div>
+                    <h1 class="text-3xl font-bold text-on-surface">⚖️ Input Timbangan</h1>
+                    <p class="text-sm text-on-surface-variant">Nasabah: <span class="font-semibold text-on-surface">{{ $user->name }}</span></p>
+                </div>
+            </div>
+
+            <!-- Progress Indicator (Full Green) -->
+            <div class="flex items-center gap-2">
+                <div class="flex-1 h-1.5 bg-primary rounded-full"></div>
             </div>
         </div>
 
-        <!-- Progress Indicator -->
-        <div class="flex items-center gap-2">
-            <div class="flex-1 h-1.5 bg-primary rounded-full"></div>
-            <div class="flex-1 h-1.5 bg-outline-variant rounded-full"></div>
-        </div>
-
-        <!-- Main Form Card -->
-        <x-card class="max-w-2xl">
+        <!-- Main Form Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+            <!-- Main Form Card -->
+            <x-card class="space-y-6 lg:col-span-2 max-w-3xl mx-auto w-full">
             @if ($errors->any())
                 <x-alert type="error" title="Ada Kesalahan" class="mb-6" dismissible>
                     <ul class="list-disc list-inside space-y-1">
@@ -32,77 +35,64 @@
             @endif
 
             <form action="{{ route('petugas.weighing.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6"
-                  x-data="weighingForm()" 
-                  @detected="handleAI($event.detail)"
-                  @snapshot-taken="handleSnapshot($event.detail)">
+                  x-data="weighingForm()">
                 @csrf
                 <input type="hidden" name="user_id" value="{{ $user->id }}">
 
-                <div class="mb-6">
-                    <x-camera-scanner />
-                </div>
-
-                <!-- Form Section 1: Kategori -->
+                <!-- Form Section 1: Daftar Sampah -->
                 <div class="space-y-4">
                     <div class="flex items-center justify-between pb-3 border-b border-primary/20">
                         <div class="flex items-center gap-2">
                             <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
                                 <span class="text-sm font-bold text-primary">1</span>
                             </div>
-                            <h3 class="font-semibold text-on-surface">Pilih Kategori Sampah</h3>
-                        </div>
-                        
-                        <!-- AI Status Badge -->
-                        <div x-show="aiDetectedCategory" x-cloak class="px-3 py-1 bg-forest-emerald/20 text-forest-emerald rounded-full text-xs font-bold flex items-center gap-1 transition-all">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                            Dipilih Otomatis
+                            <h3 class="font-semibold text-on-surface">Daftar Sampah</h3>
                         </div>
                     </div>
 
-                    <x-select-field 
-                        label="Kategori Sampah"
-                        name="trash_category_id"
-                        x-model="selectedCategoryId"
-                        required
-                        :items="$trashCategories->map(fn($k) => [
-                            'value' => $k->id,
-                            'label' => $k->nama . ' (Rp ' . number_format($k->harga_per_kg, 0, ',', '.') . '/Kg)'
-                        ])->toArray()"
-                        :error="$errors->has('trash_category_id') ? $errors->first('trash_category_id') : false"
-                    />
-                </div>
-
-                <!-- Form Section 2: Berat -->
-                <div class="space-y-4">
-                    <div class="flex items-center gap-2 pb-3 border-b border-primary/20">
-                        <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                            <span class="text-sm font-bold text-primary">2</span>
-                        </div>
-                        <h3 class="font-semibold text-on-surface">Berat Sampah</h3>
+                    <!-- Items List -->
+                    <div class="space-y-4">
+                        <template x-for="(item, index) in items" :key="item.id">
+                            <div class="flex flex-col sm:flex-row gap-4 p-4 border border-outline-variant rounded-xl bg-surface relative group">
+                                <!-- Kategori -->
+                                <div class="flex-1">
+                                    <label class="block text-sm font-medium text-on-surface mb-1">Kategori Sampah <span class="text-error">*</span></label>
+                                    <select x-model="item.trash_category_id" :name="'items['+index+'][trash_category_id]'" required class="w-full px-4 py-3 rounded-xl border border-outline-variant bg-surface focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-sm appearance-none transition-shadow shadow-sm hover:border-primary/50">
+                                        <option value="" disabled selected>Pilih Kategori</option>
+                                        @foreach($trashCategories as $k)
+                                            <option value="{{ $k->id }}">{{ $k->nama }} (Rp {{ number_format($k->harga_per_kg, 0, ',', '.') }}/Kg)</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                
+                                <!-- Berat -->
+                                <div class="sm:w-40">
+                                    <label class="block text-sm font-medium text-on-surface mb-1">Berat (Kg) <span class="text-error">*</span></label>
+                                    <input type="number" x-model="item.berat_kg" :name="'items['+index+'][berat_kg]'" required min="0.1" step="0.1" placeholder="Contoh: 5.5" class="w-full px-4 py-3 rounded-xl border border-outline-variant bg-surface focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-sm transition-shadow shadow-sm hover:border-primary/50">
+                                </div>
+                                
+                                <!-- Hapus Button -->
+                                <div class="flex sm:self-end sm:mb-0.5">
+                                    <button type="button" @click="removeItem(index)" x-show="items.length > 1" class="w-full sm:w-12 h-[3.25rem] bg-error/10 text-error hover:bg-error hover:text-white rounded-xl flex items-center justify-center transition-colors shadow-sm mt-2 sm:mt-0" title="Hapus Sampah">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                        <span class="sm:hidden ml-2 font-medium">Hapus</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </template>
                     </div>
 
-                    <x-input-field 
-                        label="Berat Sampah (Kg)"
-                        name="berat_kg"
-                        type="number"
-                        placeholder="Contoh: 5.5"
-                        step="0.1"
-                        min="0.1"
-                        required
-                        :value="old('berat_kg')"
-                        :error="$errors->has('berat_kg') ? $errors->first('berat_kg') : false"
-                    />
-                    <p class="text-xs text-on-surface-variant flex items-center gap-2">
-                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/><path fill-rule="evenodd" d="M4 5a2 2 0 012-2 1 1 0 010 2H4a1 1 0 00-1 1v10a1 1 0 001 1h12a1 1 0 001-1V6a1 1 0 00-1-1h-1a1 1 0 010-2h1a2 2 0 012 2v10a2 2 0 01-2 2H6a2 2 0 01-2-2V5z" clip-rule="evenodd"/></svg>
-                        Masukkan berat hasil timbangan dengan akurat
-                    </p>
+                    <!-- Tambah Button -->
+                    <button type="button" @click="addItem()" class="mt-2 py-2 px-4 border-2 border-dashed border-primary text-primary hover:bg-primary/5 font-bold rounded-xl transition-colors flex items-center justify-center gap-2 w-full">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                        Tambah Sampah Lain
+                    </button>
                 </div>
 
                 <!-- Form Section 3: Foto Bukti -->
                 <div class="space-y-4">
-                    <div class="flex items-center gap-2 pb-3 border-b border-primary/20">
                         <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                            <span class="text-sm font-bold text-primary">3</span>
+                            <span class="text-sm font-bold text-primary">2</span>
                         </div>
                         <h3 class="font-semibold text-on-surface">Foto Bukti (Opsional)</h3>
                     </div>
@@ -154,41 +144,14 @@
     <script>
         document.addEventListener('alpine:init', () => {
             Alpine.data('weighingForm', () => ({
-                selectedCategoryId: '{{ old('trash_category_id') }}',
-                aiDetectedCategory: null,
-                categories: @json($trashCategories->map(fn($k) => ['id' => $k->id, 'nama' => $k->nama])),
-
-                handleAI(detail) {
-                    const matchedCategory = this.categories.find(c => 
-                        detail.category.toLowerCase().includes(c.nama.toLowerCase()) || 
-                        c.nama.toLowerCase().includes(detail.category.toLowerCase())
-                    );
-                    
-                    if (matchedCategory && this.selectedCategoryId != matchedCategory.id) {
-                        this.selectedCategoryId = matchedCategory.id;
-                        this.aiDetectedCategory = detail.category;
-                    }
+                items: [
+                    { id: Date.now(), trash_category_id: '', berat_kg: '' }
+                ],
+                addItem() {
+                    this.items.push({ id: Date.now(), trash_category_id: '', berat_kg: '' });
                 },
-                
-                handleSnapshot(detail) {
-                    // detail.photoUrl is base64 data URL
-                    // Convert Data URL to Blob, then to File
-                    fetch(detail.photoUrl)
-                        .then(res => res.blob())
-                        .then(blob => {
-                            const file = new File([blob], "snapshot.jpg", { type: "image/jpeg" });
-                            const dataTransfer = new DataTransfer();
-                            dataTransfer.items.add(file);
-                            
-                            const fileInput = document.getElementById('foto_bukti');
-                            fileInput.files = dataTransfer.files;
-                            
-                            // Trigger change event for preview
-                            fileInput.dispatchEvent(new Event('change', { bubbles: true }));
-                            
-                            // Also select category if not selected
-                            this.handleAI({category: detail.category});
-                        });
+                removeItem(index) {
+                    this.items.splice(index, 1);
                 }
             }));
         });
@@ -214,15 +177,19 @@
             fileInput.parentElement.classList.add('border-primary', 'bg-primary/5');
         });
 
-        fileInput.parentElement.addEventListener('dragleave', () => {
+        fileInput.parentElement.addEventListener('dragleave', (e) => {
+            e.preventDefault();
             fileInput.parentElement.classList.remove('border-primary', 'bg-primary/5');
         });
 
         fileInput.parentElement.addEventListener('drop', (e) => {
             e.preventDefault();
             fileInput.parentElement.classList.remove('border-primary', 'bg-primary/5');
-            fileInput.files = e.dataTransfer.files;
-            fileInput.dispatchEvent(new Event('change', { bubbles: true }));
+            if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                fileInput.files = e.dataTransfer.files;
+                const event = new Event('change');
+                fileInput.dispatchEvent(event);
+            }
         });
     </script>
 </x-app-layout>

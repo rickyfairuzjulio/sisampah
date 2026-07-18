@@ -1,8 +1,8 @@
-<div x-data="chatbotWidget()" 
-     class="fixed bottom-6 right-6 z-50 flex flex-col items-end"
+<div x-data="aiAssistantWidget()" 
+     class="fixed bottom-6 right-6 md:bottom-8 md:right-8 z-50 flex flex-col items-end"
      @keydown.escape.window="isOpen = false">
     
-    <!-- Chat Window -->
+    <!-- Assistant Window -->
     <div x-show="isOpen" 
          x-transition:enter="transition ease-out duration-300"
          x-transition:enter-start="opacity-0 translate-y-10 scale-95"
@@ -32,7 +32,7 @@
         </div>
 
         <!-- Messages Area -->
-        <div class="flex-1 p-4 overflow-y-auto bg-surface-container-lowest space-y-4" id="chat-messages" x-ref="messagesBox">
+        <div class="flex-1 p-4 overflow-y-auto bg-surface-container-lowest space-y-4" id="assistant-dialogue" x-ref="messagesBox">
             
             <!-- Welcome Message -->
             <div class="flex gap-3">
@@ -104,9 +104,9 @@
     <button @click="isOpen = !isOpen" 
             class="w-14 h-14 rounded-full bg-white border-2 border-primary text-primary flex items-center justify-center shadow-2xl hover:shadow-primary/50 transition-all duration-300 hover:scale-110 relative z-50">
         
-        <img x-show="!isOpen" src="{{ asset('images/chatbot-icon.png') }}" class="w-8 h-8 object-contain">
+        <img x-show="!isOpen" src="{{ asset('images/chatbot-icon.png') }}" class="w-10 h-10 object-contain" alt="Assistant">
 
-        <svg x-show="isOpen" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" x-cloak>
+        <svg x-show="isOpen" class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" x-cloak>
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
         </svg>
 
@@ -121,7 +121,7 @@
 
 <script>
     document.addEventListener('alpine:init', () => {
-        Alpine.data('chatbotWidget', () => ({
+        Alpine.data('aiAssistantWidget', () => ({
             isOpen: false,
             isLoading: false,
             inputText: '',

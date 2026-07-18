@@ -18,8 +18,10 @@ class PetugasController extends Controller
 
         $pickupRequests = Transaction::where('tipe_setoran', 'jemput')
             ->where('status', 'pending')
-            ->with('user', 'trashCategory')
-            ->latest()
+            ->select('user_id', \DB::raw('SUM(berat_kg) as total_berat'), \DB::raw('COUNT(*) as total_items'), \DB::raw('MAX(created_at) as created_at'))
+            ->groupBy('user_id')
+            ->with('user')
+            ->orderBy('created_at', 'desc')
             ->paginate(15);
 
         $completedToday = Transaction::where('petugas_id', $petugas->id)
@@ -59,36 +61,55 @@ class PetugasController extends Controller
     {
         $validated = $request->validated();
 
-        $trashCategory = TrashCategory::findOrFail($validated['trash_category_id']);
-
-        DB::transaction(function () use ($validated, $trashCategory, $request) {
-            $transaction = Transaction::create([
-                'user_id' => $validated['user_id'],
-                'petugas_id' => auth()->id(),
-                'trash_category_id' => $validated['trash_category_id'],
-                'berat_kg' => $validated['berat_kg'],
-                'harga_per_kg' => $trashCategory->harga_per_kg,
-                'total_rp' => $validated['berat_kg'] * $trashCategory->harga_per_kg,
-                'tipe_setoran' => 'jemput',
-                'status' => 'selesai',
-                'foto_bukti' => $request->hasFile('foto_bukti')
-                    ? $request->file('foto_bukti')->store('transactions', 'public')
-                    : null,
-            ]);
-
+        DB::transaction(function () use ($validated, $request) {
             $user = User::findOrFail($validated['user_id']);
-            $user->increment('saldo', $transaction->total_rp);
+            $items = $validated['items'];
+            $totalPoints = 0;
+            $totalSaldo = 0;
+            $totalWeight = 0;
 
-            $poin = $this->calculatePoints($trashCategory->nama, $validated['berat_kg']);
+            // Hapus request pending sebelumnya karena sudah diproses
+            Transaction::where('user_id', $user->id)
+                ->where('tipe_setoran', 'jemput')
+                ->where('status', 'pending')
+                ->delete();
+
+            $fotoPath = $request->hasFile('foto_bukti')
+                ? $request->file('foto_bukti')->store('transactions', 'public')
+                : null;
+
+            foreach ($items as $item) {
+                $trashCategory = TrashCategory::findOrFail($item['trash_category_id']);
+                $weight = (float) $item['berat_kg'];
+                $hargaTotal = $weight * $trashCategory->harga_per_kg;
+
+                $transaction = Transaction::create([
+                    'user_id' => $user->id,
+                    'petugas_id' => auth()->id(),
+                    'trash_category_id' => $trashCategory->id,
+                    'berat_kg' => $weight,
+                    'harga_per_kg' => $trashCategory->harga_per_kg,
+                    'total_rp' => $hargaTotal,
+                    'tipe_setoran' => 'jemput',
+                    'status' => 'selesai',
+                    'foto_bukti' => $fotoPath,
+                ]);
+
+                $totalSaldo += $hargaTotal;
+                $totalWeight += $weight;
+                $totalPoints += $this->calculatePoints($trashCategory->nama, $weight);
+            }
+
+            $user->increment('saldo', $totalSaldo);
 
             $leaderboard = Leaderboard::firstOrCreate(
                 ['user_id' => $user->id],
                 ['total_poin_lingkungan' => 0, 'total_berat_kg' => 0, 'jumlah_transaksi' => 0]
             );
 
-            $leaderboard->increment('total_poin_lingkungan', $poin);
-            $leaderboard->increment('total_berat_kg', $validated['berat_kg']);
-            $leaderboard->increment('jumlah_transaksi');
+            $leaderboard->increment('total_poin_lingkungan', $totalPoints);
+            $leaderboard->increment('total_berat_kg', $totalWeight);
+            $leaderboard->increment('jumlah_transaksi', count($items));
         });
 
         return redirect()->route('petugas.dashboard')
@@ -106,41 +127,56 @@ class PetugasController extends Controller
     {
         $validated = $request->validate([
             'user_email' => 'required|email|exists:users,email',
-            'trash_category_id' => 'required|exists:trash_categories,id',
-            'berat_kg' => 'required|numeric|min:0.5',
+            'items' => 'required|array|min:1',
+            'items.*.trash_category_id' => 'required|exists:trash_categories,id',
+            'items.*.berat_kg' => 'required|numeric|min:0.1',
             'foto_bukti' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
         $user = User::where('email', $validated['user_email'])->firstOrFail();
-        $trashCategory = TrashCategory::findOrFail($validated['trash_category_id']);
 
-        DB::transaction(function () use ($validated, $user, $trashCategory) {
-            $transaction = Transaction::create([
-                'user_id' => $user->id,
-                'petugas_id' => auth()->id(),
-                'trash_category_id' => $validated['trash_category_id'],
-                'berat_kg' => $validated['berat_kg'],
-                'harga_per_kg' => $trashCategory->harga_per_kg,
-                'total_rp' => $validated['berat_kg'] * $trashCategory->harga_per_kg,
-                'tipe_setoran' => 'mandiri',
-                'status' => 'selesai',
-                'foto_bukti' => isset($validated['foto_bukti'])
-                    ? $validated['foto_bukti']->store('transactions', 'public')
-                    : null,
-            ]);
+        DB::transaction(function () use ($validated, $user, $request) {
+            $items = $validated['items'];
+            $totalPoints = 0;
+            $totalSaldo = 0;
+            $totalWeight = 0;
 
-            $user->increment('saldo', $transaction->total_rp);
+            $fotoPath = isset($validated['foto_bukti'])
+                ? $validated['foto_bukti']->store('transactions', 'public')
+                : null;
 
-            $poin = $this->calculatePoints($trashCategory->nama, $validated['berat_kg']);
+            foreach ($items as $item) {
+                $trashCategory = TrashCategory::findOrFail($item['trash_category_id']);
+                $weight = (float) $item['berat_kg'];
+                $hargaTotal = $weight * $trashCategory->harga_per_kg;
+
+                $transaction = Transaction::create([
+                    'user_id' => $user->id,
+                    'petugas_id' => auth()->id(),
+                    'trash_category_id' => $trashCategory->id,
+                    'berat_kg' => $weight,
+                    'harga_per_kg' => $trashCategory->harga_per_kg,
+                    'total_rp' => $hargaTotal,
+                    'tipe_setoran' => 'mandiri',
+                    'status' => 'selesai',
+                    'foto_bukti' => $fotoPath,
+                ]);
+
+                $totalSaldo += $hargaTotal;
+                $totalWeight += $weight;
+                $totalPoints += $this->calculatePoints($trashCategory->nama, $weight);
+            }
+
+            $user->increment('saldo', $totalSaldo);
 
             $leaderboard = Leaderboard::firstOrCreate(
                 ['user_id' => $user->id],
                 ['total_poin_lingkungan' => 0, 'total_berat_kg' => 0, 'jumlah_transaksi' => 0]
             );
 
-            $leaderboard->increment('total_poin_lingkungan', $poin);
-            $leaderboard->increment('total_berat_kg', $validated['berat_kg']);
-            $leaderboard->increment('jumlah_transaksi');
+            $leaderboard->increment('total_poin_lingkungan', $totalPoints);
+            $leaderboard->increment('total_berat_kg', $totalWeight);
+            $leaderboard->increment('jumlah_transaksi', count($items));
         });
 
         return redirect()->route('petugas.dashboard')

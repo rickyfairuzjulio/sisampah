@@ -12,7 +12,6 @@
     <x-dashboard-hero
         title="Dashboard Admin"
         subtitle="Statistik komprehensif dan manajemen sistem SiSampah"
-        gradient="from-[#1a1c1b] to-[#2d4a3e]"
         badge="Administrator"
     />
 
@@ -20,7 +19,7 @@
         <x-stat-tile
             title="{{ $totalNasabah }}"
             subtitle="Total Nasabah"
-            icon='<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-2a6 6 0 0112 0v2z"/></svg>'
+            icon='<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>'
         />
         <x-stat-tile
             title="{{ number_format($totalSampahKg, 1) }} Kg"
@@ -44,7 +43,7 @@
 
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <a href="{{ route('admin.trash_price.index') }}" class="quick-action-card">
-            <div class="w-11 h-11 bg-blue-100 rounded-xl flex items-center justify-center"><svg class="w-5 h-5 text-blue-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1"/></svg></div>
+            <div class="w-11 h-11 bg-blue-100 rounded-xl flex items-center justify-center"><svg class="w-5 h-5 text-blue-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg></div>
             <div><p class="font-semibold text-sm">Harga Sampah</p><p class="text-xs text-on-surface-variant">Per kategori</p></div>
         </a>
         <a href="{{ route('admin.finance.validate') }}" class="quick-action-card">

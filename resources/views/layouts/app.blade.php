@@ -27,6 +27,7 @@
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intro.js/7.2.0/introjs.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     @stack('styles')
     <script>
         // On page load or when changing themes, best to add inline in `head` to avoid FOUC
@@ -135,5 +136,45 @@
     <x-toast />
     <x-intro-onboarding />
     @stack('scripts')
+    
+    @if(session('welcome'))
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            Swal.fire({
+                title: 'Halo!',
+                text: "{{ session('welcome') }}",
+                icon: 'success',
+                confirmButtonText: 'Lanjut',
+                confirmButtonColor: '#059669', // forest-emerald
+                background: document.documentElement.classList.contains('dark') ? '#1e293b' : '#ffffff',
+                color: document.documentElement.classList.contains('dark') ? '#f8fafc' : '#0f172a',
+                customClass: {
+                    popup: 'rounded-2xl',
+                    confirmButton: 'rounded-xl shadow-md font-bold'
+                }
+            });
+        });
+    </script>
+    @endif
+
+    @if(session('error'))
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            Swal.fire({
+                title: 'Gagal!',
+                text: "{{ session('error') }}",
+                icon: 'error',
+                confirmButtonText: 'Tutup',
+                confirmButtonColor: '#ef4444',
+                background: document.documentElement.classList.contains('dark') ? '#1e293b' : '#ffffff',
+                color: document.documentElement.classList.contains('dark') ? '#f8fafc' : '#0f172a',
+                customClass: {
+                    popup: 'rounded-2xl',
+                    confirmButton: 'rounded-xl shadow-md font-bold'
+                }
+            });
+        });
+    </script>
+    @endif
 </body>
 </html>

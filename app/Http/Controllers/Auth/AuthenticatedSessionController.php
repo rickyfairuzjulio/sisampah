@@ -30,19 +30,21 @@ class AuthenticatedSessionController extends Controller
 
         $user = $request->user();
 
+        $welcomeMsg = 'Selamat datang kembali, ' . explode(' ', $user->name)[0] . '!';
+
         if ($user->hasRole('admin')) {
-            return redirect()->intended(route('admin.dashboard', absolute: false));
+            return redirect()->intended(route('admin.dashboard', absolute: false))->with('welcome', $welcomeMsg);
         }
 
         if ($user->hasRole('petugas')) {
-            return redirect()->intended(route('petugas.dashboard', absolute: false));
+            return redirect()->intended(route('petugas.dashboard', absolute: false))->with('welcome', $welcomeMsg);
         }
 
         if ($user->hasRole('nasabah')) {
-            return redirect()->intended(route('nasabah.dashboard', absolute: false));
+            return redirect()->intended(route('nasabah.dashboard', absolute: false))->with('welcome', $welcomeMsg);
         }
 
-        return redirect()->intended(route('home', absolute: false));
+        return redirect()->intended(route('home', absolute: false))->with('welcome', $welcomeMsg);
     }
 
     /**

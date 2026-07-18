@@ -5,21 +5,12 @@
 
         <!-- Main Form Grid -->
         <form action="{{ route('petugas.self_deposit.store') }}" method="POST" enctype="multipart/form-data" 
-              x-data="selfDepositForm()" 
-              @detected="handleAI($event.detail)"
-              @snapshot-taken="handleSnapshot($event.detail)">
+              x-data="selfDepositForm()">
             @csrf
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
-                <!-- Left Side: Camera Scanner -->
-                <x-card class="sticky top-6">
-
-
-                    <x-camera-scanner />
-                </x-card>
-
-                <!-- Right Side: Form Content -->
-                <x-card class="space-y-6">
+                <!-- Main Form Content -->
+                <x-card class="space-y-6 lg:col-span-2 max-w-3xl mx-auto w-full">
                     @if ($errors->any())
                         <x-alert type="error" title="Ada Kesalahan" class="mb-6" dismissible>
                             <ul class="list-disc list-inside space-y-1">
@@ -54,46 +45,54 @@
                     </p>
                 </div>
 
-                <!-- Form Section 2: Kategori & Berat -->
+                <!-- Form Section 2: Daftar Sampah -->
                 <div class="space-y-4">
                     <div class="flex items-center justify-between pb-3 border-b border-primary/20">
                         <div class="flex items-center gap-2">
                             <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
                                 <span class="text-sm font-bold text-primary">2</span>
                             </div>
-                            <h3 class="font-semibold text-on-surface">Detail Sampah</h3>
-                        </div>
-                        
-                        <!-- AI Status Badge -->
-                        <div x-show="aiDetectedCategory" x-cloak class="px-3 py-1 bg-forest-emerald/20 text-forest-emerald rounded-full text-xs font-bold flex items-center gap-1 transition-all">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                            Dipilih Otomatis
+                            <h3 class="font-semibold text-on-surface">Daftar Sampah</h3>
                         </div>
                     </div>
 
-                    <x-select-field 
-                        label="Kategori Sampah"
-                        name="trash_category_id"
-                        x-model="selectedCategoryId"
-                        required
-                        :items="$trashCategories->map(fn($k) => [
-                            'value' => $k->id,
-                            'label' => $k->nama . ' (Rp ' . number_format($k->harga_per_kg, 0, ',', '.') . '/Kg)'
-                        ])->toArray()"
-                        :error="$errors->has('trash_category_id') ? $errors->first('trash_category_id') : false"
-                    />
+                    <!-- Items List -->
+                    <div class="space-y-4">
+                        <template x-for="(item, index) in items" :key="item.id">
+                            <div class="flex flex-col sm:flex-row gap-4 p-4 border border-outline-variant rounded-xl bg-surface relative group">
+                                <!-- Kategori -->
+                                <div class="flex-1">
+                                    <label class="block text-sm font-medium text-on-surface mb-1">Kategori Sampah <span class="text-error">*</span></label>
+                                    <select x-model="item.trash_category_id" :name="'items['+index+'][trash_category_id]'" required class="w-full px-4 py-3 rounded-xl border border-outline-variant bg-surface focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-sm appearance-none transition-shadow shadow-sm hover:border-primary/50">
+                                        <option value="" disabled selected>Pilih Kategori</option>
+                                        @foreach($trashCategories as $k)
+                                            <option value="{{ $k->id }}">{{ $k->nama }} (Rp {{ number_format($k->harga_per_kg, 0, ',', '.') }}/Kg)</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                
+                                <!-- Berat -->
+                                <div class="sm:w-40">
+                                    <label class="block text-sm font-medium text-on-surface mb-1">Berat (Kg) <span class="text-error">*</span></label>
+                                    <input type="number" x-model="item.berat_kg" :name="'items['+index+'][berat_kg]'" required min="0.1" step="0.1" placeholder="Contoh: 5.5" class="w-full px-4 py-3 rounded-xl border border-outline-variant bg-surface focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-sm transition-shadow shadow-sm hover:border-primary/50">
+                                </div>
+                                
+                                <!-- Hapus Button -->
+                                <div class="flex sm:self-end sm:mb-0.5">
+                                    <button type="button" @click="removeItem(index)" x-show="items.length > 1" class="w-full sm:w-12 h-[3.25rem] bg-error/10 text-error hover:bg-error hover:text-white rounded-xl flex items-center justify-center transition-colors shadow-sm mt-2 sm:mt-0" title="Hapus Sampah">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                        <span class="sm:hidden ml-2 font-medium">Hapus</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
 
-                    <x-input-field 
-                        label="Berat Sampah (Kg)"
-                        name="berat_kg"
-                        type="number"
-                        placeholder="Contoh: 5.5"
-                        step="0.1"
-                        min="0.1"
-                        required
-                        :value="old('berat_kg')"
-                        :error="$errors->has('berat_kg') ? $errors->first('berat_kg') : false"
-                    />
+                    <!-- Tambah Button -->
+                    <button type="button" @click="addItem()" class="mt-2 py-2 px-4 border-2 border-dashed border-primary text-primary hover:bg-primary/5 font-bold rounded-xl transition-colors flex items-center justify-center gap-2 w-full">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                        Tambah Sampah Lain
+                    </button>
                 </div>
 
                 <!-- Form Section 3: Foto Bukti -->
@@ -153,40 +152,14 @@
     <script>
         document.addEventListener('alpine:init', () => {
             Alpine.data('selfDepositForm', () => ({
-                selectedCategoryId: '{{ old('trash_category_id') }}',
-                aiDetectedCategory: null,
-                categories: @json($trashCategories->map(fn($k) => ['id' => $k->id, 'nama' => $k->nama])),
-
-                handleAI(detail) {
-                    const matchedCategory = this.categories.find(c => 
-                        detail.category.toLowerCase().includes(c.nama.toLowerCase()) || 
-                        c.nama.toLowerCase().includes(detail.category.toLowerCase())
-                    );
-                    
-                    if (matchedCategory && this.selectedCategoryId != matchedCategory.id) {
-                        this.selectedCategoryId = matchedCategory.id;
-                        this.aiDetectedCategory = detail.category;
-                    }
+                items: [
+                    { id: Date.now(), trash_category_id: '', berat_kg: '' }
+                ],
+                addItem() {
+                    this.items.push({ id: Date.now(), trash_category_id: '', berat_kg: '' });
                 },
-                
-                handleSnapshot(detail) {
-                    // Convert Data URL to Blob, then to File
-                    fetch(detail.photoUrl)
-                        .then(res => res.blob())
-                        .then(blob => {
-                            const file = new File([blob], "snapshot.jpg", { type: "image/jpeg" });
-                            const dataTransfer = new DataTransfer();
-                            dataTransfer.items.add(file);
-                            
-                            const fileInput = document.getElementById('foto_bukti');
-                            fileInput.files = dataTransfer.files;
-                            
-                            // Trigger change event for preview
-                            fileInput.dispatchEvent(new Event('change', { bubbles: true }));
-                            
-                            // Also select category if not selected
-                            this.handleAI({category: detail.category});
-                        });
+                removeItem(index) {
+                    this.items.splice(index, 1);
                 }
             }));
         });

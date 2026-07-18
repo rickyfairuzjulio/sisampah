@@ -223,21 +223,54 @@
                             :error="$errors->has('nominal') ? $errors->first('nominal') : false"
                         />
 
-                        <x-select-field 
-                            label="Metode Penarikan"
-                            name="metode"
-                            x-model="method"
-                            :items="[
-                                ['value' => 'tunai', 'label' => '💵 Tunai'],
-                                ['value' => 'bca', 'label' => '🏦 Transfer BCA'],
-                                ['value' => 'bri', 'label' => '🏦 Transfer BRI'],
-                                ['value' => 'bsi', 'label' => '🏦 Transfer BSI'],
-                                ['value' => 'dana', 'label' => '📱 E-Wallet DANA'],
-                                ['value' => 'gopay', 'label' => '📱 E-Wallet GoPay'],
-                            ]"
-                            required
-                            :error="$errors->has('metode') ? $errors->first('metode') : false"
-                        />
+                        <div>
+                            <label class="block text-sm font-medium text-on-surface mb-3">Metode Penarikan <span class="text-red-500">*</span></label>
+                            
+                            <div class="relative w-full" 
+                                 x-data="paymentMethodDropdown()"
+                                 @click.outside="open = false"
+                                 class="w-full">
+                                
+                                <input type="hidden" name="metode" x-model="method">
+                                
+                                <button type="button" 
+                                        @click="open = !open" 
+                                        class="w-full flex items-center justify-between px-4 py-3 bg-surface-container-lowest border border-outline-variant hover:border-primary focus:border-primary focus:ring-1 focus:ring-primary rounded-xl transition-all shadow-sm">
+                                    <div class="flex items-center gap-3">
+                                        <div x-show="method" x-html="selectedOption.icon" class="flex-shrink-0"></div>
+                                        <span class="text-sm font-semibold text-on-surface" x-text="method ? selectedOption.label : 'Pilih Metode Penarikan'"></span>
+                                    </div>
+                                    <svg class="w-5 h-5 text-on-surface-variant transition-transform duration-200" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                                </button>
+
+                                <div x-show="open" 
+                                     x-transition:enter="transition ease-out duration-200"
+                                     x-transition:enter-start="opacity-0 -translate-y-2"
+                                     x-transition:enter-end="opacity-100 translate-y-0"
+                                     x-transition:leave="transition ease-in duration-150"
+                                     x-transition:leave-start="opacity-100 translate-y-0"
+                                     x-transition:leave-end="opacity-0 -translate-y-2"
+                                     class="absolute z-50 w-full mt-2 bg-surface-container-lowest border border-outline-variant rounded-xl shadow-lg overflow-hidden" 
+                                     style="display: none;">
+                                    <div class="max-h-60 overflow-y-auto py-1">
+                                        <template x-for="option in options" :key="option.value">
+                                            <button type="button" 
+                                                    @click="method = option.value; open = false" 
+                                                    class="w-full flex items-center gap-3 px-4 py-3 hover:bg-primary/5 transition-colors text-left"
+                                                    :class="method === option.value ? 'bg-primary/10 text-primary' : 'text-on-surface'">
+                                                <div x-html="option.icon" class="flex-shrink-0"></div>
+                                                <span class="text-sm font-medium" x-text="option.label"></span>
+                                                <svg x-show="method === option.value" class="w-5 h-5 ml-auto text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                            </button>
+                                        </template>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            @error('metode')
+                                <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
+                            @enderror
+                        </div>
 
                         <div x-show="method && method !== 'tunai'" x-transition class="space-y-4" style="display: none;">
                             <x-input-field 
@@ -266,4 +299,24 @@
         </div>
         </div>
     </div>
+    @push('scripts')
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('paymentMethodDropdown', () => ({
+                open: false,
+                options: [
+                    { value: 'tunai', label: 'Tunai', icon: '<svg class="w-8 h-8 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>' },
+                    { value: 'bca', label: 'Transfer BCA', icon: '<svg class="w-auto h-6" viewBox="0 0 100 30" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="30" rx="4" fill="#0066AE"/><text x="50" y="21" font-family="Arial, sans-serif" font-weight="900" font-size="18" fill="white" text-anchor="middle" letter-spacing="1">BCA</text></svg>' },
+                    { value: 'bri', label: 'Transfer BRI', icon: '<svg class="w-auto h-6" viewBox="0 0 100 30" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="30" rx="4" fill="#0F5C9E"/><text x="50" y="21" font-family="Arial, sans-serif" font-weight="900" font-size="18" fill="white" text-anchor="middle" letter-spacing="1">BRI</text></svg>' },
+                    { value: 'bsi', label: 'Transfer BSI', icon: '<svg class="w-auto h-6" viewBox="0 0 100 30" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="30" rx="4" fill="#00A39D"/><text x="50" y="21" font-family="Arial, sans-serif" font-weight="900" font-size="18" fill="white" text-anchor="middle" letter-spacing="1">BSI</text></svg>' },
+                    { value: 'dana', label: 'DANA', icon: '<svg class="w-auto h-6" viewBox="0 0 100 30" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="30" rx="4" fill="#118EEA"/><text x="50" y="21" font-family="Arial, sans-serif" font-weight="900" font-size="18" fill="white" text-anchor="middle" letter-spacing="1">DANA</text></svg>' },
+                    { value: 'gopay', label: 'GoPay', icon: '<svg class="w-auto h-6" viewBox="0 0 100 30" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="30" rx="4" fill="#00AEEF"/><text x="50" y="21" font-family="Arial, sans-serif" font-weight="900" font-size="18" fill="white" text-anchor="middle" letter-spacing="1">GoPay</text></svg>' }
+                ],
+                get selectedOption() {
+                    return this.options.find(opt => opt.value === this.method) || this.options[0];
+                }
+            }));
+        });
+    </script>
+    @endpush
 </x-app-layout>

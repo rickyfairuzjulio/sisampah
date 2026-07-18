@@ -47,7 +47,12 @@ class TrashPriceController extends Controller
             ->orderBy('created_at', 'desc')
             ->paginate(10);
 
-        return view('admin.trash-price.show', compact('category', 'prediction', 'trend', 'histories'));
+        $chartHistories = PriceHistory::where('trash_category_id', $id)
+            ->orderBy('created_at', 'asc')
+            ->take(30)
+            ->get();
+
+        return view('admin.trash-price.show', compact('category', 'prediction', 'trend', 'histories', 'chartHistories'));
     }
 
     public function store(StoreTrashPriceRequest $request)

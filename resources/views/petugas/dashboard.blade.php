@@ -12,7 +12,6 @@
     <x-dashboard-hero
         title="Dashboard Manifes"
         subtitle="Kelola penjemputan pending, input timbangan, dan setoran mandiri"
-        gradient="from-primary to-forest-emerald"
         badge="Petugas Lapangan"
     />
 
@@ -90,17 +89,17 @@
 
                             <div class="bg-surface-container-low rounded-xl p-3 grid grid-cols-2 gap-3 text-sm border border-outline-variant/50">
                                 <div>
-                                    <p class="text-on-surface-variant text-xs mb-0.5">Kategori</p>
+                                    <p class="text-on-surface-variant text-xs mb-0.5">Total Jenis Sampah</p>
                                     <p class="font-bold text-on-surface flex items-center gap-1">
                                         <svg class="w-4 h-4 text-forest-emerald" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"/></svg>
-                                        {{ $request->trashCategory->nama ?? '-' }}
+                                        {{ $request->total_items }} Jenis
                                     </p>
                                 </div>
                                 <div>
-                                    <p class="text-on-surface-variant text-xs mb-0.5">Estimasi Berat</p>
+                                    <p class="text-on-surface-variant text-xs mb-0.5">Total Estimasi Berat</p>
                                     <p class="font-bold text-on-surface flex items-center gap-1">
                                         <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2"/></svg>
-                                        {{ $request->berat_kg }} Kg
+                                        {{ $request->total_berat }} Kg
                                     </p>
                                 </div>
                             </div>

@@ -12,7 +12,6 @@
     <x-dashboard-hero
         :title="'Halo, ' . explode(' ', Auth::user()->name)[0] . '!'"
         subtitle="Kelola sampah Anda, pantau saldo, dan jadwalkan penjemputan"
-        gradient="from-[#00694c] to-[#1D9E75]"
         badge="Nasabah"
     />
 
@@ -191,25 +190,33 @@
                 });
             ">
                 <x-card class="border-t-4 border-t-gray-500 !p-5 flex flex-col justify-center text-center">
-                    <p class="text-3xl mb-2">☁️</p>
+                    <div class="mb-3 flex justify-center">
+                        <svg class="w-8 h-8 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"/></svg>
+                    </div>
                     <p class="text-2xl font-black text-on-surface"><span x-ref="co2">0</span> <span class="text-sm font-semibold">Kg</span></p>
                     <p class="text-xs text-on-surface-variant font-medium mt-1">CO₂ Dikurangi</p>
                 </x-card>
                 
                 <x-card class="border-t-4 border-t-forest-emerald !p-5 flex flex-col justify-center text-center">
-                    <p class="text-3xl mb-2">🌲</p>
+                    <div class="mb-3 flex justify-center">
+                        <svg class="w-8 h-8 text-forest-emerald" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 21C11 21 11 14 16 9C19 6 22 5 22 5C22 5 21 8 18 11C13 16 13 21 13 21H11Z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 21C10 21 10 16 5 11C2 8 1 7 1 7C1 7 2 10 5 13C10 18 10 21 10 21H10Z"/></svg>
+                    </div>
                     <p class="text-2xl font-black text-on-surface"><span x-ref="pohon">0</span></p>
                     <p class="text-xs text-on-surface-variant font-medium mt-1">Pohon Diselamatkan</p>
                 </x-card>
 
                 <x-card class="border-t-4 border-t-amber-500 !p-5 flex flex-col justify-center text-center">
-                    <p class="text-3xl mb-2">⚡</p>
+                    <div class="mb-3 flex justify-center">
+                        <svg class="w-8 h-8 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                    </div>
                     <p class="text-2xl font-black text-on-surface"><span x-ref="energi">0</span> <span class="text-sm font-semibold">kWh</span></p>
                     <p class="text-xs text-on-surface-variant font-medium mt-1">Energi Dihemat</p>
                 </x-card>
 
                 <x-card class="border-t-4 border-t-blue-500 !p-5 flex flex-col justify-center text-center">
-                    <p class="text-3xl mb-2">💧</p>
+                    <div class="mb-3 flex justify-center">
+                        <svg class="w-8 h-8 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a9 9 0 0018 0c0-4.97-9-15-9-15S3 10.03 3 15z"/></svg>
+                    </div>
                     <p class="text-2xl font-black text-on-surface"><span x-ref="air">0</span> <span class="text-sm font-semibold">L</span></p>
                     <p class="text-xs text-on-surface-variant font-medium mt-1">Air Dihemat</p>
                 </x-card>

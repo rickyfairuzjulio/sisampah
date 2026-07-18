@@ -15,8 +15,9 @@ class StoreTransactionRequest extends FormRequest
     {
         return [
             'user_id' => 'required|exists:users,id',
-            'trash_category_id' => 'required|exists:trash_categories,id',
-            'berat_kg' => 'required|numeric|min:0.5',
+            'items' => 'required|array|min:1',
+            'items.*.trash_category_id' => 'required|exists:trash_categories,id',
+            'items.*.berat_kg' => 'required|numeric|min:0.1',
             'foto_bukti' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ];
     }
@@ -24,8 +25,10 @@ class StoreTransactionRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'berat_kg.min' => 'Berat sampah harus minimal 0.5 Kg.',
-            'trash_category_id.required' => 'Kategori sampah harus dipilih.',
+            'items.required' => 'Daftar sampah tidak boleh kosong.',
+            'items.min' => 'Daftar sampah tidak boleh kosong.',
+            'items.*.berat_kg.min' => 'Berat sampah harus minimal 0.1 Kg.',
+            'items.*.trash_category_id.required' => 'Kategori sampah harus dipilih.',
         ];
     }
 }

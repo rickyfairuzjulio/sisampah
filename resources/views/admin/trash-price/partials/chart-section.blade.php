@@ -41,14 +41,14 @@
             async fetchDataAndRender() {
                 this.loading = true;
                 try {
-                    // Fetch real data from API
-                    const response = await fetch(`/api/v1/price-history?category_id=${this.categoryId}&per_page=${this.range === '30d' ? 30 : 7}`);
-                    const json = await response.json();
+                    // Use data passed from controller directly
+                    let data = @json($chartHistories);
                     
-                    if (json.status === 'success') {
-                        // Reverse because API returns desc, we want asc for chart (left to right = past to present)
-                        const data = json.data.data.reverse();
-                        
+                    if (this.range === '7d') {
+                        data = data.slice(-7);
+                    }
+                    
+                    if (data.length > 0) {
                         const labels = data.map(item => {
                             const date = new Date(item.created_at);
                             return date.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });

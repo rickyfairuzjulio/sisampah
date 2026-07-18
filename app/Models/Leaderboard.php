@@ -50,7 +50,7 @@ class Leaderboard extends Model
     public function getBadgeIconAttribute(): string
     {
         return match ($this->level) {
-            4 => '💎',
+            4 => '🏆',
             3 => '🥇',
             2 => '🥈',
             default => '🥉',

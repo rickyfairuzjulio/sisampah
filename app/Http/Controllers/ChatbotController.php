@@ -16,8 +16,7 @@ class ChatbotController extends Controller
             'message' => 'required|string',
             'history' => 'nullable|array', // Array of previous chat history to keep context
         ]);
-
-        $apiKey = env('GEMINI_API_KEY');
+        $apiKey = config('services.gemini.key');
 
         if (empty($apiKey)) {
             return response()->json([

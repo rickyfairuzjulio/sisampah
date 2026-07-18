@@ -59,6 +59,7 @@ Route::middleware(['auth', 'role:petugas'])->prefix('petugas')->name('petugas.')
 
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
+    Route::resource('users', \App\Http\Controllers\Admin\UserController::class)->except(['show']);
     // Modul Harga Sampah (Admin)
     Route::prefix('trash-price')->name('trash_price.')->group(function () {
         Route::get('/', [TrashPriceController::class, 'index'])->name('index');
