@@ -26,6 +26,10 @@ WORKDIR /var/www
 # Copy application files
 COPY . .
 
+# Ensure Laravel's bootstrap/cache directory exists and is writable
+RUN mkdir -p bootstrap/cache storage/framework/cache storage/framework/sessions storage/framework/views \
+    && chmod -R 775 bootstrap/cache storage
+
 # Install dependencies
 RUN composer install --no-dev --optimize-autoloader
 
