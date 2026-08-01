@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Admin\BankSampahController;
+use App\Http\Controllers\Admin\SuperAdminController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\ChatbotController;
@@ -12,6 +14,10 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::post('/chat', [ChatbotController::class, 'chat'])->name('chat');
+Route::post('/chat/vision', [ChatbotController::class, 'analyzeVision'])->name('chat.vision');
+Route::get('/scan-history', [ChatbotController::class, 'history'])->name('scan.history');
+Route::delete('/scan-history/{id}', [ChatbotController::class, 'deleteHistory'])->name('scan.history.delete');
+Route::get('/api/bank-sampah/nearest', [BankSampahController::class, 'nearestApi'])->name('api.bank_sampah.nearest');
 Route::get('/edukasi', [ArticleController::class, 'publicIndex'])->name('edukasi.index');
 Route::get('/edukasi/{slug}', [ArticleController::class, 'publicShow'])->name('edukasi.show');
 
@@ -47,6 +53,11 @@ Route::middleware(['auth', 'role:nasabah'])->prefix('nasabah')->name('nasabah.')
     Route::post('/prices/{id}/favorite', [TrashPriceController::class, 'toggleFavorite'])->name('prices.favorite');
     Route::get('/sertifikat', [NasabahController::class, 'certificate'])->name('certificate');
     Route::post('/transaksi/{id}/rating', [NasabahController::class, 'submitRating'])->name('transaction.rating');
+    
+    // Top Up Routes
+    Route::get('/topup', [NasabahController::class, 'showTopUpForm'])->name('topup.form');
+    Route::post('/topup', [NasabahController::class, 'storeTopUp'])->name('topup.store');
+    Route::get('/topup/{id}/status', [NasabahController::class, 'checkTopUpStatus'])->name('topup.status');
 });
 
 Route::middleware(['auth', 'role:petugas'])->prefix('petugas')->name('petugas.')->group(function () {
@@ -58,8 +69,21 @@ Route::middleware(['auth', 'role:petugas'])->prefix('petugas')->name('petugas.')
 });
 
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
+    Route::get('/dashboard', [SuperAdminController::class, 'dashboard'])->name('dashboard');
     Route::resource('users', \App\Http\Controllers\Admin\UserController::class)->except(['show']);
+
+    // Master Bank Sampah & Peta Sebaran (Super Admin)
+    Route::get('/peta-sebaran', [BankSampahController::class, 'sebaranMap'])->name('peta_sebaran');
+    Route::prefix('master-bank-sampah')->name('master_bank_sampah.')->group(function () {
+        Route::get('/', [BankSampahController::class, 'index'])->name('index');
+        Route::get('/create', [BankSampahController::class, 'create'])->name('create');
+        Route::post('/', [BankSampahController::class, 'store'])->name('store');
+        Route::get('/{id}', [BankSampahController::class, 'show'])->name('show');
+        Route::get('/{id}/edit', [BankSampahController::class, 'edit'])->name('edit');
+        Route::put('/{id}', [BankSampahController::class, 'update'])->name('update');
+        Route::delete('/{id}', [BankSampahController::class, 'destroy'])->name('destroy');
+        Route::post('/{id}/toggle-status', [BankSampahController::class, 'toggleStatus'])->name('toggle_status');
+    });
     // Modul Harga Sampah (Admin)
     Route::prefix('trash-price')->name('trash_price.')->group(function () {
         Route::get('/', [TrashPriceController::class, 'index'])->name('index');
@@ -73,7 +97,9 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
         Route::post('/{id}/duplicate', [TrashPriceController::class, 'duplicate'])->name('duplicate');
     });
     Route::get('/validasi-keuangan', [AdminController::class, 'validateFinance'])->name('finance.validate');
+    Route::post('/validasi-keuangan/topup-kas', [AdminController::class, 'topupKas'])->name('finance.topup_kas');
     Route::post('/validasi-keuangan/{id}', [AdminController::class, 'approveWithdrawal'])->name('finance.approve');
+    Route::post('/validasi-keuangan/{id}/approve-gateway', [AdminController::class, 'approveWithdrawalWithGateway'])->name('finance.approve_gateway');
     Route::post('/validasi-keuangan/{id}/reject', [AdminController::class, 'rejectWithdrawal'])->name('finance.reject');
     Route::get('/konfigurasi-wilayah', [AdminController::class, 'configureRegion'])->name('region.configure');
     Route::get('/laporan', [AdminController::class, 'reports'])->name('reports');

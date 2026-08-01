@@ -13,68 +13,46 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Inter', ...defaultTheme.fontFamily.sans],
+                sans: ['Plus Jakarta Sans', 'Inter', ...defaultTheme.fontFamily.sans],
             },
             colors: {
-                surface: 'var(--color-surface)',
-                'surface-dim': 'var(--color-surface-dim)',
-                'surface-bright': 'var(--color-surface-bright)',
-                'surface-container-lowest': 'var(--color-surface-container-lowest)',
-                'surface-container-low': 'var(--color-surface-container-low)',
-                'surface-container': 'var(--color-surface-container)',
-                'surface-container-high': 'var(--color-surface-container-high)',
-                'surface-container-highest': 'var(--color-surface-container-highest)',
-                'on-surface': 'var(--color-on-surface)',
-                'on-surface-variant': 'var(--color-on-surface-variant)',
-                'inverse-surface': 'var(--color-inverse-surface)',
-                'inverse-on-surface': 'var(--color-inverse-on-surface)',
-                outline: 'var(--color-outline)',
-                'outline-variant': 'var(--color-outline-variant)',
-                'surface-tint': 'var(--color-surface-tint)',
-                primary: 'var(--color-primary)',
-                'on-primary': 'var(--color-on-primary)',
-                'primary-container': 'var(--color-primary-container)',
-                'on-primary-container': 'var(--color-on-primary-container)',
-                'inverse-primary': 'var(--color-inverse-primary)',
-                secondary: 'var(--color-secondary)',
-                'on-secondary': 'var(--color-on-secondary)',
-                'secondary-container': 'var(--color-secondary-container)',
-                'on-secondary-container': 'var(--color-on-secondary-container)',
-                tertiary: 'var(--color-tertiary)',
-                'on-tertiary': 'var(--color-on-tertiary)',
-                'tertiary-container': 'var(--color-tertiary-container)',
-                'on-tertiary-container': 'var(--color-on-tertiary-container)',
-                error: 'var(--color-error)',
-                'on-error': 'var(--color-on-error)',
-                'error-container': 'var(--color-error-container)',
-                'on-error-container': 'var(--color-on-error-container)',
+                // Core Brand Colors
+                primary: '#22C55E',
+                'primary-dark': '#16A34A',
+                mint: '#34D399',
+                warning: '#F59E0B',
+                danger: '#EF4444',
+                
+                // Semantic / Theming Colors (Mapped from CSS)
                 background: 'var(--color-background)',
-                'on-background': 'var(--color-on-background)',
-                'surface-variant': 'var(--color-surface-variant)',
-                'forest-emerald': 'var(--color-forest-emerald)',
-                'soft-mint': 'var(--color-soft-mint)',
+                surface: 'var(--color-surface)',
+                card: 'var(--color-card)',
+                sidebar: 'var(--color-sidebar)',
+                navbar: 'var(--color-navbar)',
+                'hover-bg': 'var(--color-hover)',
+                'border-color': 'var(--color-border)',
+                
+                // Text Colors
+                'text-primary': 'var(--color-text-primary)',
+                'text-secondary': 'var(--color-text-secondary)',
+                'text-muted': 'var(--color-text-muted)',
+                'text-success': 'var(--color-text-success)',
             },
             borderRadius: {
                 sm: '0.25rem',
                 DEFAULT: '0.5rem',
                 md: '0.75rem',
                 lg: '1rem',
-                xl: '1.5rem',
-                '2xl': '2rem',
-                full: '9999px',
-            },
-            spacing: {
-                unit: '4px',
-                xs: '4px',
-                sm: '8px',
-                md: '16px',
-                lg: '24px',
-                xl: '32px',
-                'container-margin': '20px',
-                gutter: '16px',
+                xl: '1.25rem', // 20px for Cards
+                '2xl': '1.5rem', // 24px for Modals
+                'btn': '16px', // 16px for Buttons/Inputs
+                'card': '20px',
+                full: '9999px', // Chips
             },
             boxShadow: {
-                'ambient': '0 4px 20px 0 rgba(0, 0, 0, 0.06)',
+                'soft': '0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01)',
+                'glow-green': '0 0 15px rgba(34, 197, 94, 0.4)',
+                'glow-green-sm': '0 4px 14px 0 rgba(34, 197, 94, 0.39)',
             },
             keyframes: {
                 'slide-in': {
@@ -84,11 +62,16 @@ export default {
                 'fade-in': {
                     '0%': { opacity: '0' },
                     '100%': { opacity: '1' },
+                },
+                'ripple': {
+                    '0%': { transform: 'scale(0.8)', opacity: '1' },
+                    '100%': { transform: 'scale(2.4)', opacity: '0' },
                 }
             },
             animation: {
                 'slide-in': 'slide-in 0.4s ease-out',
                 'fade-in': 'fade-in 0.4s ease-out',
+                'ripple': 'ripple 1s cubic-bezier(0, 0.2, 0.8, 1) infinite',
             }
         },
     },

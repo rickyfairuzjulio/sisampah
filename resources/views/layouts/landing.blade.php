@@ -42,19 +42,19 @@
             <div class="flex items-center justify-between h-16 lg:h-20">
                 <a href="{{ route('home') }}" class="flex items-center gap-2 sm:gap-3 group">
                     <img src="{{ asset('images/logo.png') }}" alt="SiSampah Logo" class="w-10 h-10 sm:w-11 sm:h-11 lg:w-12 lg:h-12 object-contain group-hover:scale-105 transition-transform drop-shadow">
-                    <span class="text-lg sm:text-xl lg:text-2xl font-bold tracking-tight">SiSampah<span class="text-forest-emerald">.</span></span>
+                    <span class="text-lg sm:text-xl lg:text-2xl font-bold tracking-tight">SiSampah<span class="text-emerald">.</span></span>
                 </a>
 
                 <nav class="hidden lg:flex items-center gap-8 text-sm font-semibold text-white/70">
-                    <a href="#fitur" class="hover:text-forest-emerald transition-colors">Fitur</a>
-                    <a href="#cara-kerja" class="hover:text-forest-emerald transition-colors">Cara Kerja</a>
-                    <a href="#dampak" class="hover:text-forest-emerald transition-colors">Dampak</a>
-                    <a href="{{ route('edukasi.index') }}" class="hover:text-forest-emerald transition-colors">Edukasi</a>
+                    <a href="#fitur" class="hover:text-emerald transition-colors">Fitur</a>
+                    <a href="#cara-kerja" class="hover:text-emerald transition-colors">Cara Kerja</a>
+                    <a href="#dampak" class="hover:text-emerald transition-colors">Dampak</a>
+                    <a href="{{ route('edukasi.index') }}" class="hover:text-emerald transition-colors">Edukasi</a>
                 </nav>
 
                 <div class="hidden lg:flex items-center gap-3">
                     @auth
-                        <a href="{{ route($dashRoute) }}" class="px-6 py-2.5 bg-gradient-to-r from-primary to-forest-emerald hover:shadow-lg hover:shadow-primary/20 text-white text-sm font-bold rounded-full transition-all">
+                        <a href="{{ route($dashRoute) }}" class="px-6 py-2.5 bg-gradient-to-r from-primary to-emerald hover:shadow-lg hover:shadow-primary/20 text-white text-sm font-bold rounded-full transition-all">
                             Dashboard Saya
                         </a>
                     @else
@@ -102,7 +102,7 @@
 
                 <div class="pt-3 border-t border-white/10 flex flex-col gap-2.5">
                     @auth
-                        <a href="{{ route($dashRoute) }}" class="block text-center py-3 bg-gradient-to-r from-primary to-forest-emerald text-white rounded-xl font-bold text-sm shadow-md">
+                        <a href="{{ route($dashRoute) }}" class="block text-center py-3 bg-gradient-to-r from-primary to-emerald text-white rounded-xl font-bold text-sm shadow-md">
                             Buka Dashboard Saya
                         </a>
                     @else
@@ -129,24 +129,24 @@
                 <div>
                     <div class="flex items-center gap-2.5 mb-4">
                         <img src="{{ asset('images/logo.png') }}" alt="SiSampah Logo" class="w-10 h-10 object-contain drop-shadow">
-                        <span class="text-xl font-bold text-white tracking-tight">SiSampah<span class="text-forest-emerald">.</span></span>
+                        <span class="text-xl font-bold text-white tracking-tight">SiSampah<span class="text-emerald">.</span></span>
                     </div>
                     <p class="text-white/60 text-xs sm:text-sm leading-relaxed mb-4">
                         Platform pintar pengelolaan bank sampah untuk menciptakan lingkungan yang lebih bersih, desa yang mandiri, dan menyejahterakan masyarakat.
                     </p>
                 </div>
                 <div>
-                    <h4 class="font-bold text-sm sm:text-base mb-4 text-forest-emerald uppercase tracking-wider">Fitur Unggulan</h4>
+                    <h4 class="font-bold text-sm sm:text-base mb-4 text-emerald uppercase tracking-wider">Fitur Unggulan</h4>
                     <ul class="space-y-2.5 text-xs sm:text-sm text-white/70">
-                        <li class="flex items-center gap-2"><span class="text-forest-emerald">✓</span> Klasifikasi Sampah AI</li>
-                        <li class="flex items-center gap-2"><span class="text-forest-emerald">✓</span> Manifes Penjemputan Otomatis</li>
-                        <li class="flex items-center gap-2"><span class="text-forest-emerald">✓</span> Dompet Digital (Poin)</li>
-                        <li class="flex items-center gap-2"><span class="text-forest-emerald">✓</span> Edukasi Ramah Lingkungan</li>
-                        <li class="flex items-center gap-2"><span class="text-forest-emerald">✓</span> Chatbot Pintar SiSampah</li>
+                        <li class="flex items-center gap-2"><span class="text-emerald">✓</span> Klasifikasi Sampah AI</li>
+                        <li class="flex items-center gap-2"><span class="text-emerald">✓</span> Manifes Penjemputan Otomatis</li>
+                        <li class="flex items-center gap-2"><span class="text-emerald">✓</span> Dompet Digital (Poin)</li>
+                        <li class="flex items-center gap-2"><span class="text-emerald">✓</span> Edukasi Ramah Lingkungan</li>
+                        <li class="flex items-center gap-2"><span class="text-emerald">✓</span> Chatbot Pintar SiSampah</li>
                     </ul>
                 </div>
                 <div>
-                    <h4 class="font-bold text-sm sm:text-base mb-4 text-forest-emerald uppercase tracking-wider">Teknologi Terapan</h4>
+                    <h4 class="font-bold text-sm sm:text-base mb-4 text-emerald uppercase tracking-wider">Teknologi Terapan</h4>
                     <ul class="space-y-2.5 text-xs sm:text-sm text-white/70">
                         <li>Laravel 11 & PHP 8.3</li>
                         <li>Tailwind CSS & Alpine.js</li>
@@ -156,17 +156,17 @@
                     </ul>
                 </div>
                 <div>
-                    <h4 class="font-bold text-sm sm:text-base mb-4 text-forest-emerald uppercase tracking-wider">Dikembangkan Oleh</h4>
+                    <h4 class="font-bold text-sm sm:text-base mb-4 text-emerald uppercase tracking-wider">Dikembangkan Oleh</h4>
                     <ul class="space-y-3 text-xs sm:text-sm text-white/70">
                         <li class="flex items-start gap-2.5">
-                            <svg class="w-5 h-5 flex-shrink-0 text-forest-emerald mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                            <svg class="w-5 h-5 flex-shrink-0 text-emerald mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
                             <div>
                                 <span class="block font-semibold text-white">Bodrex Developer</span>
                                 <span class="text-[11px] text-white/50">Walisongo Science Competition</span>
                             </div>
                         </li>
                         <li class="flex items-start gap-2.5">
-                            <svg class="w-5 h-5 flex-shrink-0 text-forest-emerald mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                            <svg class="w-5 h-5 flex-shrink-0 text-emerald mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
                             <span>Universitas Islam Negeri Walisongo (UIN Walisongo)</span>
                         </li>
                     </ul>
@@ -176,7 +176,7 @@
                 <p>&copy; {{ date('Y') }} Bodrex Developer. Semua hak cipta dilindungi.</p>
                 <div class="flex items-center gap-3">
                     <span class="px-2.5 py-1 bg-white/5 border border-white/10 rounded-lg text-white/70">V 1.0.0</span>
-                    <span class="px-2.5 py-1 bg-forest-emerald/20 text-forest-emerald font-bold rounded-lg border border-forest-emerald/30">Kompetisi Edition</span>
+                    <span class="px-2.5 py-1 bg-emerald/20 text-emerald font-bold rounded-lg border border-emerald/30">Kompetisi Edition</span>
                 </div>
             </div>
         </div>

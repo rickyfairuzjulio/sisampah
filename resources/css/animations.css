@@ -95,7 +95,7 @@ textarea:focus {
 
 /* Gradient Text */
 .gradient-text {
-    @apply bg-gradient-to-r from-primary to-forest-emerald bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-primary to-primary-dark bg-clip-text text-transparent;
 }
 
 /* Glass Effect */
@@ -110,16 +110,16 @@ textarea:focus {
 }
 
 ::-webkit-scrollbar-track {
-    @apply bg-surface-container rounded-full;
+    @apply bg-surface rounded-full;
 }
 
 ::-webkit-scrollbar-thumb {
-    @apply bg-outline rounded-full hover:bg-outline-variant;
+    @apply bg-border-color rounded-full hover:bg-hover-bg;
 }
 
 /* Loading Skeleton */
 .skeleton {
-    @apply animate-pulse bg-surface-container-high rounded-lg;
+    @apply animate-pulse bg-surface rounded-lg;
 }
 
 /* Responsive Typography */

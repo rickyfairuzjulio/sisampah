@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.dashboard')
 
 @section('content')
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -6,8 +6,6 @@
     @if(session('success'))
         <x-alert type="success" class="mb-6 animate-slide-in">{{ session('success') }}</x-alert>
     @endif
-
-    <x-role-nav role="admin" />
 
     <x-dashboard-hero
         title="Dashboard Admin"

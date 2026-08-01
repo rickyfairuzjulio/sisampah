@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 #[Fillable([
-    'nama', 'kode', 'kategori', 'jenis', 'gambar', 'harga_per_kg', 'harga_per_gram',
+    'bank_sampah_id', 'nama', 'kode', 'kategori', 'jenis', 'gambar', 'harga_per_kg', 'harga_per_gram',
     'satuan', 'kualitas', 'stok_dibutuhkan', 'status_harga', 'perubahan_persen',
     'deskripsi', 'manfaat', 'nilai_daur_ulang', 'tips_penyimpanan', 'tips_menjual',
     'is_archived',
@@ -31,6 +31,11 @@ class TrashCategory extends Model
     }
 
     // ─── Relationships ───
+
+    public function bankSampah()
+    {
+        return $this->belongsTo(BankSampah::class);
+    }
 
     public function transactions(): HasMany
     {

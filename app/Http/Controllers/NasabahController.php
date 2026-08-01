@@ -8,8 +8,11 @@ use App\Models\Leaderboard;
 use App\Models\Transaction;
 use App\Models\TrashCategory;
 use App\Models\Withdrawal;
+use App\Models\TopUp;
+use App\Core\Services\MidtransService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class NasabahController extends Controller
 {
@@ -135,13 +138,21 @@ class NasabahController extends Controller
             ->where('status', 'selesai')
             ->with('trashCategory')
             ->latest()
-            ->paginate(10);
+            ->paginate(10, ['*'], 'mutasi_page');
 
         $withdrawals = $user->withdrawals()
             ->latest()
-            ->paginate(10);
+            ->paginate(10, ['*'], 'withdrawals_page');
 
-        return view('nasabah.wallet', compact('saldo', 'mutasi', 'withdrawals'));
+        if (\Illuminate\Support\Facades\Schema::hasTable('topups')) {
+            $topups = $user->topups()
+                ->latest()
+                ->paginate(10, ['*'], 'topups_page');
+        } else {
+            $topups = new \Illuminate\Pagination\LengthAwarePaginator([], 0, 10, 1, ['pageName' => 'topups_page']);
+        }
+
+        return view('nasabah.wallet', compact('saldo', 'mutasi', 'withdrawals', 'topups'));
     }
 
     public function requestWithdrawal(StoreWithdrawalRequest $request)
@@ -239,5 +250,123 @@ class NasabahController extends Controller
         ]);
 
         return back()->with('success', 'Terima kasih atas ulasan Anda!');
+    }
+
+    public function showTopUpForm()
+    {
+        $user = auth()->user();
+        $recentTopups = $user->topups()->latest()->take(5)->get();
+
+        return view('nasabah.topup-form', compact('recentTopups'));
+    }
+
+    public function storeTopUp(Request $request, MidtransService $midtransService)
+    {
+        $validated = $request->validate([
+            'nominal' => 'required|numeric|min:10000|max:10000000',
+        ]);
+
+        $user = auth()->user();
+
+        // 1. Create a pending TopUp record
+        $topup = TopUp::create([
+            'user_id' => $user->id,
+            'nominal' => $validated['nominal'],
+            'status' => 'pending',
+        ]);
+
+        // 2. Call Midtrans Service to generate snap token
+        $midtransResult = $midtransService->getSnapToken($topup->id, $topup->nominal, $user);
+
+        if (!$midtransResult || !isset($midtransResult['token'])) {
+            $topup->delete();
+            return back()->with('error', 'Gagal menghubungkan ke payment gateway Midtrans. Silakan coba beberapa saat lagi.');
+        }
+
+        // 3. Save the token
+        $topup->update([
+            'snap_token' => $midtransResult['token'],
+        ]);
+
+        return response()->json([
+            'status' => 'success',
+            'token' => $topup->snap_token,
+            'redirect_url' => $midtransResult['redirect_url'],
+            'topup_id' => $topup->id,
+        ]);
+    }
+
+    public function checkTopUpStatus($id)
+    {
+        $topup = TopUp::where('id', $id)
+            ->where('user_id', auth()->id())
+            ->firstOrFail();
+
+        return response()->json([
+            'status' => $topup->status,
+            'nominal' => $topup->nominal,
+        ]);
+    }
+
+    public function midtransCallback(Request $request, MidtransService $midtransService)
+    {
+        $payload = $request->all();
+        
+        Log::info('Midtrans Webhook Received:', $payload);
+
+        $orderId = $payload['order_id'] ?? null;
+        $statusCode = $payload['status_code'] ?? null;
+        $grossAmount = $payload['gross_amount'] ?? null;
+        $signatureKey = $payload['signature_key'] ?? null;
+        $transactionStatus = $payload['transaction_status'] ?? null;
+        $paymentType = $payload['payment_type'] ?? null;
+
+        if (!$orderId || !$statusCode || !$grossAmount || !$signatureKey) {
+            Log::error('Midtrans Webhook: Invalid payload parameters.');
+            return response()->json(['message' => 'Invalid Payload'], 400);
+        }
+
+        // Verify Signature
+        if (!$midtransService->verifyCallbackSignature($orderId, $statusCode, $grossAmount, $signatureKey)) {
+            Log::error('Midtrans Webhook: Signature verification failed for Order ID: ' . $orderId);
+            return response()->json(['message' => 'Invalid Signature'], 403);
+        }
+
+        // Find the TopUp record
+        $topup = TopUp::find($orderId);
+        if (!$topup) {
+            Log::error('Midtrans Webhook: Top-Up transaction not found for Order ID: ' . $orderId);
+            return response()->json(['message' => 'Transaction not found'], 404);
+        }
+
+        // If transaction is already success, ignore it (Idempotency)
+        if ($topup->status === 'success') {
+            return response()->json(['message' => 'Transaction already processed']);
+        }
+
+        // Map status
+        $status = 'pending';
+        if ($transactionStatus === 'capture' || $transactionStatus === 'settlement') {
+            $status = 'success';
+        } elseif (in_array($transactionStatus, ['deny', 'cancel', 'expire'])) {
+            $status = 'failed';
+        }
+
+        DB::transaction(function () use ($topup, $status, $paymentType, $payload) {
+            $topup->update([
+                'status' => $status,
+                'payment_method' => $paymentType,
+                'payment_time' => now(),
+                'raw_response' => json_encode($payload),
+            ]);
+
+            if ($status === 'success') {
+                $user = $topup->user;
+                $user->increment('saldo', $topup->nominal);
+                Log::info("User ID {$user->id} ({$user->name}) balance topped up by Rp {$topup->nominal} via Midtrans.");
+            }
+        });
+
+        return response()->json(['message' => 'OK']);
     }
 }

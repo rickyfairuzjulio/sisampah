@@ -23,9 +23,10 @@
     <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intro.js/7.2.0/introjs.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     @stack('styles')
@@ -72,7 +73,7 @@
                             </p>
                         </div>
                         <div>
-                            <h4 class="font-bold text-lg mb-4 text-forest-emerald">Fitur Unggulan</h4>
+                            <h4 class="font-bold text-lg mb-4 text-emerald">Fitur Unggulan</h4>
                             <ul class="space-y-2 text-sm text-white/70">
                                 <li>Klasifikasi Sampah AI</li>
                                 <li>Manifes Penjemputan Otomatis</li>
@@ -82,7 +83,7 @@
                             </ul>
                         </div>
                         <div>
-                            <h4 class="font-bold text-lg mb-4 text-forest-emerald">Teknologi Terapan</h4>
+                            <h4 class="font-bold text-lg mb-4 text-emerald">Teknologi Terapan</h4>
                             <ul class="space-y-2 text-sm text-white/70">
                                 <li>Laravel 11 & PHP 8.2</li>
                                 <li>Tailwind CSS & Alpine.js</li>
@@ -92,7 +93,7 @@
                             </ul>
                         </div>
                         <div>
-                            <h4 class="font-bold text-lg mb-4 text-forest-emerald">Dikembangkan Oleh</h4>
+                            <h4 class="font-bold text-lg mb-4 text-emerald">Dikembangkan Oleh</h4>
                             <ul class="space-y-3 text-sm text-white/70">
                                 <li class="flex items-start gap-2">
                                     <svg class="w-5 h-5 flex-shrink-0 text-primary mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
@@ -144,7 +145,7 @@
                 text: "{{ session('welcome') }}",
                 icon: 'success',
                 confirmButtonText: 'Lanjut',
-                confirmButtonColor: '#059669', // forest-emerald
+                confirmButtonColor: '#059669', // emerald
                 background: document.documentElement.classList.contains('dark') ? '#1e293b' : '#ffffff',
                 color: document.documentElement.classList.contains('dark') ? '#f8fafc' : '#0f172a',
                 customClass: {

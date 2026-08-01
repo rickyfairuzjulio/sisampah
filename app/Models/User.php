@@ -11,7 +11,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 
-#[Fillable(['name', 'email', 'password', 'saldo', 'avatar', 'rt', 'rw', 'alamat_lengkap', 'nomor_telepon'])]
+#[Fillable(['name', 'email', 'password', 'saldo', 'avatar', 'rt', 'rw', 'alamat_lengkap', 'nomor_telepon', 'bank_sampah_id'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -24,6 +24,11 @@ class User extends Authenticatable
             'password' => 'hashed',
             'saldo' => 'decimal:2',
         ];
+    }
+
+    public function bankSampah()
+    {
+        return $this->belongsTo(BankSampah::class);
     }
 
     public function transactions(): HasMany
@@ -39,6 +44,11 @@ class User extends Authenticatable
     public function withdrawals(): HasMany
     {
         return $this->hasMany(Withdrawal::class);
+    }
+
+    public function topups(): HasMany
+    {
+        return $this->hasMany(TopUp::class);
     }
 
     public function leaderboard(): HasOne

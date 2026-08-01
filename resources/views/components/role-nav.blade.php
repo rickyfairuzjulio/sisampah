@@ -3,23 +3,25 @@
 @php
 $links = match($role) {
     'nasabah' => [
-        ['route' => 'nasabah.dashboard', 'label' => 'Dashboard', 'icon' => 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6', 'pattern' => 'nasabah.dashboard'],
-        ['route' => 'nasabah.prices.index', 'label' => 'Harga Sampah', 'icon' => 'M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z', 'pattern' => 'nasabah.prices.*'],
-        ['route' => 'nasabah.pickup.form', 'label' => 'Jemput Sampah', 'icon' => 'M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z M15 11a3 3 0 11-6 0 3 3 0 016 0z', 'pattern' => 'nasabah.pickup.*'],
-        ['route' => 'nasabah.wallet', 'label' => 'Dompet & Penarikan', 'icon' => 'M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z', 'pattern' => 'nasabah.wallet'],
-        ['route' => 'nasabah.edukasi', 'label' => 'Edukasi', 'icon' => 'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253', 'pattern' => 'nasabah.edukasi'],
+        ['route' => 'nasabah.dashboard', 'label' => 'Dashboard', 'bi' => 'bi-speedometer2', 'pattern' => 'nasabah.dashboard'],
+        ['route' => 'nasabah.prices.index', 'label' => 'Harga Sampah', 'bi' => 'bi-tags-fill', 'pattern' => 'nasabah.prices.*'],
+        ['route' => 'nasabah.pickup.form', 'label' => 'Jemput Sampah', 'bi' => 'bi-truck-front-fill', 'pattern' => 'nasabah.pickup.*'],
+        ['route' => 'nasabah.wallet', 'label' => 'Dompet & Penarikan', 'bi' => 'bi-wallet2', 'pattern' => 'nasabah.wallet'],
+        ['route' => 'nasabah.edukasi', 'label' => 'Edukasi', 'bi' => 'bi-book-fill', 'pattern' => 'nasabah.edukasi'],
     ],
     'petugas' => [
-        ['route' => 'petugas.dashboard', 'label' => 'Manifes Jemput', 'icon' => 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2', 'pattern' => 'petugas.dashboard'],
-        ['route' => 'petugas.self_deposit.form', 'label' => 'Setor Mandiri', 'icon' => 'M12 4v16m8-8H4', 'pattern' => 'petugas.self_deposit.*'],
+        ['route' => 'petugas.dashboard', 'label' => 'Manifes Jemput', 'bi' => 'bi-clipboard-check-fill', 'pattern' => 'petugas.dashboard'],
+        ['route' => 'petugas.self_deposit.form', 'label' => 'Setor Mandiri', 'bi' => 'bi-box-arrow-in-down', 'pattern' => 'petugas.self_deposit.*'],
     ],
     'admin' => [
-        ['route' => 'admin.dashboard', 'label' => 'Dashboard', 'icon' => 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6', 'pattern' => 'admin.dashboard'],
-        ['route' => 'admin.users.index', 'label' => 'Pengguna', 'icon' => 'M12 4.354a4 4 0 110 5.292M15 21H3v-2a6 6 0 0112 0v2zm0 0h6v-2a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z', 'pattern' => 'admin.users.*'],
-        ['route' => 'admin.trash_price.index', 'label' => 'Harga Sampah', 'icon' => 'M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z', 'pattern' => 'admin.trash_price.*'],
-        ['route' => 'admin.finance.validate', 'label' => 'Validasi Keuangan', 'icon' => 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z', 'pattern' => 'admin.finance.*'],
-        ['route' => 'admin.reports', 'label' => 'Laporan', 'icon' => 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z', 'pattern' => 'admin.reports*'],
-        ['route' => 'admin.articles.index', 'label' => 'Artikel Edukasi', 'icon' => 'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253', 'pattern' => 'admin.articles.*'],
+        ['route' => 'admin.dashboard', 'label' => 'Dashboard', 'bi' => 'bi-speedometer2', 'pattern' => 'admin.dashboard'],
+        ['route' => 'admin.master_bank_sampah.index', 'label' => 'Master Bank Sampah', 'bi' => 'bi-buildings-fill', 'pattern' => 'admin.master_bank_sampah.*'],
+        ['route' => 'admin.peta_sebaran', 'label' => 'Peta Sebaran (GIS)', 'bi' => 'bi-geo-alt-fill', 'pattern' => 'admin.peta_sebaran'],
+        ['route' => 'admin.users.index', 'label' => 'Pengguna', 'bi' => 'bi-people-fill', 'pattern' => 'admin.users.*'],
+        ['route' => 'admin.trash_price.index', 'label' => 'Harga Sampah', 'bi' => 'bi-tags-fill', 'pattern' => 'admin.trash_price.*'],
+        ['route' => 'admin.finance.validate', 'label' => 'Validasi Keuangan', 'bi' => 'bi-shield-check', 'pattern' => 'admin.finance.*'],
+        ['route' => 'admin.reports', 'label' => 'Laporan', 'bi' => 'bi-bar-chart-line-fill', 'pattern' => 'admin.reports*'],
+        ['route' => 'admin.articles.index', 'label' => 'Artikel Edukasi', 'bi' => 'bi-journal-text', 'pattern' => 'admin.articles.*'],
     ],
     default => [],
 };
@@ -30,14 +32,20 @@ $links = match($role) {
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
-    <div class="flex gap-2 min-w-max pb-1">
+    <div class="flex gap-2.5 min-w-max pb-1">
         @foreach($links as $link)
             <a href="{{ route($link['route']) }}"
-               class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all
-                      {{ request()->routeIs($link['pattern']) ? 'bg-primary text-white shadow-sm' : 'bg-surface-container-low text-on-surface-variant hover:bg-surface-container hover:text-on-surface border border-outline-variant' }}">
-                <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $link['icon'] }}"/>
-                </svg>
+               class="inline-flex items-center gap-2 px-4.5 py-2.5 rounded-[14px] text-xs font-extrabold transition-all duration-200 shadow-xs
+                      {{ request()->routeIs($link['pattern']) 
+                         ? 'bg-gradient-to-r from-[#22C55E] to-[#14B8A6] text-white shadow-[0_4px_20px_rgba(34,197,94,0.35)]' 
+                         : 'bg-white dark:bg-[#0F172A] text-[#64748B] dark:text-[#CBD5E1] hover:bg-slate-50 dark:hover:bg-[#1E293B] hover:text-[#0F172A] border border-[#E2E8F0] dark:border-[#334155]' }}">
+                @if(!empty($link['bi']))
+                    <i class="bi {{ $link['bi'] }} text-sm"></i>
+                @elseif(!empty($link['icon']))
+                    <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $link['icon'] }}"/>
+                    </svg>
+                @endif
                 {{ $link['label'] }}
             </a>
         @endforeach

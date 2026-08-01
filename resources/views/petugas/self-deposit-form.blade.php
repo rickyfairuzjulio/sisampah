@@ -1,7 +1,7 @@
 <x-app-layout title="Input Setoran Mandiri">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
 
-        <x-role-nav role="petugas" />
+
 
         <!-- Main Form Grid -->
         <form action="{{ route('petugas.self_deposit.store') }}" method="POST" enctype="multipart/form-data" 

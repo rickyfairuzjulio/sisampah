@@ -13,7 +13,7 @@
 {{-- ═══════════════ HERO ═══════════════ --}}
 <section class="relative min-h-[100dvh] flex items-center overflow-hidden">
     <div class="landing-blob w-[500px] h-[500px] bg-primary/30 -top-32 -left-32"></div>
-    <div class="landing-blob w-[400px] h-[400px] bg-forest-emerald/20 top-1/2 right-0 animation-delay-2000" style="animation-delay: 2s"></div>
+    <div class="landing-blob w-[400px] h-[400px] bg-emerald/20 top-1/2 right-0 animation-delay-2000" style="animation-delay: 2s"></div>
     <div class="landing-blob w-[300px] h-[300px] bg-amber-500/10 bottom-0 left-1/3" style="animation-delay: 4s"></div>
 
     <div class="absolute inset-0 opacity-[0.04]" style="background-image: url('/images/auth-bg-pattern.svg'); background-size: cover;"></div>
@@ -22,13 +22,13 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
             <div class="text-center lg:text-left">
                 <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/20 text-xs sm:text-sm font-medium text-white/90 mb-6 lg:mb-8">
-                    <span class="w-2 h-2 bg-forest-emerald rounded-full animate-pulse"></span>
+                    <span class="w-2 h-2 bg-emerald rounded-full animate-pulse"></span>
                     Bank Sampah Digital #1 untuk Desa
                 </div>
 
                 <h1 class="landing-hero-title font-black mb-6">
                     Sampah Jadi
-                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-forest-emerald to-emerald-300"> Berkah</span>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald to-emerald-300"> Berkah</span>
                 </h1>
 
                 <p class="text-base sm:text-lg text-white/60 leading-relaxed max-w-xl mx-auto lg:mx-0 mb-8 lg:mb-10">
@@ -54,11 +54,11 @@
 
                 <div class="flex flex-wrap items-center justify-center lg:justify-start gap-6 mt-10 text-sm text-white/50">
                     <span class="flex items-center gap-2">
-                        <svg class="w-5 h-5 text-forest-emerald" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+                        <svg class="w-5 h-5 text-emerald" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
                         Gratis untuk nasabah
                     </span>
                     <span class="flex items-center gap-2">
-                        <svg class="w-5 h-5 text-forest-emerald" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+                        <svg class="w-5 h-5 text-emerald" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
                         Jemput via GPS
                     </span>
                 </div>
@@ -67,7 +67,7 @@
             {{-- Hero Card Mockup --}}
             <div class="relative flex justify-center lg:justify-end">
                 <div class="relative w-full max-w-sm lg:max-w-md">
-                    <div class="absolute -inset-4 bg-gradient-to-br from-primary/40 to-forest-emerald/20 rounded-3xl blur-2xl"></div>
+                    <div class="absolute -inset-4 bg-gradient-to-br from-primary/40 to-emerald/20 rounded-3xl blur-2xl"></div>
                     <div class="relative landing-card !bg-[#0a1f17]/80 !p-6 sm:!p-8 shadow-2xl">
                         <div class="flex items-center justify-between mb-6">
                             <div>
@@ -75,7 +75,7 @@
                                 <p class="text-2xl sm:text-3xl font-bold mt-1">Rp 245.000</p>
                             </div>
                             <div class="w-12 h-12 bg-primary/20 rounded-2xl flex items-center justify-center">
-                                <svg class="w-6 h-6 text-forest-emerald" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                <svg class="w-6 h-6 text-emerald" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                             </div>
                         </div>
                         <div class="space-y-3">
@@ -88,13 +88,13 @@
                                             <p class="text-xs text-white/40">{{ $berat }}</p>
                                         </div>
                                     </div>
-                                    <span class="text-sm font-bold text-forest-emerald">{{ $nominal }}</span>
+                                    <span class="text-sm font-bold text-emerald">{{ $nominal }}</span>
                                 </div>
                             @endforeach
                         </div>
                         <div class="mt-6 pt-4 border-t border-white/10 flex items-center justify-between">
                             <span class="text-xs text-white/40">+120 poin lingkungan</span>
-                            <span class="text-xs font-semibold text-forest-emerald">Naik peringkat #3</span>
+                            <span class="text-xs font-semibold text-emerald">Naik peringkat #3</span>
                         </div>
                     </div>
                 </div>
@@ -108,7 +108,7 @@
     <div class="landing-marquee">
         @foreach(array_merge(['Plastik', 'Kertas', 'Kardus', 'Logam', 'Kaca', 'Organik', 'E-Waste', 'Botol PET'], ['Plastik', 'Kertas', 'Kardus', 'Logam', 'Kaca', 'Organik', 'E-Waste', 'Botol PET']) as $kategori)
             <span class="flex items-center gap-3 px-6 text-sm font-semibold text-white/40 whitespace-nowrap">
-                <span class="w-1.5 h-1.5 rounded-full bg-forest-emerald"></span>
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald"></span>
                 {{ $kategori }}
             </span>
         @endforeach
@@ -121,22 +121,22 @@
          :class="shown ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'"
          class="transition-all duration-1000 ease-out opacity-0 translate-y-8">
         <div class="text-center max-w-2xl mx-auto mb-12 lg:mb-16">
-            <p class="text-forest-emerald text-sm font-semibold uppercase tracking-widest mb-3">Fitur Lengkap</p>
+            <p class="text-emerald text-sm font-semibold uppercase tracking-widest mb-3">Fitur Lengkap</p>
             <h2 class="landing-section-title font-bold mb-4">Satu Platform, Tiga Peran</h2>
             <p class="text-white/50 text-base sm:text-lg">Dirancang khusus untuk ekosistem bank sampah desa — dari setoran hingga laporan admin.</p>
         </div>
 
         <div class="landing-bento">
             <div class="landing-card landing-bento-item-lg group">
-                <div class="absolute top-0 right-0 w-32 h-32 bg-forest-emerald/10 rounded-full blur-3xl group-hover:bg-forest-emerald/20 transition-colors"></div>
-                <span class="inline-block px-3 py-1 text-xs font-bold bg-forest-emerald/20 text-forest-emerald rounded-full mb-4">Nasabah</span>
+                <div class="absolute top-0 right-0 w-32 h-32 bg-emerald/10 rounded-full blur-3xl group-hover:bg-emerald/20 transition-colors"></div>
+                <span class="inline-block px-3 py-1 text-xs font-bold bg-emerald/20 text-emerald rounded-full mb-4">Nasabah</span>
                 <h3 class="text-xl lg:text-2xl font-bold mb-3">Setor, Pantau, Tarik</h3>
                 <p class="text-white/50 text-sm leading-relaxed mb-6">Dashboard saldo real-time, jadwal jemput dengan GPS, riwayat transaksi, penarikan tunai/transfer, dan papan peringkat komunitas.</p>
                 <ul class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-white/60">
-                    <li class="flex items-center gap-2"><span class="text-forest-emerald">✓</span> Penjemputan GPS</li>
-                    <li class="flex items-center gap-2"><span class="text-forest-emerald">✓</span> Dompet digital</li>
-                    <li class="flex items-center gap-2"><span class="text-forest-emerald">✓</span> Sistem poin</li>
-                    <li class="flex items-center gap-2"><span class="text-forest-emerald">✓</span> Edukasi daur ulang</li>
+                    <li class="flex items-center gap-2"><span class="text-emerald">✓</span> Penjemputan GPS</li>
+                    <li class="flex items-center gap-2"><span class="text-emerald">✓</span> Dompet digital</li>
+                    <li class="flex items-center gap-2"><span class="text-emerald">✓</span> Sistem poin</li>
+                    <li class="flex items-center gap-2"><span class="text-emerald">✓</span> Edukasi daur ulang</li>
                 </ul>
             </div>
 

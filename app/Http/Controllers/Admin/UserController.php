@@ -13,7 +13,7 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-        $query = User::query();
+        $query = User::with('bankSampah');
 
         if ($request->has('role') && $request->role != 'all') {
             $query->role($request->role);
@@ -21,6 +21,10 @@ class UserController extends Controller
             $query->whereHas('roles', function($q) {
                 $q->whereIn('name', ['nasabah', 'petugas']);
             });
+        }
+
+        if ($request->filled('bank_sampah_id')) {
+            $query->where('bank_sampah_id', $request->bank_sampah_id);
         }
 
         if ($request->has('search')) {
@@ -31,13 +35,15 @@ class UserController extends Controller
         }
 
         $users = $query->latest()->paginate(15);
+        $bankSampahs = \App\Models\BankSampah::all();
 
-        return view('admin.users.index', compact('users'));
+        return view('admin.users.index', compact('users', 'bankSampahs'));
     }
 
     public function create()
     {
-        return view('admin.users.create');
+        $bankSampahs = \App\Models\BankSampah::all();
+        return view('admin.users.create', compact('bankSampahs'));
     }
 
     public function store(Request $request)
@@ -47,12 +53,14 @@ class UserController extends Controller
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8',
             'role' => 'required|in:nasabah,petugas',
+            'bank_sampah_id' => 'nullable|exists:bank_sampahs,id',
         ]);
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => \Hash::make($request->password),
+            'bank_sampah_id' => $request->bank_sampah_id ?: \App\Models\BankSampah::first()?->id,
         ]);
 
         $user->assignRole($request->role);
@@ -68,7 +76,8 @@ class UserController extends Controller
     public function edit(string $id)
     {
         $user = User::findOrFail($id);
-        return view('admin.users.edit', compact('user'));
+        $bankSampahs = \App\Models\BankSampah::all();
+        return view('admin.users.edit', compact('user', 'bankSampahs'));
     }
 
     public function update(Request $request, string $id)
@@ -80,10 +89,12 @@ class UserController extends Controller
             'email' => 'required|string|email|max:255|unique:users,email,'.$user->id,
             'password' => 'nullable|string|min:8',
             'role' => 'required|in:nasabah,petugas',
+            'bank_sampah_id' => 'nullable|exists:bank_sampahs,id',
         ]);
 
         $user->name = $request->name;
         $user->email = $request->email;
+        $user->bank_sampah_id = $request->bank_sampah_id;
         if ($request->filled('password')) {
             $user->password = \Hash::make($request->password);
         }

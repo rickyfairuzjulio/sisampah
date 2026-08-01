@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.dashboard')
 
 @section('content')
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8" x-data="{ activeTab: 'pending', approveId: null, rejectId: null }">
@@ -21,16 +21,46 @@
         </div>
     @endif
 
-    <x-role-nav role="admin" />
 
-    <div class="mb-8 animate-fade-in">
-        <div class="bg-gradient-to-r from-primary to-forest-emerald rounded-2xl p-6 shadow-lg text-white">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div>
-                    <h1 class="text-2xl sm:text-3xl font-bold mb-1">Validasi Penarikan Dana</h1>
-                    <p class="text-white/80 text-sm">Proses permintaan pencairan saldo nasabah ke rekening/e-wallet mereka.</p>
-                </div>
+
+    <!-- Treasury Kas Header Card -->
+    <div class="card card-body bg-gradient-to-r from-primary/10 via-surface to-background border border-primary/20 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+        <div class="flex items-center gap-4">
+            <div class="w-14 h-14 bg-primary/10 border border-primary/30 rounded-2xl flex items-center justify-center text-primary text-2xl shrink-0 shadow-soft">
+                <i class="bi bi-wallet2"></i>
             </div>
+            <div>
+                <p class="text-xs font-bold uppercase tracking-wider text-text-muted">Kas Utama Bank Sampah Pusat</p>
+                <h1 class="text-2xl sm:text-3xl font-black text-text-primary mt-0.5 tracking-tight">
+                    Rp {{ number_format($saldoKasPusat ?? 50000000, 0, ',', '.') }}
+                </h1>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-3">
+            <button @click="$dispatch('open-modal', 'topup-kas-modal')" class="btn btn-primary !py-2.5 !px-5 text-xs flex items-center gap-2 shadow-soft">
+                <i class="bi bi-plus-circle-fill text-sm"></i> Isi Saldo Kas Pusat
+            </button>
+        </div>
+    </div>
+
+    <!-- Financial Metrics Bar -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+        <div class="card card-body">
+            <p class="text-xs font-bold text-text-muted uppercase tracking-wider mb-1">Kas Bank Sampah</p>
+            <p class="text-xl font-extrabold text-primary">Rp {{ number_format($saldoKasPusat ?? 50000000, 0, ',', '.') }}</p>
+        </div>
+        <div class="card card-body">
+            <p class="text-xs font-bold text-text-muted uppercase tracking-wider mb-1">Saldo Nasabah</p>
+            <p class="text-xl font-extrabold text-text-primary">Rp {{ number_format($totalSaldoNasabah ?? 0, 0, ',', '.') }}</p>
+        </div>
+        <div class="card card-body">
+            <p class="text-xs font-bold text-text-muted uppercase tracking-wider mb-1">Setoran Selesai</p>
+            <p class="text-xl font-extrabold text-primary">Rp {{ number_format($totalSetoran ?? 0, 0, ',', '.') }}</p>
+        </div>
+        <div class="card card-body">
+            <p class="text-xs font-bold text-text-muted uppercase tracking-wider mb-1">Pencairan Disetujui</p>
+            <p class="text-xl font-extrabold text-danger">Rp {{ number_format($totalDisetujui ?? 0, 0, ',', '.') }}</p>
         </div>
     </div>
 
@@ -96,13 +126,20 @@
                                 </div>
                                 @endif
                             </td>
-                            <td class="p-5 text-right space-x-2">
-                                <button @click="approveId = '{{ $item->id }}'; $dispatch('open-modal', 'approve-modal')" class="px-3.5 py-2 bg-green-500 hover:bg-green-600 hover:shadow-md hover:-translate-y-0.5 text-white text-xs font-bold rounded-xl transition-all inline-flex items-center gap-1.5">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                            <td class="p-5 text-right space-x-2 flex items-center justify-end gap-1.5">
+                                <form action="{{ route('admin.finance.approve_gateway', $item->id) }}" method="POST" class="inline">
+                                    @csrf
+                                    <button type="submit" class="px-3 py-2 bg-blue-600 hover:bg-blue-700 hover:shadow-md hover:-translate-y-0.5 text-white text-xs font-bold rounded-xl transition-all inline-flex items-center gap-1" onclick="confirmGatewayPayment(event, this.form, '{{ addslashes($item->user->name) }}', '{{ number_format($item->nominal, 0, ',', '.') }}')">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                                        Bayar Instan
+                                    </button>
+                                </form>
+                                <button @click="approveId = '{{ $item->id }}'; $dispatch('open-modal', 'approve-modal')" class="px-3 py-2 bg-green-500 hover:bg-green-600 hover:shadow-md hover:-translate-y-0.5 text-white text-xs font-bold rounded-xl transition-all inline-flex items-center gap-1">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
                                     Setujui
                                 </button>
-                                <button @click="rejectId = '{{ $item->id }}'; $dispatch('open-modal', 'reject-modal')" class="px-3.5 py-2 bg-red-50 hover:bg-red-100 border border-red-200 hover:border-red-300 text-red-700 hover:shadow-sm text-xs font-bold rounded-xl transition-all inline-flex items-center gap-1.5">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                <button @click="rejectId = '{{ $item->id }}'; $dispatch('open-modal', 'reject-modal')" class="px-3 py-2 bg-red-50 hover:bg-red-100 border border-red-200 hover:border-red-300 text-red-700 hover:shadow-sm text-xs font-bold rounded-xl transition-all inline-flex items-center gap-1">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                                     Tolak
                                 </button>
                             </td>
@@ -151,15 +188,24 @@
                             <span class="text-base font-extrabold text-green-600">Rp {{ number_format($item->nominal, 0, ',', '.') }}</span>
                         </div>
 
-                        <div class="grid grid-cols-2 gap-2">
-                            <button @click="rejectId = '{{ $item->id }}'; $dispatch('open-modal', 'reject-modal')" class="py-2 bg-red-50 hover:bg-red-100 border border-red-200 text-red-700 text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 transition-all">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                                Tolak
-                            </button>
-                            <button @click="approveId = '{{ $item->id }}'; $dispatch('open-modal', 'approve-modal')" class="py-2 bg-green-500 hover:bg-green-600 text-white text-xs font-bold rounded-xl shadow-md flex items-center justify-center gap-1.5 transition-all">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                                Setujui
-                            </button>
+                        <div class="space-y-2">
+                            <form action="{{ route('admin.finance.approve_gateway', $item->id) }}" method="POST" class="w-full">
+                                @csrf
+                                <button type="submit" class="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl shadow-sm flex items-center justify-center gap-1.5 transition-all" onclick="confirmGatewayPayment(event, this.form, '{{ addslashes($item->user->name) }}', '{{ number_format($item->nominal, 0, ',', '.') }}')">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                                    Bayar Instan (Gateway)
+                                </button>
+                            </form>
+                            <div class="grid grid-cols-2 gap-2">
+                                <button @click="rejectId = '{{ $item->id }}'; $dispatch('open-modal', 'reject-modal')" class="py-2 bg-red-50 hover:bg-red-100 border border-red-200 text-red-700 text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 transition-all">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                    Tolak
+                                </button>
+                                <button @click="approveId = '{{ $item->id }}'; $dispatch('open-modal', 'approve-modal')" class="py-2 bg-green-500 hover:bg-green-600 text-white text-xs font-bold rounded-xl shadow-md flex items-center justify-center gap-1.5 transition-all">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                    Setujui (Resi)
+                                </button>
+                            </div>
                         </div>
                     </div>
                 @empty
@@ -340,5 +386,77 @@
         </div>
     </x-modal>
 
+    <!-- Topup Kas Modal -->
+    <x-modal name="topup-kas-modal" maxWidth="md">
+        <div class="p-6">
+            <div class="flex items-center gap-3 mb-4">
+                <div class="w-10 h-10 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary text-xl shrink-0">
+                    <i class="bi bi-plus-circle-fill"></i>
+                </div>
+                <div>
+                    <h2 class="text-lg font-bold text-text-primary">Isi Saldo Kas Utama</h2>
+                    <p class="text-xs text-text-secondary">Tambah dana cadangan kas Bank Sampah Pusat</p>
+                </div>
+            </div>
+
+            <form action="{{ route('admin.finance.topup_kas') }}" method="POST" class="space-y-4">
+                @csrf
+                <div>
+                    <label class="block text-xs font-bold text-text-secondary uppercase tracking-wide mb-1.5">Nominal Top Up Kas (Rp) <span class="text-danger">*</span></label>
+                    <input type="number" name="nominal" required min="10000" step="10000" value="10000000" placeholder="Contoh: 10000000" class="form-input text-sm font-bold">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-text-secondary uppercase tracking-wide mb-1.5">Sumber Dana / Asal Kas <span class="text-danger">*</span></label>
+                    <select name="sumber_dana" required class="form-select text-xs">
+                        <option value="Kas Pemdes & Anggaran Desa">Kas Pemdes & Anggaran Desa</option>
+                        <option value="Hasil Penjualan Daur Ulang ke Pabrik">Hasil Penjualan Daur Ulang ke Pabrik</option>
+                        <option value="Hibah / Dana CSR Mitra Lingkungan">Hibah / Dana CSR Mitra Lingkungan</option>
+                        <option value="Setoran Modal Awal Pengurus Bank Sampah">Setoran Modal Awal Pengurus Bank Sampah</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-text-secondary uppercase tracking-wide mb-1.5">Catatan Tambahan (Opsional)</label>
+                    <textarea name="catatan" rows="2" class="form-input text-xs" placeholder="Tuliskan catatan transaksi kas..."></textarea>
+                </div>
+
+                <div class="flex justify-end gap-3 pt-4 border-t border-border-color">
+                    <button type="button" @click="$dispatch('close-modal', 'topup-kas-modal')" class="btn btn-secondary text-xs">
+                        Batal
+                    </button>
+                    <button type="submit" class="btn btn-primary text-xs !py-2.5 !px-5 shadow-soft">
+                        <i class="bi bi-[#2DD67B] bi-check-circle-fill"></i> Tambah Saldo Kas
+                    </button>
+                </div>
+            </form>
+        </div>
+    </x-modal>
+
 </div>
+
+@push('scripts')
+<script>
+    function confirmGatewayPayment(e, form, name, nominal) {
+        e.preventDefault();
+        Swal.fire({
+            title: 'Konfirmasi Pembayaran Instan',
+            html: `Apakah Anda yakin ingin memproses pencairan dana sebesar <b>Rp ${nominal}</b> untuk <b>${name}</b> via Payment Gateway?`,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Ya, Bayar Sekarang',
+            cancelButtonText: 'Batal',
+            confirmButtonColor: '#2563eb',
+            cancelButtonColor: '#64748b',
+            background: document.documentElement.classList.contains('dark') ? '#0A241B' : '#ffffff',
+            color: document.documentElement.classList.contains('dark') ? '#ffffff' : '#0F172A',
+            customClass: { popup: 'rounded-[20px]', confirmButton: 'rounded-xl px-6 py-2.5 font-bold', cancelButton: 'rounded-xl px-6 py-2.5 font-bold' }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                form.submit();
+            }
+        });
+    }
+</script>
+@endpush
 @endsection

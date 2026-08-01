@@ -6,6 +6,7 @@ use App\Models\Leaderboard;
 use App\Models\Transaction;
 use App\Models\User;
 use App\Models\Withdrawal;
+use App\Core\Services\MidtransService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -67,7 +68,37 @@ class AdminController extends Controller
             ->take(10)
             ->get();
 
-        return view('admin.finance.validate', compact('withdrawals', 'approved'));
+        // Financial Treasury Metrics
+        $totalSaldoNasabah = User::role('nasabah')->sum('saldo');
+        $totalSetoran = Transaction::where('status', 'selesai')->sum('total_rp');
+        $totalDisetujui = Withdrawal::where('status', 'disetujui')->sum('nominal');
+        $kasTambahan = Cache::get('kas_tambahan_pusat', 50000000);
+        
+        $saldoKasPusat = $kasTambahan + $totalSetoran - $totalDisetujui;
+
+        return view('admin.finance.validate', compact(
+            'withdrawals',
+            'approved',
+            'saldoKasPusat',
+            'totalSaldoNasabah',
+            'totalSetoran',
+            'totalDisetujui'
+        ));
+    }
+
+    public function topupKas(Request $request)
+    {
+        $validated = $request->validate([
+            'nominal' => 'required|numeric|min:10000',
+            'sumber_dana' => 'required|string|max:255',
+            'catatan' => 'nullable|string|max:500',
+        ]);
+
+        $currentKas = Cache::get('kas_tambahan_pusat', 50000000);
+        Cache::put('kas_tambahan_pusat', $currentKas + $validated['nominal'], 86400 * 365);
+
+        return redirect()->route('admin.finance.validate')
+            ->with('success', 'Berhasil menambahkan Kas Utama Bank Sampah Pusat sebesar Rp ' . number_format($validated['nominal'], 0, ',', '.'));
     }
 
     public function approveWithdrawal(Request $request, $id)
@@ -89,6 +120,34 @@ class AdminController extends Controller
 
         return redirect()->route('admin.finance.validate')
             ->with('success', 'Pengajuan penarikan dana berhasil disetujui.');
+    }
+
+    public function approveWithdrawalWithGateway(Request $request, $id, MidtransService $midtransService)
+    {
+        $withdrawal = Withdrawal::findOrFail($id);
+
+        if ($withdrawal->status !== 'pending') {
+            return redirect()->route('admin.finance.validate')
+                ->with('error', 'Pengajuan penarikan ini sudah diproses.');
+        }
+
+        DB::transaction(function () use ($withdrawal, $midtransService) {
+            // Trigger simulated disbursement
+            $payoutResult = $midtransService->simulateDisbursement(
+                $withdrawal->id,
+                (float) $withdrawal->nominal,
+                $withdrawal->metode,
+                $withdrawal->rekening_tujuan ?? 'TUNAI'
+            );
+
+            // Record transaction details in admin notes
+            $withdrawal->status = 'disetujui';
+            $withdrawal->catatan_admin = "Diproses otomatis via Gateway. Ref: {$payoutResult['reference_no']}, ID: {$payoutResult['transaction_id']}";
+            $withdrawal->save();
+        });
+
+        return redirect()->route('admin.finance.validate')
+            ->with('success', 'Pengajuan penarikan dana berhasil dicairkan secara instan via Payment Gateway.');
     }
 
     public function rejectWithdrawal(Request $request, $id)

@@ -141,9 +141,25 @@
     <script>
         document.addEventListener('alpine:init', () => {
             Alpine.data('pickupForm', () => ({
-                items: [
-                    { id: Date.now(), trash_category_id: '', perkiraan_berat: '' }
-                ],
+                items: [],
+                init() {
+                    const savedBasket = window.sessionStorage.getItem('sisampah_pickup_basket');
+                    if (savedBasket) {
+                        try {
+                            const parsed = JSON.parse(savedBasket);
+                            if (Array.isArray(parsed) && parsed.length > 0) {
+                                this.items = parsed.map(item => ({
+                                    id: Date.now() + Math.random(),
+                                    trash_category_id: item.trash_category_id || item.category_id || '',
+                                    perkiraan_berat: item.perkiraan_berat || item.estimasi_berat_kg || 1.0
+                                }));
+                                window.sessionStorage.removeItem('sisampah_pickup_basket');
+                                return;
+                            }
+                        } catch(e) { console.error('Error loading basket:', e); }
+                    }
+                    this.items = [{ id: Date.now(), trash_category_id: '', perkiraan_berat: '' }];
+                },
                 addItem() {
                     this.items.push({ id: Date.now(), trash_category_id: '', perkiraan_berat: '' });
                 },

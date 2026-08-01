@@ -8,6 +8,9 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
+// Public webhook route for Midtrans payment notifications
+Route::post('/v1/midtrans/callback', [App\Http\Controllers\NasabahController::class, 'midtransCallback']);
+
 Route::prefix('v1')->middleware('auth:sanctum')->group(function () {
 
     // Price Management API endpoints

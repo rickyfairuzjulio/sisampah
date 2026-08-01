@@ -10,18 +10,18 @@ class RoleAndPermissionSeeder extends Seeder
 {
     public function run(): void
     {
-        Role::create(['name' => 'admin']);
-        Role::create(['name' => 'petugas']);
-        Role::create(['name' => 'nasabah']);
+        Role::firstOrCreate(['name' => 'admin']);
+        Role::firstOrCreate(['name' => 'petugas']);
+        Role::firstOrCreate(['name' => 'nasabah']);
 
-        Permission::create(['name' => 'view_dashboard']);
-        Permission::create(['name' => 'manage_harga']);
-        Permission::create(['name' => 'manage_users']);
-        Permission::create(['name' => 'manage_articles']);
-        Permission::create(['name' => 'validate_withdrawal']);
-        Permission::create(['name' => 'input_timbangan']);
-        Permission::create(['name' => 'view_saldo']);
-        Permission::create(['name' => 'request_withdrawal']);
+        Permission::firstOrCreate(['name' => 'view_dashboard']);
+        Permission::firstOrCreate(['name' => 'manage_harga']);
+        Permission::firstOrCreate(['name' => 'manage_users']);
+        Permission::firstOrCreate(['name' => 'manage_articles']);
+        Permission::firstOrCreate(['name' => 'validate_withdrawal']);
+        Permission::firstOrCreate(['name' => 'input_timbangan']);
+        Permission::firstOrCreate(['name' => 'view_saldo']);
+        Permission::firstOrCreate(['name' => 'request_withdrawal']);
 
         $adminRole = Role::findByName('admin');
         $adminRole->givePermissionTo(Permission::all());

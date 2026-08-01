@@ -4,117 +4,198 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <link rel="icon" href="{{ asset('images/logo.png') }}" type="image/png">
 
-    <title>{{ config('app.name', 'SiSampah') }}</title>
+    <title>{{ config('app.name', 'SiSampah') }} - Dashboard</title>
 
     <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=inter:400,600,700&display=swap" rel="stylesheet" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 
-    <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    @stack('styles')
+    
+    <script>
+        // On page load or when changing themes, best to add inline in `head` to avoid FOUC
+        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
 </head>
-<body class="font-sans antialiased bg-surface text-on-surface">
-    <div class="flex h-screen overflow-hidden bg-surface-dim">
+<body class="font-sans antialiased bg-background text-text-primary overflow-hidden transition-colors duration-300">
+    
+    <div class="flex h-screen w-full bg-background" x-data="{ sidebarOpen: false }">
         
-        <!-- Sidebar -->
-        <aside class="w-64 bg-primary text-on-primary flex flex-col justify-between hidden md:flex shrink-0 shadow-xl z-20">
-            <div>
-                <!-- Logo -->
-                <div class="h-20 flex items-center px-6">
-                    <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center text-primary font-bold">
-                            <!-- Placeholder icon -->
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-                        </div>
-                        <div>
-                            <h2 class="text-lg font-bold leading-tight">SiSampah Desa</h2>
-                            <p class="text-[10px] text-on-primary-container leading-tight">Bersih Desa, Sejahtera Bersama</p>
-                        </div>
-                    </div>
-                </div>
+        <!-- Desktop Sidebar -->
+        <div class="hidden lg:block h-full">
+            @include('layouts.sidebar')
+        </div>
 
-                <!-- Navigation Links -->
-                <nav class="mt-4 px-4 space-y-1">
-                    <p class="px-2 text-xs font-semibold text-primary-fixed-dim uppercase tracking-wider mb-2">Menu Utama</p>
-                    
-                    <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-full bg-primary-container text-white shadow-sm transition">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
-                        <span class="font-semibold text-sm">Beranda</span>
-                    </a>
-                    <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-full text-primary-fixed-dim hover:bg-primary-container hover:text-white transition">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
-                        <span class="font-semibold text-sm">Edukasi</span>
-                    </a>
-                    <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-full text-primary-fixed-dim hover:bg-primary-container hover:text-white transition">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                        <span class="font-semibold text-sm">AI Waste Assistant</span>
-                    </a>
-                    <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-full text-primary-fixed-dim hover:bg-primary-container hover:text-white transition">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        <span class="font-semibold text-sm">Tabungan Sampah</span>
-                    </a>
-                    
-                    <p class="px-2 text-xs font-semibold text-primary-fixed-dim uppercase tracking-wider mb-2 mt-6">Pengelolaan</p>
-                    <a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-full text-primary-fixed-dim hover:bg-primary-container hover:text-white transition">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-                        <span class="font-semibold text-sm">Kader & BSU</span>
-                    </a>
-                </nav>
-            </div>
+        <!-- Mobile Sidebar Backdrop Overlay -->
+        <div x-show="sidebarOpen" 
+             x-transition:enter="transition-opacity ease-linear duration-300"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="transition-opacity ease-linear duration-300"
+             x-transition:leave-start="opacity-100"
+             x-transition:leave-end="opacity-0"
+             class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden"
+             @click="sidebarOpen = false"
+             x-cloak></div>
 
-            <!-- User Profile Bottom -->
-            <div class="p-4 border-t border-primary-container">
-                <div class="flex items-center gap-3 mb-4 cursor-pointer hover:bg-primary-container p-2 rounded-xl transition">
-                    <div class="w-10 h-10 bg-white rounded-full overflow-hidden flex-shrink-0 flex items-center justify-center">
-                        <span class="text-primary font-bold">AF</span>
-                    </div>
-                    <div class="flex-grow overflow-hidden">
-                        <p class="text-sm font-bold truncate">{{ Auth::user()->name ?? 'Ahmad Fauzi' }}</p>
-                        <p class="text-xs text-primary-fixed-dim truncate">Kepala Desa</p>
-                    </div>
-                    <svg class="w-4 h-4 text-primary-fixed-dim" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                </div>
+        <!-- Mobile Sidebar Drawer -->
+        <div x-show="sidebarOpen" 
+             x-transition:enter="transition ease-in-out duration-300 transform"
+             x-transition:enter-start="-translate-x-full"
+             x-transition:enter-end="translate-x-0"
+             x-transition:leave="transition ease-in-out duration-300 transform"
+             x-transition:leave-start="translate-x-0"
+             x-transition:leave-end="-translate-x-full"
+             class="fixed inset-y-0 left-0 z-50 w-[260px] bg-[#041A12] lg:hidden h-full"
+             x-cloak>
+            @include('layouts.sidebar')
+        </div>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 flex flex-col h-full overflow-hidden relative z-0">
+            
+            <!-- Dashboard Navbar / Top Header -->
+            <nav class="bg-[#041A12]/90 backdrop-blur-md border-b border-white/5 h-[72px] flex items-center justify-between px-4 sm:px-6 sticky top-0 z-30 transition-colors duration-300">
                 
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <button type="submit" class="flex items-center gap-2 text-sm text-primary-fixed-dim hover:text-white transition px-2">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
-                        Keluar
+                <!-- Mobile Menu Button & Logo -->
+                <div class="flex items-center gap-3 lg:hidden">
+                    <button @click="sidebarOpen = !sidebarOpen" class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 text-[#8BA39A] hover:text-white flex items-center justify-center transition-colors">
+                        <i class="bi bi-list text-2xl"></i>
                     </button>
-                </form>
-            </div>
-        </aside>
-
-        <!-- Main Content -->
-        <main class="flex-1 flex flex-col h-screen overflow-hidden">
-            <!-- Header -->
-            <header class="h-20 bg-surface shadow-sm flex items-center justify-between px-8 shrink-0 z-10">
-                <div>
-                    <h1 class="text-2xl font-bold text-on-surface">@yield('title', 'Beranda Desa')</h1>
-                    <p class="text-sm text-on-surface-variant">@yield('subtitle', 'Kelola sampah, tingkatkan lingkungan, sejahterakan warga.')</p>
+                    <a href="{{ route('home') }}" class="flex items-center gap-2">
+                        <img src="{{ asset('images/logo.png') }}" alt="Logo" class="w-8 h-8">
+                        <span class="font-bold text-white text-base sm:hidden">SiSampah</span>
+                    </a>
                 </div>
-                
-                <div class="flex items-center gap-6">
-                    <div class="flex items-center gap-2 bg-surface-container px-4 py-2 rounded-full border border-surface-variant">
-                        <svg class="w-4 h-4 text-outline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                        <span class="text-sm font-semibold text-on-surface">{{ now()->translatedFormat('d F Y') }}</span>
+
+                <!-- Header Title for Desktop -->
+                <div class="hidden lg:block">
+                    @isset($header)
+                        <h1 class="text-xl font-bold text-white tracking-tight">{{ $header }}</h1>
+                    @endisset
+                </div>
+
+                <!-- Search Bar Center (Tablet & Desktop) -->
+                <div class="flex-1 max-w-md mx-auto hidden md:block px-4">
+                    <div class="relative group">
+                        <i class="bi bi-search absolute left-4 top-1/2 -translate-y-1/2 text-[#8BA39A] group-focus-within:text-primary transition-colors"></i>
+                        <input type="text" placeholder="Pencarian cepat..." class="w-full pl-11 pr-4 py-2.5 bg-white/5 border border-white/10 rounded-full text-white placeholder:text-[#8BA39A] focus:bg-white/10 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all text-sm font-medium">
                     </div>
-                    <button class="relative p-2 text-on-surface hover:bg-surface-container rounded-full transition">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
-                        <span class="absolute top-1 right-1 w-2.5 h-2.5 bg-error rounded-full ring-2 ring-surface"></span>
-                    </button>
                 </div>
-            </header>
 
-            <!-- Page Content -->
-            <div class="flex-1 overflow-y-auto bg-surface-dim p-8">
-                <div class="max-w-[1600px] mx-auto">
+                <!-- Right Actions -->
+                <div class="flex items-center gap-2 sm:gap-4">
+                    
+                    <x-theme-toggle />
+
+                    <button class="relative w-10 h-10 rounded-full flex items-center justify-center text-[#8BA39A] hover:bg-white/5 hover:text-white transition-all">
+                        <i class="bi bi-bell-fill text-lg"></i>
+                        <span class="absolute top-2 right-2 w-2.5 h-2.5 bg-danger rounded-full border-2 border-[#041A12]"></span>
+                    </button>
+
+                    <div class="w-[1px] h-6 bg-white/10 mx-1 hidden sm:block"></div>
+
+                    @auth
+                        <x-dropdown align="right" width="48">
+                            <x-slot name="trigger">
+                                <button class="flex items-center gap-3 group cursor-pointer hover:bg-white/5 p-1 rounded-full sm:pr-4 transition-colors border border-transparent hover:border-white/10">
+                                    <img src="{{ Auth::user()->avatar_url }}" class="w-9 h-9 rounded-full object-cover border-2 border-primary" alt="{{ Auth::user()->name }}">
+                                    <div class="hidden sm:block text-left">
+                                        <p class="text-sm font-bold text-white leading-none">{{ Auth::user()->name }}</p>
+                                        <p class="text-[10px] text-primary font-bold mt-1.5 uppercase tracking-wide">{{ Auth::user()->roles->first()->name ?? 'User' }}</p>
+                                    </div>
+                                    <i class="bi bi-chevron-down text-[#8BA39A] text-xs ml-1 group-hover:text-white transition-colors hidden sm:block"></i>
+                                </button>
+                            </x-slot>
+
+                            <x-slot name="content">
+                                <x-dropdown-link :href="route('profile.edit')" class="!text-sm !font-bold">
+                                    <i class="bi bi-person mr-2 text-primary"></i> Profil Saya
+                                </x-dropdown-link>
+                                
+                                <form method="POST" action="{{ route('logout') }}">
+                                    @csrf
+                                    <x-dropdown-link :href="route('logout')"
+                                            onclick="event.preventDefault(); this.closest('form').submit();"
+                                            class="!text-sm !font-bold !text-danger hover:bg-danger/10">
+                                        <i class="bi bi-box-arrow-right mr-2"></i> Keluar
+                                    </x-dropdown-link>
+                                </form>
+                            </x-slot>
+                        </x-dropdown>
+                    @endauth
+                </div>
+            </nav>
+
+            <!-- Page Content (Scrollable) -->
+            <div class="flex-1 overflow-y-auto custom-scrollbar relative z-0">
+                <div class="p-4 sm:p-6 lg:p-8 pb-28 sm:pb-28 lg:pb-28 max-w-[1600px] mx-auto min-h-full flex flex-col">
                     @yield('content')
+                    {{ $slot ?? '' }}
+                    
+                    <!-- Dashboard Footer -->
+                    <footer class="mt-auto pt-8 pb-2 text-center">
+                        <p class="text-[11px] font-semibold text-text-muted">
+                            &copy; {{ date('Y') }} SiSampah Enterprise Dashboard. Dikembangkan oleh <span class="text-primary font-bold">Bodrex Developer</span>.
+                        </p>
+                    </footer>
                 </div>
             </div>
-        </main>
 
+        </main>
     </div>
+
+    <x-chatbot-widget />
+    <x-toast />
+    
+    <!-- Render scripts pushed by components -->
+    @stack('scripts')
+    
+    @if(session('welcome'))
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            Swal.fire({
+                title: 'Halo!',
+                text: "{{ session('welcome') }}",
+                icon: 'success',
+                confirmButtonText: 'Lanjut',
+                confirmButtonColor: '#22C55E',
+                background: document.documentElement.classList.contains('dark') ? '#0B2A1F' : '#ffffff',
+                color: document.documentElement.classList.contains('dark') ? '#ffffff' : '#0F172A',
+                customClass: { popup: 'rounded-[24px]', confirmButton: 'rounded-[16px] px-8 shadow-soft font-bold' }
+            });
+        });
+    </script>
+    @endif
+
+    @if(session('error'))
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            Swal.fire({
+                title: 'Gagal!',
+                text: "{{ session('error') }}",
+                icon: 'error',
+                confirmButtonText: 'Tutup',
+                confirmButtonColor: '#EF4444',
+                background: document.documentElement.classList.contains('dark') ? '#0B2A1F' : '#ffffff',
+                color: document.documentElement.classList.contains('dark') ? '#ffffff' : '#0F172A',
+                customClass: { popup: 'rounded-[24px]', confirmButton: 'rounded-[16px] px-8 shadow-soft font-bold' }
+            });
+        });
+    </script>
+    @endif
+
 </body>
 </html>
