@@ -15,7 +15,11 @@ class BankSampah extends Model
 
     protected $fillable = [
         'kode_bank',
+        'nomor_registrasi',
         'nama',
+        'penanggung_jawab',
+        'telepon_pj',
+        'email_pj',
         'slug',
         'logo',
         'foto',
@@ -36,24 +40,52 @@ class BankSampah extends Model
         'jam_tutup',
         'hari_operasional',
         'radius_layanan',
+        'kas_unit',
         'wilayah_layanan',
         'status',
+        'status_verifikasi',
     ];
 
     protected $casts = [
         'latitude' => 'float',
         'longitude' => 'float',
         'radius_layanan' => 'integer',
+        'kas_unit' => 'decimal:2',
         'wilayah_layanan' => 'array',
     ];
 
-    protected $appends = ['logo_url', 'foto_url', 'status_badge_bg', 'marker_color'];
+    protected $appends = ['logo_url', 'foto_url', 'status_badge_bg', 'verifikasi_badge_bg', 'marker_color'];
 
     // ─── Relationships ───
 
     public function users(): HasMany
     {
         return $this->hasMany(User::class);
+    }
+
+    public function documents(): HasMany
+    {
+        return $this->hasMany(BankSampahDocument::class);
+    }
+
+    public function verifications(): HasMany
+    {
+        return $this->hasMany(BankSampahVerification::class);
+    }
+
+    public function admins(): HasMany
+    {
+        return $this->hasMany(BankSampahAdmin::class);
+    }
+
+    public function pickups(): HasMany
+    {
+        return $this->hasMany(Pickup::class);
+    }
+
+    public function ledgers(): HasMany
+    {
+        return $this->hasMany(WalletLedger::class);
     }
 
     public function nasabah(): HasMany
@@ -140,6 +172,19 @@ class BankSampah extends Model
             'aktif' => 'bg-emerald-100 text-emerald-800 border-emerald-300',
             'libur' => 'bg-amber-100 text-amber-800 border-amber-300',
             'nonaktif' => 'bg-rose-100 text-rose-800 border-rose-300',
+            default => 'bg-slate-100 text-slate-800 border-slate-300',
+        };
+    }
+
+    public function getVerifikasiBadgeBgAttribute(): string
+    {
+        return match ($this->status_verifikasi) {
+            'draft' => 'bg-slate-100 text-slate-700 border-slate-300',
+            'submitted', 'under_review' => 'bg-sky-100 text-sky-800 border-sky-300',
+            'document_revision' => 'bg-amber-100 text-amber-800 border-amber-300',
+            'meeting_scheduled' => 'bg-indigo-100 text-indigo-800 border-indigo-300',
+            'verified', 'active' => 'bg-emerald-100 text-emerald-800 border-emerald-300',
+            'rejected', 'suspended', 'closed' => 'bg-rose-100 text-rose-800 border-rose-300',
             default => 'bg-slate-100 text-slate-800 border-slate-300',
         };
     }

@@ -11,94 +11,195 @@
 @section('content')
 
 {{-- ═══════════════ HERO ═══════════════ --}}
-<section class="relative min-h-[100dvh] flex items-center overflow-hidden">
-    <div class="landing-blob w-[500px] h-[500px] bg-primary/30 -top-32 -left-32"></div>
-    <div class="landing-blob w-[400px] h-[400px] bg-emerald/20 top-1/2 right-0 animation-delay-2000" style="animation-delay: 2s"></div>
-    <div class="landing-blob w-[300px] h-[300px] bg-amber-500/10 bottom-0 left-1/3" style="animation-delay: 4s"></div>
+<section class="relative min-h-[100dvh] flex items-center overflow-hidden bg-[#051410]">
+    <div class="landing-blob w-[500px] h-[500px] bg-emerald-500/20 -top-32 -left-32 blur-[100px]"></div>
+    <div class="landing-blob w-[400px] h-[400px] bg-emerald-500/15 top-1/2 right-0 blur-[100px] animation-delay-2000" style="animation-delay: 2s"></div>
 
-    <div class="absolute inset-0 opacity-[0.04]" style="background-image: url('/images/auth-bg-pattern.svg'); background-size: cover;"></div>
-
-    <div class="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-16 lg:pt-32 lg:pb-24">
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
-            <div class="text-center lg:text-left">
-                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/20 text-xs sm:text-sm font-medium text-white/90 mb-6 lg:mb-8">
-                    <span class="w-2 h-2 bg-emerald rounded-full animate-pulse"></span>
+    <div class="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-16 lg:pt-36 lg:pb-24">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+            
+            <!-- Left Hero Content -->
+            <div class="text-left">
+                <!-- Top Badge Pill -->
+                <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-semibold mb-6">
+                    <i class="bi bi-buildings text-sm"></i>
                     Bank Sampah Digital #1 untuk Desa
                 </div>
 
-                <h1 class="landing-hero-title font-black mb-6">
-                    Sampah Jadi
-                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald to-emerald-300"> Berkah</span>
+                <!-- Main Headline -->
+                <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black text-white leading-[1.12] tracking-tight mb-6">
+                    Sampah Hari Ini,<br>
+                    <span class="text-emerald-400">Manfaat untuk Nanti.</span>
                 </h1>
 
-                <p class="text-base sm:text-lg text-white/60 leading-relaxed max-w-xl mx-auto lg:mx-0 mb-8 lg:mb-10">
-                    Setor sampah, dapatkan saldo, dan bantu desa lebih bersih. SiSampah menghubungkan nasabah, petugas, dan admin dalam satu ekosistem digital.
+                <!-- Subtitle Text -->
+                <p class="text-base sm:text-lg text-white/70 leading-relaxed max-w-xl mb-8">
+                    SiSampah menghubungkan nasabah, petugas, dan admin dalam satu ekosistem digital untuk lingkungan yang lebih bersih dan berkelanjutan.
                 </p>
 
-                <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center lg:justify-start">
+                <!-- 3 Feature Badges -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-9 max-w-xl">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0">
+                            <i class="bi bi-sprout text-lg"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-xs font-bold text-white leading-tight">Setor Sampah</h4>
+                            <p class="text-[11px] text-white/50 mt-0.5">Mudah &amp; Praktis</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0">
+                            <i class="bi bi-geo-alt text-lg"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-xs font-bold text-white leading-tight">Jemput via GPS</h4>
+                            <p class="text-[11px] text-white/50 mt-0.5">Cepat &amp; Tepat</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0">
+                            <i class="bi bi-shield-check text-lg"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-xs font-bold text-white leading-tight">Dampak Nyata</h4>
+                            <p class="text-[11px] text-white/50 mt-0.5">Untuk Bumi Kita</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Primary Action Buttons -->
+                <div class="flex flex-wrap items-center gap-4 mb-8">
                     @auth
-                        <a href="{{ route($dash) }}" class="inline-flex items-center justify-center gap-2 px-8 py-4 bg-primary hover:bg-primary-container text-white font-bold rounded-2xl transition-all hover:shadow-lg hover:shadow-primary/25 min-h-[52px]">
-                            Buka Dashboard
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                        <a href="{{ route($dash) }}" class="inline-flex items-center justify-center gap-2 px-8 py-3.5 bg-emerald-500 hover:bg-emerald-400 text-white font-bold rounded-full transition-all shadow-lg shadow-emerald-500/25">
+                            Buka Dashboard <i class="bi bi-arrow-right text-base"></i>
                         </a>
                     @else
-                        <a href="{{ route('register') }}" class="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white text-[#051410] font-bold rounded-2xl hover:bg-white/90 transition-all min-h-[52px]">
-                            Mulai Gratis
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                        <a href="{{ route('register') }}" class="inline-flex items-center justify-center gap-2 px-8 py-3.5 bg-emerald-500 hover:bg-emerald-400 text-white font-bold rounded-full transition-all shadow-lg shadow-emerald-500/25">
+                            Mulai Gratis <i class="bi bi-arrow-right text-base"></i>
                         </a>
-                        <a href="{{ route('login') }}" class="inline-flex items-center justify-center px-8 py-4 border border-white/20 text-white font-semibold rounded-2xl hover:bg-white/10 transition-all min-h-[52px]">
-                            Masuk
+                        <a href="{{ route('pendaftaran_bank_sampah.index') }}" class="inline-flex items-center justify-center gap-2.5 px-7 py-3.5 bg-transparent border border-emerald-500/40 hover:bg-emerald-500/10 text-white font-bold rounded-full transition-all">
+                            <i class="bi bi-buildings text-emerald-400"></i> Daftarkan Bank Sampah
                         </a>
                     @endauth
                 </div>
 
-                <div class="flex flex-wrap items-center justify-center lg:justify-start gap-6 mt-10 text-sm text-white/50">
+                <!-- Bottom Checkmarks -->
+                <div class="flex items-center gap-6 text-xs font-semibold text-white/70">
                     <span class="flex items-center gap-2">
-                        <svg class="w-5 h-5 text-emerald" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+                        <span class="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xs"><i class="bi bi-check-lg"></i></span>
                         Gratis untuk nasabah
                     </span>
                     <span class="flex items-center gap-2">
-                        <svg class="w-5 h-5 text-emerald" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+                        <span class="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xs"><i class="bi bi-check-lg"></i></span>
                         Jemput via GPS
                     </span>
                 </div>
             </div>
 
-            {{-- Hero Card Mockup --}}
+            <!-- Right Hero Card Mockup -->
             <div class="relative flex justify-center lg:justify-end">
-                <div class="relative w-full max-w-sm lg:max-w-md">
-                    <div class="absolute -inset-4 bg-gradient-to-br from-primary/40 to-emerald/20 rounded-3xl blur-2xl"></div>
-                    <div class="relative landing-card !bg-[#0a1f17]/80 !p-6 sm:!p-8 shadow-2xl">
-                        <div class="flex items-center justify-between mb-6">
+                <div class="relative w-full max-w-md">
+                    <!-- Glow Background Effect -->
+                    <div class="absolute -inset-2 bg-emerald-500/20 rounded-[34px] blur-2xl"></div>
+
+                    <!-- Saldo Nasabah Card -->
+                    <div class="relative bg-[#061e17]/90 border border-emerald-500/30 p-7 sm:p-8 rounded-[28px] shadow-2xl backdrop-blur-xl space-y-6">
+                        
+                        <!-- Top Saldo Row -->
+                        <div class="flex items-start justify-between">
                             <div>
-                                <p class="text-xs text-white/50 uppercase tracking-wider">Saldo Nasabah</p>
-                                <p class="text-2xl sm:text-3xl font-bold mt-1">Rp 245.000</p>
+                                <p class="text-[11px] font-bold text-emerald-400 uppercase tracking-widest">SALDO NASABAH</p>
+                                <h3 class="text-4xl sm:text-5xl font-black text-white tracking-tight mt-1">Rp 245.000</h3>
                             </div>
-                            <div class="w-12 h-12 bg-primary/20 rounded-2xl flex items-center justify-center">
-                                <svg class="w-6 h-6 text-emerald" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            <div class="w-12 h-12 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0">
+                                <i class="bi bi-wallet2 text-xl"></i>
                             </div>
                         </div>
+
+                        <!-- 3 Items List -->
                         <div class="space-y-3">
-                            @foreach([['Plastik', '12.5 Kg', '+Rp 18.750', 'bg-blue-500/20 text-blue-300'], ['Kertas', '8.0 Kg', '+Rp 12.000', 'bg-amber-500/20 text-amber-300'], ['Organik', '5.5 Kg', '+Rp 8.250', 'bg-green-500/20 text-green-300']] as [$jenis, $berat, $nominal, $color])
-                                <div class="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/5">
-                                    <div class="flex items-center gap-3">
-                                        <span class="w-8 h-8 rounded-lg {{ $color }} flex items-center justify-center text-xs font-bold">{{ substr($jenis, 0, 1) }}</span>
-                                        <div>
-                                            <p class="text-sm font-semibold">{{ $jenis }}</p>
-                                            <p class="text-xs text-white/40">{{ $berat }}</p>
-                                        </div>
+                            <!-- Plastik -->
+                            <div class="flex items-center justify-between p-3.5 rounded-2xl bg-[#041611]/90 border border-white/10 hover:border-emerald-500/40 transition-all cursor-pointer group">
+                                <div class="flex items-center gap-3.5">
+                                    <div class="w-10 h-10 rounded-xl bg-blue-500/15 border border-blue-500/30 text-blue-400 flex items-center justify-center shrink-0">
+                                        <i class="bi bi-cup-straw text-lg"></i>
                                     </div>
-                                    <span class="text-sm font-bold text-emerald">{{ $nominal }}</span>
+                                    <div>
+                                        <h4 class="text-sm font-bold text-white group-hover:text-emerald-400 transition-colors">Plastik</h4>
+                                        <p class="text-xs text-white/50 mt-0.5">12.5 Kg</p>
+                                    </div>
                                 </div>
-                            @endforeach
+                                <div class="flex items-center gap-2">
+                                    <span class="text-sm font-black text-emerald-400">+Rp 18.750</span>
+                                    <i class="bi bi-chevron-right text-xs text-white/40 group-hover:text-emerald-400 transition-colors"></i>
+                                </div>
+                            </div>
+
+                            <!-- Kertas -->
+                            <div class="flex items-center justify-between p-3.5 rounded-2xl bg-[#041611]/90 border border-white/10 hover:border-emerald-500/40 transition-all cursor-pointer group">
+                                <div class="flex items-center gap-3.5">
+                                    <div class="w-10 h-10 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-400 flex items-center justify-center shrink-0">
+                                        <i class="bi bi-file-earmark-text text-lg"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-sm font-bold text-white group-hover:text-emerald-400 transition-colors">Kertas</h4>
+                                        <p class="text-xs text-white/50 mt-0.5">8.0 Kg</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-sm font-black text-emerald-400">+Rp 12.000</span>
+                                    <i class="bi bi-chevron-right text-xs text-white/40 group-hover:text-emerald-400 transition-colors"></i>
+                                </div>
+                            </div>
+
+                            <!-- Organik -->
+                            <div class="flex items-center justify-between p-3.5 rounded-2xl bg-[#041611]/90 border border-white/10 hover:border-emerald-500/40 transition-all cursor-pointer group">
+                                <div class="flex items-center gap-3.5">
+                                    <div class="w-10 h-10 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 flex items-center justify-center shrink-0">
+                                        <i class="bi bi-tree text-lg"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-sm font-bold text-white group-hover:text-emerald-400 transition-colors">Organik</h4>
+                                        <p class="text-xs text-white/50 mt-0.5">5.5 Kg</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-sm font-black text-emerald-400">+Rp 8.250</span>
+                                    <i class="bi bi-chevron-right text-xs text-white/40 group-hover:text-emerald-400 transition-colors"></i>
+                                </div>
+                            </div>
                         </div>
-                        <div class="mt-6 pt-4 border-t border-white/10 flex items-center justify-between">
-                            <span class="text-xs text-white/40">+120 poin lingkungan</span>
-                            <span class="text-xs font-semibold text-emerald">Naik peringkat #3</span>
+
+                        <!-- Bottom Badge Pill Row -->
+                        <div class="p-3.5 rounded-2xl bg-[#041611]/90 border border-white/10 flex items-center justify-between gap-3 text-xs">
+                            <div class="flex items-center gap-2.5">
+                                <div class="w-8 h-8 rounded-lg bg-emerald-500/15 text-emerald-400 flex items-center justify-center shrink-0">
+                                    <i class="bi bi-leaf text-base"></i>
+                                </div>
+                                <div>
+                                    <h5 class="font-bold text-white text-xs">+120 poin lingkungan</h5>
+                                    <p class="text-[10px] text-white/50">Terus tingkatkan kontribusimu!</p>
+                                </div>
+                            </div>
+                            <div class="h-8 w-px bg-white/10"></div>
+                            <div class="flex items-center gap-2.5">
+                                <div class="w-8 h-8 rounded-lg bg-amber-500/15 text-amber-400 flex items-center justify-center shrink-0">
+                                    <i class="bi bi-trophy text-base"></i>
+                                </div>
+                                <div>
+                                    <h5 class="font-bold text-white text-xs">Naik peringkat #3</h5>
+                                    <p class="text-[10px] text-white/50">Ayo kejar posisi #1!</p>
+                                </div>
+                                <i class="bi bi-chevron-right text-xs text-white/40"></i>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
+
         </div>
     </div>
 </section>
@@ -321,15 +422,25 @@
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             @foreach($articles as $article)
-                <article class="landing-card group flex flex-col h-full !p-0 overflow-hidden border border-white/10 hover:border-forest-emerald/50">
+                <article class="landing-card group flex flex-col h-full !p-0 overflow-hidden border border-white/10 hover:border-emerald-400/50 transition-all">
+                    <!-- Image Banner -->
+                    <div class="relative h-48 overflow-hidden">
+                        <img src="{{ $article->image_url }}" alt="{{ $article->judul }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out">
+                        <div class="absolute top-3 left-3">
+                            <span class="inline-block px-3 py-1 text-xs font-bold bg-emerald-500 text-white rounded-full shadow-md">{{ $article->kategori }}</span>
+                        </div>
+                    </div>
+                    
                     <div class="p-6 flex-1 flex flex-col">
-                        <span class="inline-block self-start px-3 py-1 text-xs font-bold bg-primary/20 text-forest-emerald rounded-full mb-4">{{ $article->kategori }}</span>
-                        <h3 class="text-lg font-bold mb-3 group-hover:text-forest-emerald transition-colors line-clamp-2 min-h-[56px]">{{ $article->judul }}</h3>
-                        <p class="text-sm text-white/50 leading-relaxed flex-1 line-clamp-3 min-h-[60px]">{{ Str::limit(strip_tags($article->konten), 120) }}</p>
-                        <a href="{{ route('edukasi.show', $article->slug) }}" class="inline-flex items-center gap-2 text-sm font-bold text-forest-emerald mt-5 group-hover:gap-3 transition-all">
-                            Baca artikel
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
-                        </a>
+                        <h3 class="text-lg font-bold text-white mb-3 group-hover:text-emerald-400 transition-colors line-clamp-2 min-h-[56px]">{{ $article->judul }}</h3>
+                        <p class="text-sm text-white/60 leading-relaxed flex-1 line-clamp-3 min-h-[60px]">{{ Str::limit(strip_tags($article->konten), 120) }}</p>
+                        <div class="flex items-center justify-between mt-5 pt-4 border-t border-white/10">
+                            <span class="text-xs text-white/40">{{ $article->created_at->translatedFormat('d M Y') }}</span>
+                            <a href="{{ route('edukasi.show', $article->slug) }}" class="inline-flex items-center gap-2 text-sm font-bold text-emerald-400 hover:text-emerald-300 group-hover:gap-3 transition-all">
+                                Baca artikel
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                            </a>
+                        </div>
                     </div>
                 </article>
             @endforeach

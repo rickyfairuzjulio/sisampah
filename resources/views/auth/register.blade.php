@@ -34,6 +34,21 @@
         </div>
 
         <div>
+            <label for="bank_sampah_id" class="block text-sm font-medium text-gray-300 mb-2">Pilih Bank Sampah Unit</label>
+            <select id="bank_sampah_id" name="bank_sampah_id" required class="auth-input @error('bank_sampah_id') border-red-500 @enderror">
+                <option value="">-- Pilih Unit Bank Sampah Domisili Anda --</option>
+                @foreach($bankSampahs ?? \App\Models\BankSampah::active()->get() as $bs)
+                    <option value="{{ $bs->id }}" {{ old('bank_sampah_id') == $bs->id ? 'selected' : '' }}>
+                        {{ $bs->nama }} (Kec. {{ $bs->kecamatan ?? 'Terdekat' }})
+                    </option>
+                @endforeach
+            </select>
+            @error('bank_sampah_id')
+                <p class="mt-1.5 text-xs text-red-400">{{ $message }}</p>
+            @enderror
+        </div>
+
+        <div>
             <label for="password" class="block text-sm font-medium text-gray-300 mb-2">Password</label>
             <div class="relative">
                 <input id="password" name="password" type="password" required autocomplete="new-password"

@@ -53,14 +53,18 @@ class Article extends Model
         $imagePath = $this->image ?? $this->gambar;
 
         if (! $imagePath) {
-            return null;
+            return 'https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?w=800&auto=format&fit=crop&q=80';
         }
 
         if (str_starts_with($imagePath, 'http://') || str_starts_with($imagePath, 'https://')) {
             return $imagePath;
         }
 
-        return asset('storage/' . ltrim($imagePath, '/'));
+        if (\Storage::disk('public')->exists($imagePath)) {
+            return asset('storage/' . ltrim($imagePath, '/'));
+        }
+
+        return 'https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?w=800&auto=format&fit=crop&q=80';
     }
 
     public function getExcerptAttribute(): string

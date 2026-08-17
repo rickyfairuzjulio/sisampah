@@ -89,30 +89,152 @@
                     </button>
                 </div>
 
-                <!-- Form Section 2: Foto Bukti -->
-                <div class="space-y-4">
+                <!-- Form Section 2: Foto Bukti Timbangan (Live Camera & File Choice) -->
+                <div class="space-y-4" x-data="{ 
+                    isCameraOpen: false, 
+                    photoPreview: null, 
+                    cameraStream: null,
+                    openCamera() {
+                        this.isCameraOpen = true;
+                        this.$nextTick(() => {
+                            navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+                                .then(stream => {
+                                    this.cameraStream = stream;
+                                    this.$refs.videoFeed.srcObject = stream;
+                                })
+                                .catch(err => {
+                                    alert('Tidak dapat mengaktifkan kamera live. Membuka kamera/galeri bawaan.');
+                                    this.isCameraOpen = false;
+                                    this.triggerFileInput();
+                                });
+                        });
+                    },
+                    closeCamera() {
+                        if (this.cameraStream) {
+                            this.cameraStream.getTracks().forEach(track => track.stop());
+                            this.cameraStream = null;
+                        }
+                        this.isCameraOpen = false;
+                    },
+                    takePhoto() {
+                        const video = this.$refs.videoFeed;
+                        const canvas = document.createElement('canvas');
+                        canvas.width = video.videoWidth || 640;
+                        canvas.height = video.videoHeight || 480;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                        
+                        const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+                        this.photoPreview = dataUrl;
+
+                        canvas.toBlob(blob => {
+                            const file = new File([blob], 'timbangan_' + Date.now() + '.jpg', { type: 'image/jpeg' });
+                            const dataTransfer = new DataTransfer();
+                            dataTransfer.items.add(file);
+                            document.getElementById('foto_bukti').files = dataTransfer.files;
+                        }, 'image/jpeg', 0.85);
+
+                        this.closeCamera();
+                    },
+                    triggerFileInput() {
+                        document.getElementById('foto_bukti').click();
+                    },
+                    handleFileSelect(event) {
+                        const file = event.target.files[0];
+                        if (file) {
+                            const reader = new FileReader();
+                            reader.onload = (e) => {
+                                this.photoPreview = e.target.result;
+                            };
+                            reader.readAsDataURL(file);
+                        }
+                    },
+                    clearPhoto() {
+                        this.photoPreview = null;
+                        document.getElementById('foto_bukti').value = '';
+                    }
+                }">
                     <div class="flex items-center gap-2 pb-3 border-b border-primary/20">
                         <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
                             <span class="text-sm font-bold text-primary">2</span>
                         </div>
-                        <h3 class="font-semibold text-on-surface">Foto Bukti (Opsional)</h3>
+                        <h3 class="font-semibold text-on-surface">Foto Bukti Timbangan (Opsional)</h3>
                     </div>
 
-                    <div>
-                        <label for="foto_bukti" class="block text-sm font-medium text-on-surface mb-2">Upload Foto</label>
-                        <div class="relative border-2 border-dashed border-primary/30 rounded-lg p-6 hover:border-primary/50 transition-colors">
-                            <input type="file" id="foto_bukti" name="foto_bukti" accept="image/*"
-                                   class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
-                            <div class="text-center pointer-events-none">
-                                <svg class="w-12 h-12 text-primary/60 dark:text-primary mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                                </svg>
-                                <p class="text-sm font-semibold text-on-surface">Klik atau tarik foto di sini</p>
-                                <p class="text-xs text-on-surface-variant">JPEG, PNG, JPG (Maks 2MB)</p>
+                    <!-- Hidden native file input with camera capture support -->
+                    <input type="file" id="foto_bukti" name="foto_bukti" accept="image/*" capture="environment" class="hidden" @change="handleFileSelect($event)">
+
+                    <!-- Options Grid (When no photo preview yet) -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" x-show="!photoPreview">
+                        <!-- Direct Live Camera Button -->
+                        <button type="button" @click="openCamera()" 
+                                class="p-4 rounded-2xl border-2 border-emerald-500/40 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 font-bold transition-all flex items-center justify-center gap-3 shadow-md hover:scale-[1.02] active:scale-95 group">
+                            <div class="w-12 h-12 rounded-xl bg-emerald-500 text-slate-950 flex items-center justify-center text-xl font-bold shadow group-hover:scale-110 transition-transform">
+                                <i class="bi bi-camera-fill"></i>
                             </div>
+                            <div class="text-left">
+                                <span class="block text-sm font-extrabold text-on-surface">Buka Kamera Langsung</span>
+                                <span class="block text-[11px] text-emerald-600 dark:text-emerald-300 font-normal">Ambil foto via kamera HP / WebCam</span>
+                            </div>
+                        </button>
+
+                        <!-- Upload File / Gallery Button -->
+                        <button type="button" @click="triggerFileInput()" 
+                                class="p-4 rounded-2xl border-2 border-slate-300 dark:border-slate-700 bg-surface hover:bg-surface-container text-on-surface font-bold transition-all flex items-center justify-center gap-3 shadow-md hover:scale-[1.02] active:scale-95 group">
+                            <div class="w-12 h-12 rounded-xl bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200 flex items-center justify-center text-xl font-bold shadow group-hover:scale-110 transition-transform">
+                                <i class="bi bi-folder-fill"></i>
+                            </div>
+                            <div class="text-left">
+                                <span class="block text-sm font-extrabold text-on-surface">Pilih dari Galeri</span>
+                                <span class="block text-[11px] text-on-surface-variant font-normal">Pilih file foto di memori</span>
+                            </div>
+                        </button>
+                    </div>
+
+                    <!-- Photo Preview Box -->
+                    <div x-show="photoPreview" class="relative rounded-2xl overflow-hidden border-2 border-emerald-500/50 bg-slate-900 p-3 text-center shadow-lg space-y-3" x-cloak>
+                        <div class="flex items-center justify-between px-2 text-xs text-emerald-400 font-bold border-b border-slate-800 pb-2">
+                            <span class="flex items-center gap-1.5"><i class="bi bi-check-circle-fill text-emerald-400"></i> Foto Bukti Berhasil Diambil</span>
                         </div>
-                        <div id="preview" class="mt-4 hidden">
-                            <img id="previewImg" src="" alt="Preview" class="max-h-40 rounded-lg mx-auto">
+                        <img :src="photoPreview" class="max-h-56 rounded-xl mx-auto object-contain border border-slate-800 shadow">
+                        <div class="flex items-center justify-center gap-2 pt-1">
+                            <button type="button" @click="openCamera()" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs flex items-center gap-1.5 shadow">
+                                <i class="bi bi-camera-fill"></i> Foto Ulang Kamera
+                            </button>
+                            <button type="button" @click="triggerFileInput()" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold rounded-xl text-xs flex items-center gap-1.5 shadow">
+                                <i class="bi bi-image"></i> Ganti File
+                            </button>
+                            <button type="button" @click="clearPhoto()" class="px-3 py-2 bg-rose-500/20 hover:bg-rose-500/30 text-rose-400 font-bold rounded-xl text-xs flex items-center gap-1">
+                                <i class="bi bi-trash-fill"></i> Hapus
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Live Camera Modal -->
+                    <div x-show="isCameraOpen" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4" x-cloak>
+                        <div class="bg-slate-900 border border-emerald-500/40 rounded-3xl overflow-hidden max-w-md w-full shadow-2xl p-5 space-y-4">
+                            <div class="flex items-center justify-between border-b border-slate-800 pb-3 text-white">
+                                <h3 class="font-bold text-base flex items-center gap-2">
+                                    <i class="bi bi-camera-reels-fill text-emerald-400"></i> Kamera Timbangan Petugas
+                                </h3>
+                                <button type="button" @click="closeCamera()" class="text-slate-400 hover:text-white"><i class="bi bi-x-lg"></i></button>
+                            </div>
+
+                            <!-- Video Feed -->
+                            <div class="relative bg-black rounded-2xl overflow-hidden aspect-video flex items-center justify-center border border-emerald-500/30">
+                                <video x-ref="videoFeed" autoplay playsinline class="w-full h-full object-cover"></video>
+                                <div class="absolute inset-0 border-2 border-emerald-500/30 pointer-events-none rounded-2xl"></div>
+                            </div>
+
+                            <!-- Action Buttons -->
+                            <div class="flex gap-3">
+                                <button type="button" @click="closeCamera()" class="flex-1 py-3 bg-slate-800 text-slate-300 font-bold rounded-xl text-xs hover:bg-slate-700">
+                                    Batal
+                                </button>
+                                <button type="button" @click="takePhoto()" class="flex-1 py-3 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-extrabold rounded-xl text-xs shadow-lg flex items-center justify-center gap-2">
+                                    <i class="bi bi-camera-fill text-sm"></i> Ambil Foto
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -155,42 +277,6 @@
                     this.items.splice(index, 1);
                 }
             }));
-        });
-
-        const fileInput = document.getElementById('foto_bukti');
-        const preview = document.getElementById('preview');
-        const previewImg = document.getElementById('previewImg');
-
-        fileInput.addEventListener('change', function(e) {
-            if (this.files && this.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    previewImg.src = e.target.result;
-                    preview.classList.remove('hidden');
-                };
-                reader.readAsDataURL(this.files[0]);
-            }
-        });
-
-        // Drag and drop
-        fileInput.parentElement.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            fileInput.parentElement.classList.add('border-primary', 'bg-primary/5');
-        });
-
-        fileInput.parentElement.addEventListener('dragleave', (e) => {
-            e.preventDefault();
-            fileInput.parentElement.classList.remove('border-primary', 'bg-primary/5');
-        });
-
-        fileInput.parentElement.addEventListener('drop', (e) => {
-            e.preventDefault();
-            fileInput.parentElement.classList.remove('border-primary', 'bg-primary/5');
-            if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-                fileInput.files = e.dataTransfer.files;
-                const event = new Event('change');
-                fileInput.dispatchEvent(event);
-            }
         });
     </script>
 </x-app-layout>

@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -11,9 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('withdrawals', function (Blueprint $table) {
-            $table->string('metode', 50)->change();
-        });
+        if (DB::getDriverName() === 'mysql') {
+            DB::statement("ALTER TABLE withdrawals MODIFY COLUMN metode VARCHAR(50) NOT NULL DEFAULT 'tunai'");
+        }
     }
 
     /**
@@ -21,8 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('withdrawals', function (Blueprint $table) {
-            $table->enum('metode', ['tunai', 'transfer'])->change();
-        });
+        if (DB::getDriverName() === 'mysql') {
+            DB::statement("ALTER TABLE withdrawals MODIFY COLUMN metode ENUM('tunai', 'transfer') NOT NULL DEFAULT 'tunai'");
+        }
     }
 };

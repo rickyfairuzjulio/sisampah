@@ -10,38 +10,38 @@
          x-transition:leave="transition ease-in duration-200"
          x-transition:leave-start="opacity-100 translate-y-0 scale-100"
          x-transition:leave-end="opacity-0 translate-y-10 scale-95"
-         class="bg-surface-container-lowest border border-outline-variant rounded-3xl shadow-2xl w-[360px] sm:w-[440px] h-[580px] max-h-[85vh] flex flex-col mb-4 overflow-hidden"
+         class="bg-[#051410]/95 backdrop-blur-2xl border border-emerald-500/30 rounded-3xl shadow-[0_20px_60px_rgba(0,0,0,0.8)] w-[360px] sm:w-[440px] h-[600px] max-h-[85vh] flex flex-col mb-4 overflow-hidden relative z-50"
          x-cloak>
         
         <!-- Header -->
-        <div class="bg-gradient-to-r from-primary via-emerald-700 to-emerald p-4 flex items-center justify-between text-white shadow-md relative z-10">
+        <div class="bg-gradient-to-r from-emerald-950 via-[#0a2e22] to-teal-950 p-4 flex items-center justify-between text-white border-b border-emerald-500/30 shadow-lg relative z-10">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center backdrop-blur-sm border-2 border-primary-container p-1 shadow-sm">
+                <div class="w-10 h-10 bg-black/40 rounded-full flex items-center justify-center backdrop-blur-md border border-emerald-500/40 p-1 shadow-md">
                     <img src="{{ asset('images/chatbot-icon.png') }}" class="w-full h-full object-contain" alt="AI">
                 </div>
                 <div>
                     <div class="flex items-center gap-1.5">
-                        <h3 class="font-bold text-lg leading-tight">SiSampah AI</h3>
-                        <span class="px-2 py-0.5 bg-emerald-400/30 text-white text-[10px] font-bold rounded-full border border-white/20">Vision v2.5</span>
+                        <h3 class="font-extrabold text-lg leading-tight text-white tracking-tight">SiSampah AI</h3>
+                        <span class="px-2 py-0.5 bg-emerald-500/30 text-emerald-300 text-[10px] font-extrabold rounded-full border border-emerald-500/40">Vision v2.5</span>
                     </div>
-                    <p class="text-xs text-white/80">Asisten Smart Recycling & Vision</p>
+                    <p class="text-xs text-slate-300">Asisten Smart Recycling & Computer Vision</p>
                 </div>
             </div>
             
             <div class="flex items-center gap-1">
                 <!-- Basket Button -->
-                <button @click="isBasketOpen = true" class="relative text-white hover:text-white/80 p-2 rounded-xl hover:bg-white/10 transition-colors" title="Keranjang Setoran">
+                <button @click="isBasketOpen = true" class="relative text-slate-300 hover:text-emerald-400 p-2 rounded-xl hover:bg-emerald-500/10 transition-colors" title="Keranjang Setoran">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z"/></svg>
-                    <span x-show="basket.length > 0" class="absolute top-1 right-1 w-4 h-4 bg-amber-400 text-amber-950 font-extrabold text-[10px] rounded-full flex items-center justify-center shadow" x-text="basket.length"></span>
+                    <span x-show="basket.length > 0" class="absolute top-1 right-1 w-4 h-4 bg-emerald-400 text-slate-950 font-extrabold text-[10px] rounded-full flex items-center justify-center shadow" x-text="basket.length"></span>
                 </button>
                 
                 <!-- History Link -->
-                <a href="{{ route('scan.history') }}" class="text-white hover:text-white/80 p-2 rounded-xl hover:bg-white/10 transition-colors" title="Riwayat Scan">
+                <a href="{{ route('scan.history') }}" class="text-slate-300 hover:text-emerald-400 p-2 rounded-xl hover:bg-emerald-500/10 transition-colors" title="Riwayat Scan">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                 </a>
                 
                 <!-- Close Button -->
-                <button @click="isOpen = false" class="text-white hover:text-white/80 p-2 rounded-xl hover:bg-white/10 transition-colors">
+                <button @click="isOpen = false" class="text-slate-300 hover:text-emerald-400 p-2 rounded-xl hover:bg-emerald-500/10 transition-colors">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                     </svg>
@@ -50,21 +50,21 @@
         </div>
 
         <!-- Messages Dialogue Area -->
-        <div class="flex-1 p-4 overflow-y-auto bg-slate-50 space-y-4" id="assistant-dialogue" x-ref="messagesBox">
+        <div class="flex-1 p-4 overflow-y-auto bg-[#030f0c]/90 space-y-4 shadow-inner" id="assistant-dialogue" x-ref="messagesBox">
             
             <!-- Welcome Message -->
             <div class="flex gap-3">
-                <div class="w-8 h-8 rounded-full bg-white border-2 border-primary flex items-center justify-center flex-shrink-0 p-1 shadow-sm">
+                <div class="w-8 h-8 rounded-full bg-black/40 border border-emerald-500/40 flex items-center justify-center flex-shrink-0 p-1 shadow-sm">
                     <img src="{{ asset('images/chatbot-icon.png') }}" class="w-full h-full object-contain" alt="AI">
                 </div>
-                <div class="bg-white rounded-2xl rounded-tl-none p-3.5 max-w-[85%] text-sm text-on-surface border border-slate-200/80 shadow-sm space-y-2">
-                    <p>Halo! Saya <strong>SiSampah AI Vision</strong>. Foto sampah Anda dengan menekan ikon kamera 📸 di bawah untuk menganalisis objek, estimasi harga, dan rekomendasi daur ulang!</p>
-                    <div class="flex flex-wrap gap-1.5 pt-1">
-                        <button @click="triggerCameraChoice('camera')" class="px-2.5 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs font-semibold rounded-lg border border-emerald-200 transition-colors flex items-center gap-1">
-                            📷 Foto Sampah
+                <div class="bg-[#0b241b]/95 rounded-2xl rounded-tl-none p-4 max-w-[85%] text-sm text-slate-100 border border-emerald-500/30 shadow-lg space-y-2.5">
+                    <p class="leading-relaxed">Halo! Saya <strong class="text-emerald-400">SiSampah AI Vision</strong>. Foto sampah Anda dengan menekan ikon kamera di bawah untuk menganalisis jenis objek, estimasi harga jual, dan rekomendasi daur ulang!</p>
+                    <div class="flex flex-wrap gap-2 pt-1">
+                        <button @click="triggerCameraChoice('camera')" class="px-3 py-1.5 bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 text-xs font-bold rounded-xl border border-emerald-500/40 transition-all flex items-center gap-1.5 shadow-sm">
+                            <i class="bi bi-camera-fill"></i> Foto Sampah
                         </button>
-                        <button @click="triggerCameraChoice('gallery')" class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg transition-colors flex items-center gap-1">
-                            🖼️ Unggah Galeri
+                        <button @click="triggerCameraChoice('gallery')" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold rounded-xl border border-slate-700 transition-all flex items-center gap-1.5 shadow-sm">
+                            <i class="bi bi-image-fill"></i> Unggah Galeri
                         </button>
                     </div>
                 </div>
@@ -75,28 +75,28 @@
                 <div class="flex gap-3" :class="msg.role === 'user' ? 'flex-row-reverse' : ''">
                     <!-- Avatar -->
                     <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 shadow-sm" 
-                         :class="msg.role === 'user' ? 'bg-emerald text-white' : 'bg-white border-2 border-primary p-1'">
-                        <span x-show="msg.role === 'user'">👤</span>
+                         :class="msg.role === 'user' ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white' : 'bg-black/40 border border-emerald-500/40 p-1'">
+                        <span x-show="msg.role === 'user'"><i class="bi bi-person-fill text-sm"></i></span>
                         <img x-show="msg.role !== 'user'" src="{{ asset('images/chatbot-icon.png') }}" class="w-full h-full object-contain" alt="AI">
                     </div>
                     
                     <!-- Bubble Content -->
-                    <div class="p-3.5 text-sm rounded-2xl max-w-[88%] space-y-2 shadow-sm"
-                         :class="msg.role === 'user' ? 'bg-emerald text-white rounded-tr-none' : 'bg-white text-on-surface rounded-tl-none border border-slate-200/80'">
+                    <div class="p-3.5 text-sm rounded-2xl max-w-[88%] space-y-2 shadow-md"
+                         :class="msg.role === 'user' ? 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-tr-none shadow-emerald-500/20' : 'bg-[#0b241b]/95 text-slate-100 rounded-tl-none border border-emerald-500/30'">
                         
                         <!-- Text message -->
                         <div class="whitespace-pre-wrap leading-relaxed" x-html="formatMessage(msg.text)"></div>
                         
                         <!-- Image Preview in bubble -->
                         <template x-if="msg.image">
-                            <div class="relative rounded-xl overflow-hidden mt-2 border border-slate-200 max-h-48 group">
+                            <div class="relative rounded-xl overflow-hidden mt-2 border border-emerald-500/30 max-h-48 group shadow-md">
                                 <img :src="msg.image" class="w-full h-full object-cover">
                                 <template x-if="msg.visionResult">
                                     <div class="absolute inset-0 pointer-events-none">
                                         <template x-for="(obj, oIdx) in msg.visionResult.objects" :key="oIdx">
-                                            <div class="absolute border-2 border-amber-400 bg-amber-400/20 rounded shadow-sm"
+                                            <div class="absolute border-2 border-emerald-400 bg-emerald-400/20 rounded shadow-md"
                                                  :style="`top:${obj.bounding_box[0]}%; left:${obj.bounding_box[1]}%; height:${obj.bounding_box[2] - obj.bounding_box[0]}%; width:${obj.bounding_box[3] - obj.bounding_box[1]}%`">
-                                                <span class="absolute -top-5 left-0 bg-amber-500 text-amber-950 text-[10px] font-extrabold px-1.5 py-0.5 rounded shadow whitespace-nowrap">
+                                                <span class="absolute -top-5 left-0 bg-emerald-500 text-slate-950 text-[10px] font-extrabold px-1.5 py-0.5 rounded shadow-lg whitespace-nowrap">
                                                     <span x-text="obj.nama_objek"></span> (<span x-text="Math.round(obj.confidence)"></span>%)
                                                 </span>
                                             </div>
@@ -108,13 +108,13 @@
 
                         <!-- Interactive Vision Card v2.0 -->
                         <template x-if="msg.visionResult">
-                            <div class="mt-3 bg-slate-50 rounded-xl p-3.5 border border-slate-200 space-y-3 text-xs text-slate-800">
+                            <div class="mt-3 bg-[#071a13] rounded-2xl p-4 border border-emerald-500/30 space-y-3.5 text-xs text-slate-200 shadow-xl">
                                 
                                 <!-- Low Confidence / Unrecognized Alert -->
                                 <template x-if="msg.visionResult.is_valid === false || msg.visionResult.is_recognized === false">
-                                    <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-amber-900 space-y-1">
-                                        <div class="flex items-center gap-1.5 font-bold text-amber-950 text-xs">
-                                            <span>⚠️</span> Validasi Gambar Perlu Perbaikan
+                                    <div class="bg-amber-500/10 border border-amber-500/30 rounded-xl p-3 text-amber-300 space-y-1">
+                                        <div class="flex items-center gap-1.5 font-bold text-amber-200 text-xs">
+                                            <i class="bi bi-exclamation-triangle-fill text-amber-400"></i> Validasi Gambar Perlu Perbaikan
                                         </div>
                                         <p class="text-[11px] leading-relaxed" x-text="msg.visionResult.unrecognized_message || 'Gambar belum dapat dianalisis secara optimal. Silakan ambil foto ulang dengan pencahayaan yang lebih baik.'"></p>
                                     </div>
@@ -123,81 +123,81 @@
                                 <template x-if="msg.visionResult.is_valid !== false && msg.visionResult.is_recognized !== false">
                                     <div class="space-y-3">
                                         <!-- Header Badge & Image Validation -->
-                                        <div class="flex items-center justify-between border-b border-slate-200 pb-2">
+                                        <div class="flex items-center justify-between border-b border-emerald-500/20 pb-2.5">
                                             <div class="flex items-center gap-1.5">
-                                                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
-                                                <span class="font-extrabold text-emerald-800 uppercase tracking-wider text-[10px]">AI Vision v2.0 Analyzer</span>
+                                                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                                                <span class="font-extrabold text-emerald-400 uppercase tracking-wider text-[10px]">AI Vision v2.5 Analyzer</span>
                                             </div>
-                                            <span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 font-bold rounded-md text-[10px]" x-text="`${msg.visionResult.object_count || (msg.visionResult.objects ? msg.visionResult.objects.length : 0)} Objek Terdeteksi`"></span>
+                                            <span class="px-2 py-0.5 bg-emerald-500/20 text-emerald-300 font-extrabold rounded-md text-[10px] border border-emerald-500/30" x-text="`${msg.visionResult.object_count || (msg.visionResult.objects ? msg.visionResult.objects.length : 0)} Objek Terdeteksi`"></span>
                                         </div>
 
                                         <!-- Human Detection Card (If Human Present) -->
                                         <template x-if="msg.visionResult.human_detected && msg.visionResult.human_detected.detected">
-                                            <div class="bg-blue-50/90 border border-blue-200 rounded-xl p-3 text-blue-900 space-y-1 text-[11px]">
-                                                <div class="flex items-center justify-between font-bold text-blue-950">
-                                                    <span>👤 Objek Manusia Terdeteksi</span>
-                                                    <span class="px-1.5 py-0.5 bg-blue-200 text-blue-900 text-[10px] rounded" x-text="`Kepercayaan: ${msg.visionResult.human_detected.confidence}%`"></span>
+                                            <div class="bg-sky-500/10 border border-sky-500/30 rounded-xl p-3 text-sky-200 space-y-1 text-[11px]">
+                                                <div class="flex items-center justify-between font-bold text-sky-300">
+                                                    <span class="flex items-center gap-1.5"><i class="bi bi-person-bounding-box"></i> Objek Manusia Terdeteksi</span>
+                                                    <span class="px-1.5 py-0.5 bg-sky-500/20 text-sky-300 text-[10px] rounded border border-sky-500/30" x-text="`Kepercayaan: ${msg.visionResult.human_detected.confidence}%`"></span>
                                                 </div>
-                                                <p class="text-[10px] text-blue-800 leading-snug" x-text="msg.visionResult.human_detected.privacy_note"></p>
+                                                <p class="text-[10px] text-sky-200/80 leading-snug" x-text="msg.visionResult.human_detected.privacy_note"></p>
                                             </div>
                                         </template>
 
                                         <!-- Objects Breakdown list -->
                                         <div class="space-y-2" x-show="msg.visionResult.objects && msg.visionResult.objects.length > 0">
                                             <template x-for="(obj, oIndex) in msg.visionResult.objects" :key="oIndex">
-                                                <div class="bg-white p-2.5 rounded-lg border border-slate-200 space-y-1.5 shadow-2xs">
+                                                <div class="bg-[#0c2b20] p-3 rounded-xl border border-emerald-500/30 space-y-2 shadow-sm text-slate-200">
                                                     <div class="flex items-start justify-between">
                                                         <div>
                                                             <div class="flex items-center gap-1.5">
-                                                                <h4 class="font-bold text-slate-900 text-xs" x-text="obj.nama_objek"></h4>
+                                                                <h4 class="font-bold text-white text-xs" x-text="obj.nama_objek"></h4>
                                                                 <template x-if="obj.ocr_code">
-                                                                    <span class="px-1.5 py-0.5 bg-purple-100 text-purple-800 font-mono font-bold text-[9px] rounded border border-purple-200" x-text="`OCR: ${obj.ocr_code}`"></span>
+                                                                    <span class="px-1.5 py-0.5 bg-purple-500/20 text-purple-300 font-mono font-bold text-[9px] rounded border border-purple-500/30" x-text="`OCR: ${obj.ocr_code}`"></span>
                                                                 </template>
                                                             </div>
-                                                            <p class="text-[11px] text-slate-500" x-text="`Material: ${obj.material}`"></p>
+                                                            <p class="text-[11px] text-slate-400 mt-0.5" x-text="`Material: ${obj.material}`"></p>
                                                         </div>
-                                                        <span class="px-2 py-0.5 bg-green-50 text-green-700 border border-green-200 font-bold rounded text-[10px]" x-text="`Kategori: ${obj.kategori}`"></span>
+                                                        <span class="px-2.5 py-0.5 bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-extrabold rounded-full text-[10px]" x-text="`Kategori: ${obj.kategori}`"></span>
                                                     </div>
                                                     
                                                     <!-- Metric tags -->
                                                     <div class="flex flex-wrap gap-1 text-[10px] pt-1">
-                                                        <span class="px-1.5 py-0.5 bg-blue-50 text-blue-700 rounded font-semibold" x-text="`Kepercayaan AI: ${obj.confidence}%`"></span>
-                                                        <span class="px-1.5 py-0.5 bg-amber-50 text-amber-700 rounded" x-text="`Kondisi: ${obj.kondisi}`"></span>
-                                                        <span class="px-1.5 py-0.5 bg-emerald-50 text-emerald-700 rounded font-semibold" x-text="`Daur Ulang: ${obj.layak_didaur_ulang ? 'Ya' : 'Tidak'}`"></span>
-                                                        <span class="px-1.5 py-0.5 bg-teal-50 text-teal-700 rounded font-semibold" x-text="`Layak Dijual: ${obj.layak_dijual ? 'Ya' : 'Tidak'}`"></span>
+                                                        <span class="px-1.5 py-0.5 bg-sky-500/20 text-sky-300 rounded font-semibold border border-sky-500/30" x-text="`Kepercayaan AI: ${obj.confidence}%`"></span>
+                                                        <span class="px-1.5 py-0.5 bg-amber-500/20 text-amber-300 rounded border border-amber-500/30" x-text="`Kondisi: ${obj.kondisi}`"></span>
+                                                        <span class="px-1.5 py-0.5 bg-emerald-500/20 text-emerald-300 rounded font-semibold border border-emerald-500/30" x-text="`Daur Ulang: ${obj.layak_didaur_ulang ? 'Ya' : 'Tidak'}`"></span>
+                                                        <span class="px-1.5 py-0.5 bg-teal-500/20 text-teal-300 rounded font-semibold border border-teal-500/30" x-text="`Layak Dijual: ${obj.layak_dijual ? 'Ya' : 'Tidak'}`"></span>
                                                     </div>
 
-                                                    <div class="grid grid-cols-3 gap-1 pt-1.5 text-[10px] border-t border-slate-100">
+                                                    <div class="grid grid-cols-3 gap-1 pt-1.5 text-[10px] border-t border-emerald-500/20">
                                                         <div>
                                                             <span class="text-slate-400 block">Est. Berat</span> 
-                                                            <strong class="text-slate-800" x-text="`${obj.estimasi_berat_kg} Kg`"></strong>
+                                                            <strong class="text-white" x-text="`${obj.estimasi_berat_kg} Kg`"></strong>
                                                         </div>
                                                         <div>
                                                             <span class="text-slate-400 block">Harga/Kg</span> 
-                                                            <strong class="text-slate-800" x-text="`Rp ${formatNumber(obj.harga_per_kg)}`"></strong>
+                                                            <strong class="text-white" x-text="`Rp ${formatNumber(obj.harga_per_kg)}`"></strong>
                                                         </div>
                                                         <div>
                                                             <span class="text-slate-400 block">Est. Nilai</span> 
-                                                            <strong class="text-emerald-700" x-text="`Rp ${formatNumber(obj.estimasi_saldo)}`"></strong>
+                                                            <strong class="text-emerald-400 font-extrabold" x-text="`Rp ${formatNumber(obj.estimasi_saldo)}`"></strong>
                                                         </div>
                                                     </div>
 
                                                     <!-- Cara Memilah & Membersihkan -->
                                                     <template x-if="obj.cara_memilah || obj.cara_membersihkan">
-                                                        <div class="pt-1.5 border-t border-slate-100 text-[10px] space-y-0.5 text-slate-700">
+                                                        <div class="pt-1.5 border-t border-emerald-500/20 text-[10px] space-y-0.5 text-slate-300">
                                                             <template x-if="obj.cara_memilah">
-                                                                <p><strong>Cara Memilah:</strong> <span x-text="obj.cara_memilah"></span></p>
+                                                                <p><strong class="text-emerald-400">Cara Memilah:</strong> <span x-text="obj.cara_memilah"></span></p>
                                                             </template>
                                                             <template x-if="obj.cara_membersihkan">
-                                                                <p><strong>Cara Membersihkan:</strong> <span x-text="obj.cara_membersihkan"></span></p>
+                                                                <p><strong class="text-emerald-400">Cara Membersihkan:</strong> <span x-text="obj.cara_membersihkan"></span></p>
                                                             </template>
                                                         </div>
                                                     </template>
 
                                                     <!-- Saran AI Pemanfaatan Ulang -->
                                                     <template x-if="obj.saran_ai || obj.saran_pemanfaatan_ulang">
-                                                        <div class="bg-amber-50/70 p-2 rounded text-[10px] text-amber-900">
-                                                            <strong>💡 Saran AI:</strong> <span x-text="obj.saran_ai || obj.saran_pemanfaatan_ulang"></span>
+                                                        <div class="bg-amber-500/10 p-2.5 rounded-xl border border-amber-500/30 text-[10px] text-amber-200">
+                                                            <strong class="text-amber-400 block mb-0.5 flex items-center gap-1.5"><i class="bi bi-lightbulb-fill"></i> Saran AI:</strong> <span x-text="obj.saran_ai || obj.saran_pemanfaatan_ulang"></span>
                                                         </div>
                                                     </template>
                                                 </div>
@@ -206,81 +206,31 @@
 
                                         <!-- Total Summary Box -->
                                         <template x-if="msg.visionResult.objects && msg.visionResult.objects.length > 0">
-                                            <div class="bg-gradient-to-r from-emerald-600 to-teal-700 text-white p-3 rounded-xl flex items-center justify-between shadow-sm">
+                                            <div class="bg-gradient-to-r from-emerald-500 via-teal-600 to-emerald-600 text-white p-3.5 rounded-2xl flex items-center justify-between shadow-lg shadow-emerald-500/20">
                                                 <div>
                                                     <p class="text-[10px] text-white/80 font-medium">TOTAL ESTIMASI SALDO</p>
-                                                    <p class="text-base font-black" x-text="`Rp ${formatNumber(msg.visionResult.total_harga)}`"></p>
+                                                    <p class="text-lg font-black" x-text="`Rp ${formatNumber(msg.visionResult.total_harga)}`"></p>
                                                 </div>
                                                 <div class="text-right">
                                                     <p class="text-[10px] text-white/80">Est. Total Berat</p>
-                                                    <p class="text-sm font-bold" x-text="`${msg.visionResult.total_berat} Kg`"></p>
+                                                    <p class="text-sm font-extrabold" x-text="`${msg.visionResult.total_berat} Kg`"></p>
                                                 </div>
-                                            </div>
-                                        </template>
-
-                                        <!-- AI Multi Bank Sampah Smart Recommendation Card -->
-                                        <template x-if="msg.visionResult.ai_bank_recommendation">
-                                            <div class="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 rounded-xl p-3 space-y-2 text-xs text-slate-800 shadow-xs">
-                                                <div class="flex items-center justify-between font-bold text-emerald-950">
-                                                    <span class="flex items-center gap-1.5"><i class="bi bi-geo-alt-fill text-emerald-600"></i> Rekomendasi & Perbandingan Bank Sampah</span>
-                                                    <span class="px-1.5 py-0.5 bg-emerald-200 text-emerald-900 text-[10px] rounded font-bold" x-text="`${msg.visionResult.ai_bank_recommendation.distance_km} km`"></span>
-                                                </div>
-
-                                                <!-- Top 3 Comparison List -->
-                                                <template x-if="msg.visionResult.ai_bank_recommendation.comparison_list">
-                                                    <div class="space-y-1 bg-white p-2 rounded-lg border border-emerald-100 text-[11px]">
-                                                        <template x-for="(item, bIdx) in msg.visionResult.ai_bank_recommendation.comparison_list" :key="bIdx">
-                                                            <div class="flex items-center justify-between py-1 border-b border-slate-100 last:border-b-0">
-                                                                <div class="flex items-center gap-1.5">
-                                                                    <span x-text="item.is_recommended ? '🏆' : '🏬'"></span>
-                                                                    <div>
-                                                                        <span class="font-bold text-slate-900 block leading-tight" x-text="item.nama"></span>
-                                                                        <span class="text-[9px] text-slate-500" x-text="`${item.distance_km} km • ~${item.est_travel_time_min} menit`"></span>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="text-right">
-                                                                    <span class="font-bold text-emerald-700 block" x-text="`Rp ${formatNumber(item.harga_per_kg)}/kg`"></span>
-                                                                    <span class="text-[9px] font-semibold px-1 rounded" :class="item.is_recommended ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-600'" x-text="item.is_recommended ? 'Terbaik' : 'Alternatif'"></span>
-                                                                </div>
-                                                            </div>
-                                                        </template>
-                                                    </div>
-                                                </template>
-
-                                                <p class="text-[11px] text-slate-700 leading-snug italic font-medium" x-text="`🤖 Rekomendasi AI: ${msg.visionResult.ai_bank_recommendation.recommendation_text}`"></p>
-
-                                                <div class="flex items-center justify-between pt-1 text-[10px]">
-                                                    <span class="text-slate-500 font-medium" x-text="`Est. Tempuh: ~${msg.visionResult.ai_bank_recommendation.est_travel_time_min} Menit`"></span>
-                                                    <a :href="msg.visionResult.ai_bank_recommendation.route_url" target="_blank" class="text-emerald-700 hover:text-emerald-900 font-extrabold flex items-center gap-1">
-                                                        🗺️ Navigasi Rute →
-                                                    </a>
-                                                </div>
-                                            </div>
-                                        </template>
-
-                                        <!-- Eco impact info -->
-                                        <template x-if="msg.visionResult.eco_impact && msg.visionResult.objects && msg.visionResult.objects.length > 0">
-                                            <div class="bg-teal-50 p-2.5 rounded-lg border border-teal-200 text-[11px] text-teal-900 space-y-1">
-                                                <strong class="block text-[11px] text-teal-950 flex items-center gap-1">
-                                                    🌱 Dampak Lingkungan:
-                                                </strong>
-                                                <p class="text-[11px] leading-snug" x-text="`Pengurangan CO₂: ${msg.visionResult.eco_impact.co2_reduction_kg} kg | Hemat Energi: ${msg.visionResult.eco_impact.energy_saved_kwh} kWh | Lama Terurai: ${msg.visionResult.eco_impact.decomposition_years} tahun.`"></p>
                                             </div>
                                         </template>
 
                                         <!-- Action Buttons -->
                                         <template x-if="msg.visionResult.objects && msg.visionResult.objects.length > 0">
-                                            <div class="space-y-1.5">
-                                                <div class="grid grid-cols-2 gap-1.5 pt-1">
-                                                    <button @click="openEduModal(msg.visionResult.objects[0])" class="py-2 px-2 bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold rounded-lg text-[11px] transition-colors text-center">
-                                                        📘 Pelajari Selengkapnya
+                                            <div class="space-y-2 pt-1">
+                                                <div class="grid grid-cols-2 gap-2">
+                                                    <button @click="openEduModal(msg.visionResult.objects[0])" class="py-2.5 px-3 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold rounded-xl text-[11px] border border-slate-700 transition-all text-center shadow-sm flex items-center justify-center gap-1.5">
+                                                        <i class="bi bi-book-fill text-emerald-400"></i> Pelajari Selengkapnya
                                                     </button>
-                                                    <button @click="addToBasket(msg.visionResult)" class="py-2 px-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg text-[11px] transition-colors text-center shadow-xs">
-                                                        🛒 Simpan ke Keranjang
+                                                    <button @click="addToBasket(msg.visionResult)" class="py-2.5 px-3 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold rounded-xl text-[11px] transition-all text-center shadow-md shadow-emerald-600/30 flex items-center justify-center gap-1.5">
+                                                        <i class="bi bi-cart-plus-fill"></i> Simpan ke Keranjang
                                                     </button>
                                                 </div>
-                                                <button @click="schedulePickupNow(msg.visionResult)" class="w-full py-2 bg-gradient-to-r from-primary to-emerald hover:from-primary-container hover:to-primary text-white font-extrabold rounded-lg text-xs transition-all shadow text-center flex items-center justify-center gap-1.5">
-                                                    🚚 Jadwalkan Penjemputan
+                                                <button @click="schedulePickupNow(msg.visionResult)" class="w-full py-3 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-extrabold rounded-xl text-xs transition-all shadow-lg shadow-emerald-500/20 text-center flex items-center justify-center gap-2">
+                                                    <i class="bi bi-truck text-sm"></i> Jadwalkan Penjemputan Sekarang
                                                 </button>
                                             </div>
                                         </template>
@@ -295,38 +245,38 @@
 
             <!-- Loading Laser scanning overlay/indicator -->
             <div x-show="isLoading" class="flex gap-3" x-cloak>
-                <div class="w-8 h-8 rounded-full bg-white border-2 border-primary flex items-center justify-center flex-shrink-0 p-1 shadow-sm">
+                <div class="w-8 h-8 rounded-full bg-black/40 border border-emerald-500/40 flex items-center justify-center flex-shrink-0 p-1 shadow-sm">
                     <img src="{{ asset('images/chatbot-icon.png') }}" class="w-full h-full object-contain animate-spin" alt="AI">
                 </div>
-                <div class="bg-white rounded-2xl rounded-tl-none p-4 max-w-[85%] border border-slate-200 shadow-sm space-y-2">
-                    <div class="flex items-center gap-2 text-xs text-emerald-800 font-bold">
-                        <span class="w-2 h-2 bg-emerald-500 rounded-full animate-ping"></span>
+                <div class="bg-[#0b241b]/95 rounded-2xl rounded-tl-none p-4 max-w-[85%] border border-emerald-500/30 shadow-lg space-y-2">
+                    <div class="flex items-center gap-2 text-xs text-emerald-400 font-bold">
+                        <span class="w-2 h-2 bg-emerald-400 rounded-full animate-ping"></span>
                         <span x-text="loadingText"></span>
                     </div>
-                    <div class="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
-                        <div class="bg-gradient-to-r from-primary to-emerald h-full animate-pulse" style="width: 80%"></div>
+                    <div class="w-full bg-slate-900 rounded-full h-1.5 overflow-hidden">
+                        <div class="bg-gradient-to-r from-emerald-400 to-teal-400 h-full animate-pulse" style="width: 80%"></div>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- Input Area -->
-        <div class="p-3 bg-white border-t border-slate-200 relative z-20">
+        <div class="p-3 bg-[#061812] border-t border-emerald-500/30 relative z-20">
             <!-- Camera choices popover -->
             <div x-show="showCameraMenu" 
                  @click.away="showCameraMenu = false"
                  x-transition:enter="transition ease-out duration-200"
                  x-transition:enter-start="opacity-0 translate-y-2"
                  x-transition:enter-end="opacity-100 translate-y-0"
-                 class="absolute bottom-16 left-4 bg-white border border-slate-200 rounded-2xl shadow-xl p-2 z-30 flex flex-col gap-1 w-48 text-xs font-semibold text-slate-700">
-                <button @click="openWebcamModal()" class="flex items-center gap-2 px-3 py-2 hover:bg-emerald-50 text-emerald-900 rounded-xl transition-colors">
-                    <span>📷</span> Ambil Foto Kamera
+                 class="absolute bottom-16 left-4 bg-[#0b241b] border border-emerald-500/40 rounded-2xl shadow-2xl p-2 z-30 flex flex-col gap-1 w-48 text-xs font-semibold text-slate-200">
+                <button @click="openWebcamModal()" class="flex items-center gap-2 px-3 py-2 hover:bg-emerald-500/20 text-emerald-300 rounded-xl transition-colors">
+                    <i class="bi bi-camera-fill text-emerald-400"></i> Ambil Foto Kamera
                 </button>
-                <button @click="triggerGalleryInput()" class="flex items-center gap-2 px-3 py-2 hover:bg-slate-100 rounded-xl transition-colors">
-                    <span>🖼️</span> Upload dari Galeri
+                <button @click="triggerGalleryInput()" class="flex items-center gap-2 px-3 py-2 hover:bg-slate-800 rounded-xl transition-colors">
+                    <i class="bi bi-image-fill text-slate-400"></i> Upload dari Galeri
                 </button>
-                <button @click="showCameraMenu = false" class="flex items-center gap-2 px-3 py-1.5 text-rose-600 hover:bg-rose-50 rounded-xl transition-colors">
-                    <span>❌</span> Batal
+                <button @click="showCameraMenu = false" class="flex items-center gap-2 px-3 py-1.5 text-rose-400 hover:bg-rose-500/10 rounded-xl transition-colors">
+                    <i class="bi bi-x-circle-fill text-rose-400"></i> Batal
                 </button>
             </div>
 
@@ -337,7 +287,7 @@
                 <!-- Camera Button -->
                 <button type="button" 
                         @click="showCameraMenu = !showCameraMenu"
-                        class="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 flex items-center justify-center transition-all flex-shrink-0 shadow-2xs"
+                        class="w-10 h-10 rounded-2xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/20 flex items-center justify-center transition-all flex-shrink-0 shadow-sm"
                         title="Scan Foto AI Vision">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
@@ -345,18 +295,18 @@
                     </svg>
                 </button>
 
-                <div class="flex-1 bg-slate-100 rounded-2xl border border-slate-200 focus-within:border-primary focus-within:ring-1 focus-within:ring-primary transition-all overflow-hidden relative">
+                <div class="flex-1 bg-[#0b241b] rounded-2xl border border-emerald-500/30 focus-within:border-emerald-400 focus-within:ring-1 focus-within:ring-emerald-400 transition-all overflow-hidden relative">
                     <textarea x-model="inputText" 
                               @keydown.enter.prevent="if(!$event.shiftKey) sendMessage()"
                               rows="1" 
                               placeholder="Tanya AI atau scan foto..." 
-                              class="w-full bg-transparent border-none focus:ring-0 resize-none py-2.5 px-3.5 text-sm text-slate-800 max-h-[90px] min-h-[40px]"
+                              class="w-full bg-transparent border-none focus:ring-0 resize-none py-2.5 px-3.5 text-sm text-white placeholder-slate-400 max-h-[90px] min-h-[40px]"
                               style="scrollbar-width: none;"></textarea>
                 </div>
 
                 <button type="submit" 
                         :disabled="isLoading || inputText.trim() === ''"
-                        class="w-10 h-10 rounded-2xl bg-primary hover:bg-primary-container text-white flex items-center justify-center transition-transform hover:scale-105 disabled:opacity-40 disabled:cursor-not-allowed flex-shrink-0 shadow-md">
+                        class="w-10 h-10 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-bold flex items-center justify-center transition-all hover:scale-105 disabled:opacity-40 disabled:cursor-not-allowed flex-shrink-0 shadow-lg shadow-emerald-500/20">
                     <svg class="w-5 h-5 ml-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
                     </svg>
@@ -370,9 +320,9 @@
 
     <!-- Toggle Floating Button -->
     <button @click="isOpen = !isOpen" 
-            class="w-14 h-14 rounded-full bg-[#0A241B] border-2 border-[#2DD67B] text-[#2DD67B] flex items-center justify-center shadow-[0_0_20px_rgba(45,214,123,0.4)] hover:shadow-[0_0_30px_rgba(45,214,123,0.6)] transition-all duration-300 hover:scale-110 active:scale-95 relative z-50 animate-pulse-subtle">
-        <img x-show="!isOpen" src="{{ asset('images/chatbot-icon.png') }}" class="w-9 h-9 object-contain" alt="Assistant">
-        <svg x-show="isOpen" class="w-6 h-6 text-[#2DD67B]" fill="none" stroke="currentColor" viewBox="0 0 24 24" x-cloak>
+            class="w-14 h-14 rounded-full bg-gradient-to-br from-emerald-500 via-teal-600 to-emerald-700 border-2 border-emerald-300 text-white flex items-center justify-center shadow-[0_0_30px_rgba(16,185,129,0.5)] hover:shadow-[0_0_40px_rgba(16,185,129,0.7)] transition-all duration-300 hover:scale-110 active:scale-95 relative z-50">
+        <img x-show="!isOpen" src="{{ asset('images/chatbot-icon.png') }}" class="w-9 h-9 object-contain drop-shadow-md" alt="Assistant">
+        <svg x-show="isOpen" class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" x-cloak>
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
         </svg>
         <span x-show="!isOpen && unreadCount > 0" class="absolute -top-1 -right-1 flex h-4 w-4">
@@ -386,9 +336,9 @@
         <div class="bg-white rounded-3xl overflow-hidden max-w-md w-full shadow-2xl space-y-4 p-5">
             <div class="flex items-center justify-between border-b pb-3">
                 <h3 class="font-bold text-slate-900 text-base flex items-center gap-2">
-                    <span>📷</span> Live Camera Scanner
+                    <i class="bi bi-camera-reels-fill text-emerald-600"></i> Live Camera Scanner
                 </h3>
-                <button @click="closeWebcamModal()" class="text-slate-400 hover:text-slate-600">✕</button>
+                <button @click="closeWebcamModal()" class="text-slate-400 hover:text-slate-600"><i class="bi bi-x-lg"></i></button>
             </div>
             
             <div class="relative bg-black rounded-2xl overflow-hidden aspect-video flex items-center justify-center">
@@ -403,8 +353,8 @@
                 <button @click="closeWebcamModal()" class="flex-1 py-2.5 bg-slate-100 text-slate-700 font-bold rounded-xl text-xs">
                     Batal
                 </button>
-                <button @click="captureWebcamPhoto()" class="flex-1 py-2.5 bg-primary text-white font-extrabold rounded-xl text-xs shadow-md hover:bg-primary-container">
-                    📸 Ambil Foto
+                <button @click="captureWebcamPhoto()" class="flex-1 py-2.5 bg-primary text-white font-extrabold rounded-xl text-xs shadow-md hover:bg-primary-container flex items-center justify-center gap-2">
+                    <i class="bi bi-camera-fill"></i> Ambil Foto
                 </button>
             </div>
         </div>
@@ -418,33 +368,33 @@
                     <span class="text-[10px] bg-white/20 text-white font-bold px-2 py-0.5 rounded uppercase">Edukasi AI & RAG</span>
                     <h3 class="text-lg font-bold" x-text="eduData?.nama_objek || 'Edukasi Daur Ulang'"></h3>
                 </div>
-                <button @click="isEduModalOpen = false" class="text-white hover:text-white/70">✕</button>
+                <button @click="isEduModalOpen = false" class="text-white hover:text-white/70"><i class="bi bi-x-lg"></i></button>
             </div>
             
             <div class="p-6 overflow-y-auto space-y-4 text-xs text-slate-700 leading-relaxed" x-show="eduData">
                 <div class="bg-emerald-50 p-3 rounded-xl border border-emerald-200">
-                    <strong class="text-emerald-950 font-bold block mb-1">🌱 Asal Material:</strong>
+                    <strong class="text-emerald-950 font-bold flex items-center gap-1.5 mb-1"><i class="bi bi-leaf-fill text-emerald-600"></i> Asal Material:</strong>
                     <p x-text="eduData?.edukasi?.asal_material"></p>
                 </div>
                 
                 <div class="bg-blue-50 p-3 rounded-xl border border-blue-200">
-                    <strong class="text-blue-950 font-bold block mb-1">♻️ Tahap Proses Daur Ulang:</strong>
+                    <strong class="text-blue-950 font-bold flex items-center gap-1.5 mb-1"><i class="bi bi-recycle text-blue-600"></i> Tahap Proses Daur Ulang:</strong>
                     <p x-text="eduData?.edukasi?.proses_daur_ulang"></p>
                 </div>
 
                 <div class="grid grid-cols-2 gap-3">
                     <div class="bg-amber-50 p-3 rounded-xl border border-amber-200">
-                        <strong class="text-amber-950 font-bold block mb-1">💰 Manfaat Ekonomi:</strong>
+                        <strong class="text-amber-950 font-bold flex items-center gap-1.5 mb-1"><i class="bi bi-cash-coin text-amber-600"></i> Manfaat Ekonomi:</strong>
                         <p x-text="eduData?.edukasi?.manfaat_ekonomi"></p>
                     </div>
                     <div class="bg-teal-50 p-3 rounded-xl border border-teal-200">
-                        <strong class="text-teal-950 font-bold block mb-1">🌍 Manfaat Lingkungan:</strong>
+                        <strong class="text-teal-950 font-bold flex items-center gap-1.5 mb-1"><i class="bi bi-globe-americas text-teal-600"></i> Manfaat Lingkungan:</strong>
                         <p x-text="eduData?.edukasi?.manfaat_lingkungan"></p>
                     </div>
                 </div>
 
                 <div class="bg-purple-50 p-3 rounded-xl border border-purple-200">
-                    <strong class="text-purple-950 font-bold block mb-1">✨ Fakta Menarik:</strong>
+                    <strong class="text-purple-950 font-bold flex items-center gap-1.5 mb-1"><i class="bi bi-stars text-purple-600"></i> Fakta Menarik:</strong>
                     <p x-text="eduData?.edukasi?.fakta_menarik"></p>
                 </div>
 
@@ -469,16 +419,16 @@
         <div class="bg-white rounded-3xl overflow-hidden max-w-md w-full shadow-2xl flex flex-col max-h-[85vh]">
             <div class="p-4 bg-primary text-white flex items-center justify-between">
                 <div class="flex items-center gap-2">
-                    <span class="text-xl">🛒</span>
+                    <i class="bi bi-cart-check-fill text-xl"></i>
                     <h3 class="font-bold text-base">Keranjang Setoran Sampah</h3>
                 </div>
-                <button @click="isBasketOpen = false" class="text-white hover:text-white/70">✕</button>
+                <button @click="isBasketOpen = false" class="text-white hover:text-white/70"><i class="bi bi-x-lg"></i></button>
             </div>
 
             <div class="p-4 overflow-y-auto flex-1 space-y-3">
                 <template x-if="basket.length === 0">
                     <div class="text-center py-8 text-slate-400 space-y-2">
-                        <div class="text-3xl">🗑️</div>
+                        <i class="bi bi-trash-fill text-4xl block text-slate-300"></i>
                         <p class="text-xs">Keranjang setoran masih kosong.</p>
                     </div>
                 </template>
@@ -491,7 +441,7 @@
                             <p class="text-emerald-700 font-extrabold text-xs" x-text="`Rp ${formatNumber(bItem.estimasi_saldo)}`"></p>
                         </div>
                         <button @click="removeFromBasket(bIdx)" class="text-rose-500 hover:text-rose-700 p-1 font-bold">
-                            ✕
+                            <i class="bi bi-x-lg"></i>
                         </button>
                     </div>
                 </template>
@@ -503,11 +453,11 @@
                     <span class="text-emerald-700 text-sm" x-text="`Rp ${formatNumber(getBasketTotal())}`"></span>
                 </div>
                 <div class="grid grid-cols-2 gap-2">
-                    <button @click="isBasketOpen = false; triggerCameraChoice('camera')" class="py-2.5 bg-slate-200 text-slate-800 font-bold rounded-xl text-xs">
-                        ➕ Scan Lagi
+                    <button @click="isBasketOpen = false; triggerCameraChoice('camera')" class="py-2.5 bg-slate-200 text-slate-800 font-bold rounded-xl text-xs flex items-center justify-center gap-1.5">
+                        <i class="bi bi-plus-circle-fill text-emerald-600"></i> Scan Lagi
                     </button>
-                    <button @click="checkoutBasketToPickup()" :disabled="basket.length === 0" class="py-2.5 bg-primary text-white font-extrabold rounded-xl text-xs disabled:opacity-50 shadow">
-                        🚚 Penjemputan
+                    <button @click="checkoutBasketToPickup()" :disabled="basket.length === 0" class="py-2.5 bg-primary text-white font-extrabold rounded-xl text-xs disabled:opacity-50 shadow flex items-center justify-center gap-1.5">
+                        <i class="bi bi-truck"></i> Penjemputan
                     </button>
                 </div>
             </div>
@@ -521,7 +471,7 @@
          x-transition:enter-end="opacity-100 translate-y-0 scale-100"
          class="fixed bottom-24 right-6 bg-gradient-to-r from-amber-400 to-amber-500 text-amber-950 p-4 rounded-2xl shadow-2xl z-50 flex items-center gap-3 border-2 border-white" 
          x-cloak>
-        <span class="text-3xl">🏆</span>
+        <i class="bi bi-trophy-fill text-3xl text-amber-950"></i>
         <div>
             <p class="text-[10px] uppercase tracking-wider font-extrabold text-amber-900">Lencana Baru Diperoleh!</p>
             <h4 class="font-black text-sm" x-text="unlockedBadge"></h4>

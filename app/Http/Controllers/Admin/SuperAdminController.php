@@ -18,17 +18,42 @@ class SuperAdminController extends Controller
      */
     public function dashboard()
     {
-        // Metric Counters
-        $metrics = [
-            'count_bank_sampah' => BankSampah::count(),
-            'count_admin' => User::role('admin')->count(),
-            'count_petugas' => User::role('petugas')->count(),
-            'count_nasabah' => User::role('nasabah')->count(),
-            'count_transaksi' => Transaction::count(),
-            'count_pickup' => DB::table('transactions')->where('tipe_setoran', 'jemput')->count(),
-            'total_berat' => Transaction::sum('berat_kg') ?: 0,
-            'total_pendapatan' => Transaction::sum('total_rp') ?: 0,
-        ];
+        $user = auth()->user();
+        $isSuperAdmin = $user->hasRole('super_admin') || empty($user->bank_sampah_id);
+        $bsId = $user->bank_sampah_id;
+
+        // Metric Counters (Scoped for Admin Unit, Global for Super Admin)
+        if ($isSuperAdmin) {
+            $metrics = [
+                'count_bank_sampah' => BankSampah::where('status', 'aktif')->count(),
+                'count_admin' => User::role('admin')->count(),
+                'count_petugas' => User::role('petugas')->count(),
+                'count_nasabah' => User::role('nasabah')->count(),
+                'count_transaksi' => Transaction::count(),
+                'count_pickup' => DB::table('transactions')->where('tipe_setoran', 'jemput')->count(),
+                'total_berat' => Transaction::where('status', 'selesai')->sum('berat_kg') ?: 0,
+                'total_pendapatan' => Transaction::where('status', 'selesai')->sum('total_rp') ?: 0,
+            ];
+        } else {
+            $unitBankSampah = BankSampah::find($bsId);
+            $metrics = [
+                'count_bank_sampah' => 1,
+                'count_admin' => User::role('admin')->where('bank_sampah_id', $bsId)->count(),
+                'count_petugas' => User::role('petugas')->where('bank_sampah_id', $bsId)->count(),
+                'count_nasabah' => User::role('nasabah')->where('bank_sampah_id', $bsId)->count(),
+                'count_transaksi' => Transaction::where('bank_sampah_id', $bsId)->count(),
+                'count_pickup' => Transaction::where('bank_sampah_id', $bsId)->where('tipe_setoran', 'jemput')->count(),
+                'total_berat' => Transaction::where('bank_sampah_id', $bsId)->where('status', 'selesai')->sum('berat_kg') ?: 0,
+                'total_pendapatan' => Transaction::where('bank_sampah_id', $bsId)->where('status', 'selesai')->sum('total_rp') ?: 0,
+                'unit_nama' => $unitBankSampah?->nama ?? 'Unit Bank Sampah',
+                'unit_alamat' => $unitBankSampah?->alamat ?? '-',
+                'unit_rt_rw' => 'RT ' . ($unitBankSampah?->rt ?? '01') . ' / RW ' . ($unitBankSampah?->rw ?? '01'),
+                'unit_desa' => $unitBankSampah?->desa ?? '-',
+                'unit_kecamatan' => $unitBankSampah?->kecamatan ?? '-',
+                'unit_kabupaten' => $unitBankSampah?->kabupaten ?? '-',
+                'unit_kas' => $unitBankSampah?->kas_unit ?? 0,
+            ];
+        }
 
         // 1. Grafik Setoran Harian (Last 7 Days)
         $chartSetoran = [
@@ -61,8 +86,12 @@ class SuperAdminController extends Controller
         ];
 
         // Top 10 Bank Sampah Terbaik
-        $topBankSampahs = BankSampah::withCount(['nasabah', 'petugas'])
-            ->get()
+        $topQuery = BankSampah::withCount(['nasabah', 'petugas']);
+        if (!$isSuperAdmin && $bsId) {
+            $topQuery->where('id', $bsId);
+        }
+
+        $topBankSampahs = $topQuery->get()
             ->map(function ($bs) {
                 $userIds = $bs->users()->pluck('id');
                 $bs->total_pendapatan = \App\Models\Transaction::whereIn('user_id', $userIds)->where('status', 'selesai')->sum('total_rp');
@@ -73,9 +102,11 @@ class SuperAdminController extends Controller
             ->take(10)
             ->values();
 
+        $allBankSampahs = BankSampah::all(['id', 'nama', 'kode_bank', 'latitude', 'longitude', 'radius_layanan', 'alamat', 'telepon', 'email', 'jam_buka', 'jam_tutup']);
+
         return view('admin.super-dashboard', compact(
             'metrics', 'chartSetoran', 'chartPenjemputan', 'chartPendapatan',
-            'chartJenisSampah', 'chartCO2', 'topBankSampahs'
+            'chartJenisSampah', 'chartCO2', 'topBankSampahs', 'isSuperAdmin', 'allBankSampahs'
         ));
     }
 

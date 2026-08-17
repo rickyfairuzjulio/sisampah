@@ -14,11 +14,13 @@ class StorePickupRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'bank_sampah_id' => 'nullable|exists:bank_sampahs,id',
             'items' => 'required|array|min:1',
             'items.*.trash_category_id' => 'required|exists:trash_categories,id',
             'items.*.perkiraan_berat' => 'required|numeric|min:0.1',
             'koordinat_lat' => 'required|numeric',
             'koordinat_lng' => 'required|numeric',
+            'alamat_lengkap' => 'nullable|string',
             'catatan' => 'nullable|string|max:500',
         ];
     }

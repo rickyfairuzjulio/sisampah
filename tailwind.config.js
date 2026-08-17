@@ -43,35 +43,33 @@ export default {
                 DEFAULT: '0.5rem',
                 md: '0.75rem',
                 lg: '1rem',
-                xl: '1.25rem', // 20px for Cards
-                '2xl': '1.5rem', // 24px for Modals
-                'btn': '16px', // 16px for Buttons/Inputs
-                'card': '20px',
-                full: '9999px', // Chips
+                xl: '1.25rem',
+                '2xl': '1.5rem',
+                'btn': '0.75rem', // 12px for Buttons/Inputs
+                'card': '1rem', // 16px for Cards
+                full: '9999px',
             },
             boxShadow: {
-                'soft': '0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01)',
-                'glow-green': '0 0 15px rgba(34, 197, 94, 0.4)',
-                'glow-green-sm': '0 4px 14px 0 rgba(34, 197, 94, 0.39)',
+                'sm': '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
+                'DEFAULT': '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1)',
+                'md': '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1)',
+                'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.04), 0 2px 6px -1px rgba(0, 0, 0, 0.02)',
+                'glow-green': '0 4px 14px 0 rgba(16, 185, 129, 0.2)',
+                'glow-green-sm': '0 2px 8px 0 rgba(16, 185, 129, 0.15)',
             },
             keyframes: {
                 'slide-in': {
-                    '0%': { opacity: '0', transform: 'translateY(10px)' },
+                    '0%': { opacity: '0', transform: 'translateY(6px)' },
                     '100%': { opacity: '1', transform: 'translateY(0)' },
                 },
                 'fade-in': {
                     '0%': { opacity: '0' },
                     '100%': { opacity: '1' },
                 },
-                'ripple': {
-                    '0%': { transform: 'scale(0.8)', opacity: '1' },
-                    '100%': { transform: 'scale(2.4)', opacity: '0' },
-                }
             },
             animation: {
-                'slide-in': 'slide-in 0.4s ease-out',
-                'fade-in': 'fade-in 0.4s ease-out',
-                'ripple': 'ripple 1s cubic-bezier(0, 0.2, 0.8, 1) infinite',
+                'slide-in': 'slide-in 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+                'fade-in': 'fade-in 0.3s ease-out',
             }
         },
     },

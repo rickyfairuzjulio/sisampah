@@ -52,13 +52,13 @@
 
         <!-- Mobile Sidebar Drawer -->
         <div x-show="sidebarOpen" 
-             x-transition:enter="transition ease-in-out duration-300 transform"
+             x-transition:enter="transition ease-in-out duration-200 transform"
              x-transition:enter-start="-translate-x-full"
              x-transition:enter-end="translate-x-0"
-             x-transition:leave="transition ease-in-out duration-300 transform"
+             x-transition:leave="transition ease-in-out duration-200 transform"
              x-transition:leave-start="translate-x-0"
              x-transition:leave-end="-translate-x-full"
-             class="fixed inset-y-0 left-0 z-50 w-[260px] bg-[#041A12] lg:hidden h-full"
+             class="fixed inset-y-0 left-0 z-50 w-[250px] bg-slate-900 lg:hidden h-full"
              x-cloak>
             @include('layouts.sidebar')
         </div>
@@ -67,15 +67,15 @@
         <main class="flex-1 flex flex-col h-full overflow-hidden relative z-0">
             
             <!-- Dashboard Navbar / Top Header -->
-            <nav class="bg-[#041A12]/90 backdrop-blur-md border-b border-white/5 h-[72px] flex items-center justify-between px-4 sm:px-6 sticky top-0 z-30 transition-colors duration-300">
+            <nav class="bg-slate-900 border-b border-slate-800 h-[64px] flex items-center justify-between px-4 sm:px-6 sticky top-0 z-30 transition-colors duration-200">
                 
                 <!-- Mobile Menu Button & Logo -->
                 <div class="flex items-center gap-3 lg:hidden">
-                    <button @click="sidebarOpen = !sidebarOpen" class="w-10 h-10 rounded-xl bg-white/5 border border-white/10 text-[#8BA39A] hover:text-white flex items-center justify-center transition-colors">
-                        <i class="bi bi-list text-2xl"></i>
+                    <button @click="sidebarOpen = !sidebarOpen" class="w-9 h-9 rounded-lg bg-slate-800 border border-slate-700 text-slate-300 hover:text-white flex items-center justify-center transition-colors">
+                        <i class="bi bi-list text-xl"></i>
                     </button>
                     <a href="{{ route('home') }}" class="flex items-center gap-2">
-                        <img src="{{ asset('images/logo.png') }}" alt="Logo" class="w-8 h-8">
+                        <img src="{{ asset('images/logo.png') }}" alt="Logo" class="w-7 h-7">
                         <span class="font-bold text-white text-base sm:hidden">SiSampah</span>
                     </a>
                 </div>
@@ -83,53 +83,52 @@
                 <!-- Header Title for Desktop -->
                 <div class="hidden lg:block">
                     @isset($header)
-                        <h1 class="text-xl font-bold text-white tracking-tight">{{ $header }}</h1>
+                        <h1 class="text-base font-bold text-white tracking-tight">{{ $header }}</h1>
                     @endisset
                 </div>
 
                 <!-- Search Bar Center (Tablet & Desktop) -->
                 <div class="flex-1 max-w-md mx-auto hidden md:block px-4">
                     <div class="relative group">
-                        <i class="bi bi-search absolute left-4 top-1/2 -translate-y-1/2 text-[#8BA39A] group-focus-within:text-primary transition-colors"></i>
-                        <input type="text" placeholder="Pencarian cepat..." class="w-full pl-11 pr-4 py-2.5 bg-white/5 border border-white/10 rounded-full text-white placeholder:text-[#8BA39A] focus:bg-white/10 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all text-sm font-medium">
+                        <i class="bi bi-search absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-emerald-400 transition-colors text-xs"></i>
+                        <input type="text" placeholder="Pencarian cepat..." class="w-full pl-9 pr-3.5 py-1.5 bg-slate-800/80 border border-slate-700/80 rounded-lg text-white placeholder:text-slate-400 focus:bg-slate-800 focus:border-emerald-500 ring-0 outline-none transition-all text-xs font-medium">
                     </div>
                 </div>
 
                 <!-- Right Actions -->
-                <div class="flex items-center gap-2 sm:gap-4">
+                <div class="flex items-center gap-2 sm:gap-3">
                     
                     <x-theme-toggle />
 
-                    <button class="relative w-10 h-10 rounded-full flex items-center justify-center text-[#8BA39A] hover:bg-white/5 hover:text-white transition-all">
-                        <i class="bi bi-bell-fill text-lg"></i>
-                        <span class="absolute top-2 right-2 w-2.5 h-2.5 bg-danger rounded-full border-2 border-[#041A12]"></span>
-                    </button>
+                    @auth
+                        <x-notification-dropdown />
+                    @endauth
 
-                    <div class="w-[1px] h-6 bg-white/10 mx-1 hidden sm:block"></div>
+                    <div class="w-[1px] h-5 bg-slate-800 mx-1 hidden sm:block"></div>
 
                     @auth
                         <x-dropdown align="right" width="48">
                             <x-slot name="trigger">
-                                <button class="flex items-center gap-3 group cursor-pointer hover:bg-white/5 p-1 rounded-full sm:pr-4 transition-colors border border-transparent hover:border-white/10">
-                                    <img src="{{ Auth::user()->avatar_url }}" class="w-9 h-9 rounded-full object-cover border-2 border-primary" alt="{{ Auth::user()->name }}">
+                                <button class="flex items-center gap-2.5 group cursor-pointer hover:bg-slate-800/80 p-1 rounded-lg sm:pr-3 transition-colors border border-transparent hover:border-slate-700/60">
+                                    <img src="{{ Auth::user()->avatar_url }}" class="w-8 h-8 rounded-full object-cover border border-emerald-500" alt="{{ Auth::user()->name }}">
                                     <div class="hidden sm:block text-left">
-                                        <p class="text-sm font-bold text-white leading-none">{{ Auth::user()->name }}</p>
-                                        <p class="text-[10px] text-primary font-bold mt-1.5 uppercase tracking-wide">{{ Auth::user()->roles->first()->name ?? 'User' }}</p>
+                                        <p class="text-xs font-bold text-white leading-none">{{ Auth::user()->name }}</p>
+                                        <p class="text-[10px] text-emerald-400 font-semibold mt-1 uppercase tracking-wider">{{ Auth::user()?->getRoleNames()?->first() ?? 'User' }}</p>
                                     </div>
-                                    <i class="bi bi-chevron-down text-[#8BA39A] text-xs ml-1 group-hover:text-white transition-colors hidden sm:block"></i>
+                                    <i class="bi bi-chevron-down text-slate-400 text-[10px] ml-1 group-hover:text-white transition-colors hidden sm:block"></i>
                                 </button>
                             </x-slot>
 
                             <x-slot name="content">
-                                <x-dropdown-link :href="route('profile.edit')" class="!text-sm !font-bold">
-                                    <i class="bi bi-person mr-2 text-primary"></i> Profil Saya
+                                <x-dropdown-link :href="route('profile.edit')" class="!text-xs !font-semibold">
+                                    <i class="bi bi-person mr-2 text-emerald-500"></i> Profil Saya
                                 </x-dropdown-link>
                                 
                                 <form method="POST" action="{{ route('logout') }}">
                                     @csrf
                                     <x-dropdown-link :href="route('logout')"
                                             onclick="event.preventDefault(); this.closest('form').submit();"
-                                            class="!text-sm !font-bold !text-danger hover:bg-danger/10">
+                                            class="!text-xs !font-semibold !text-red-500 hover:bg-red-500/10">
                                         <i class="bi bi-box-arrow-right mr-2"></i> Keluar
                                     </x-dropdown-link>
                                 </form>

@@ -24,6 +24,7 @@
                 <x-theme-toggle />
 
                 @auth
+                    <x-notification-dropdown />
                     <x-dropdown align="right" width="48">
                         <x-slot name="trigger">
                             <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-semibold rounded-full text-on-surface-variant bg-surface-container-low hover:text-on-surface hover:bg-surface-container transition ease-in-out duration-150">

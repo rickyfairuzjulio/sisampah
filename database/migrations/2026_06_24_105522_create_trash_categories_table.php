@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('trash_categories', function (Blueprint $table) {
             $table->id();
-            $table->string('nama')->unique();
+            $table->string('nama');
             $table->decimal('harga_per_kg', 10, 2);
             $table->text('deskripsi')->nullable();
             $table->timestamps();

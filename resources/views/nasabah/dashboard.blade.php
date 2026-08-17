@@ -24,29 +24,27 @@
         $currentXp = $userLeaderboard ? $userLeaderboard->total_poin_lingkungan : 0;
     @endphp
 
-    <div class="mb-8 animate-slide-in" style="animation-delay: 0.1s;">
-        <div class="bg-surface border border-outline-variant rounded-2xl p-5 sm:p-6 shadow-sm flex flex-col sm:flex-row items-center gap-6">
+    <div class="mb-6 animate-slide-in">
+        <div class="card p-5 sm:p-6 flex flex-col sm:flex-row items-center gap-5">
             <div class="relative shrink-0">
-                <div class="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-br {{ $badgeColor }} flex items-center justify-center text-4xl sm:text-5xl shadow-lg border-4 border-surface">
+                <div class="w-16 h-16 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-3xl">
                     {{ $badgeIcon }}
                 </div>
-                <div class="absolute -bottom-2 -right-2 bg-surface text-on-surface text-xs font-black px-2.5 py-1 rounded-full border-2 border-surface shadow-sm">
+                <div class="absolute -bottom-1.5 -right-1.5 bg-slate-900 text-white text-[10px] font-bold px-2 py-0.5 rounded-full border border-slate-700">
                     LV {{ $lvl }}
                 </div>
             </div>
             <div class="flex-1 w-full text-center sm:text-left">
-                <h3 class="text-xl sm:text-2xl font-black text-on-surface">{{ $badgeName }}</h3>
-                <p class="text-sm text-on-surface-variant font-medium mt-1 mb-4">{{ number_format($currentXp, 0) }} / {{ number_format($nextXp, 0) }} Poin Lingkungan</p>
+                <h3 class="text-lg font-bold text-text-primary">{{ $badgeName }}</h3>
+                <p class="text-xs text-text-secondary font-medium mt-0.5 mb-3">{{ number_format($currentXp, 0) }} / {{ number_format($nextXp, 0) }} Poin Lingkungan</p>
                 
-                <div class="relative w-full h-3 sm:h-4 bg-surface-container-highest rounded-full overflow-hidden">
-                    <div class="absolute top-0 left-0 h-full bg-gradient-to-r {{ $badgeColor }} transition-all duration-1000 ease-out" style="width: {{ $xpPercent }}%;">
-                        <div class="absolute inset-0 bg-white/20" style="background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.1) 10px, rgba(255,255,255,0.1) 20px);"></div>
-                    </div>
+                <div class="w-full h-2.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                    <div class="h-full bg-emerald-500 rounded-full transition-all duration-500" style="width: {{ $xpPercent }}%;"></div>
                 </div>
                 @if($lvl < 4)
-                    <p class="text-xs text-on-surface-variant font-medium mt-2 text-right">{{ 100 - $xpPercent }}% menuju Level {{ $lvl + 1 }}</p>
+                    <p class="text-[11px] text-text-muted mt-1.5 text-right">{{ 100 - $xpPercent }}% menuju Level {{ $lvl + 1 }}</p>
                 @else
-                    <p class="text-xs text-primary font-bold mt-2 text-right">Maksimal Level Tercapai! 🎉</p>
+                    <p class="text-[11px] text-emerald-500 font-semibold mt-1.5 text-right">Maksimal Level Tercapai 🎉</p>
                 @endif
             </div>
         </div>
@@ -55,89 +53,77 @@
     <!-- E-Wallet & Quick Actions Section -->
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-8 animate-slide-in">
         
-        <!-- Saldo Card (E-Wallet Style) -->
-        <div class="lg:col-span-5 relative rounded-3xl overflow-hidden bg-gradient-to-br from-[#0f2027] via-[#203a43] to-[#2c5364] shadow-xl p-7 text-white flex flex-col justify-between group cursor-pointer hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
-            <!-- Glass effect overlay -->
-            <div class="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-            <div class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -mr-10 -mt-10"></div>
-            <div class="absolute bottom-0 left-0 w-24 h-24 bg-primary/30 rounded-full blur-2xl -ml-10 -mb-10"></div>
-            
-            <div class="relative z-10 flex justify-between items-start mb-6">
+        <!-- Saldo Card -->
+        <div class="lg:col-span-5 rounded-2xl bg-emerald-600 dark:bg-emerald-700 p-6 text-white flex flex-col justify-between shadow-sm">
+            <div class="flex justify-between items-start mb-6">
                 <div>
-                    <p class="text-white/70 text-sm font-medium mb-1">Total Saldo Aktif</p>
-                    <h2 class="text-3xl font-black tracking-tight">Rp {{ number_format($saldo, 0, ',', '.') }}</h2>
+                    <p class="text-emerald-100 text-xs font-medium mb-1">Total Saldo Aktif</p>
+                    <h2 class="text-2xl font-bold tracking-tight">Rp {{ number_format($saldo, 0, ',', '.') }}</h2>
                 </div>
-                <div class="w-10 h-10 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20 shadow-inner">
-                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <div class="w-9 h-9 rounded-lg bg-white/10 flex items-center justify-center border border-white/20">
+                    <i class="bi bi-wallet2 text-white text-base"></i>
                 </div>
             </div>
 
-            <div class="relative z-10 flex items-center justify-between mt-auto pt-6 border-t border-white/10">
-                <div class="flex items-center gap-2">
-                    <div class="w-6 h-6 rounded-full bg-primary/80"></div>
-                    <div class="w-6 h-6 rounded-full bg-forest-emerald/80 -ml-3"></div>
-                    <span class="text-xs font-semibold tracking-wider opacity-80 ml-2">SiSampah Pay</span>
-                </div>
-                <a href="{{ route('nasabah.wallet') }}#withdrawal-form" class="inline-flex items-center justify-center px-4 py-2 bg-white text-[#0f2027] text-xs font-bold rounded-full hover:bg-gray-100 transition-colors shadow-sm">
+            <div class="flex items-center justify-between mt-auto pt-4 border-t border-white/15">
+                <span class="text-xs font-semibold text-emerald-100">SiSampah Pay</span>
+                <a href="{{ route('nasabah.wallet') }}#withdrawal-form" class="inline-flex items-center justify-center px-3.5 py-1.5 bg-white text-emerald-800 text-xs font-semibold rounded-lg hover:bg-emerald-50 transition-colors">
                     Tarik Dana
                 </a>
             </div>
         </div>
 
         <!-- Right Side: Stats & Quick Actions -->
-        <div class="lg:col-span-7 flex flex-col gap-6">
+        <div class="lg:col-span-7 flex flex-col gap-5">
             <!-- 3 Mini Stats -->
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
                 <x-stat-tile
                     title="{{ number_format($totalBerat, 1) }} Kg"
                     subtitle="Berat Setor"
-                    icon='<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2"/></svg>'
+                    icon='<i class="bi bi-box-seam text-lg"></i>'
                 />
                 <x-stat-tile
                     title="{{ number_format($totalPoin, 0) }}"
                     subtitle="Total Poin"
-                    icon='<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>'
+                    icon='<i class="bi bi-star text-lg"></i>'
                 />
                 <x-stat-tile
                     title="{{ collect($transaksiTerbaru)->count() }}"
                     subtitle="Transaksi"
-                    icon='<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>'
+                    icon='<i class="bi bi-arrow-left-right text-lg"></i>'
                 />
             </div>
 
             <!-- 4 Quick Actions -->
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 flex-1">
-                <a href="{{ route('nasabah.pickup.form') }}" class="group relative bg-surface-container-low hover:bg-surface-container border border-outline-variant hover:border-blue-500/50 rounded-2xl p-4 flex flex-col items-center justify-center text-center transition-all duration-300 hover:-translate-y-1 hover:shadow-lg overflow-hidden">
-                    <div class="absolute inset-0 bg-gradient-to-b from-blue-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                    <div class="w-10 h-10 sm:w-12 sm:h-12 bg-blue-100 dark:bg-blue-900/40 rounded-full flex items-center justify-center mb-2 sm:mb-3 group-hover:scale-110 transition-transform shadow-inner">
-                        <svg class="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                <a href="{{ route('nasabah.pickup.form') }}" class="card p-4 flex flex-col items-center justify-center text-center hover:border-emerald-500/50 transition-colors">
+                    <div class="w-10 h-10 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-xl flex items-center justify-center mb-2">
+                        <i class="bi bi-truck text-lg"></i>
                     </div>
-                    <p class="font-bold text-sm text-on-surface mb-0.5">Jemput</p>
-                    <p class="text-[10px] text-on-surface-variant uppercase tracking-wider hidden sm:block">GPS & Jadwal</p>
+                    <p class="font-bold text-xs text-text-primary mb-0.5">Jemput</p>
+                    <p class="text-[10px] text-text-muted hidden sm:block">GPS & Jadwal</p>
                 </a>
                 
-                <a href="{{ route('nasabah.wallet') }}" class="group relative bg-surface-container-low hover:bg-surface-container border border-outline-variant hover:border-primary/50 rounded-2xl p-4 flex flex-col items-center justify-center text-center transition-all duration-300 hover:-translate-y-1 hover:shadow-lg overflow-hidden">
-                    <div class="absolute inset-0 bg-gradient-to-b from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                    <div class="w-10 h-10 sm:w-12 sm:h-12 bg-primary/15 dark:bg-primary/20 rounded-full flex items-center justify-center mb-2 sm:mb-3 group-hover:scale-110 transition-transform shadow-inner">
-                        <svg class="w-5 h-5 sm:w-6 sm:h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
+                <a href="{{ route('nasabah.wallet') }}" class="card p-4 flex flex-col items-center justify-center text-center hover:border-emerald-500/50 transition-colors">
+                    <div class="w-10 h-10 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-xl flex items-center justify-center mb-2">
+                        <i class="bi bi-wallet2 text-lg"></i>
                     </div>
-                    <p class="font-bold text-sm text-on-surface mb-0.5">Dompet</p>
-                    <p class="text-[10px] text-on-surface-variant uppercase tracking-wider hidden sm:block">Tunai / Tf</p>
+                    <p class="font-bold text-xs text-text-primary mb-0.5">Dompet</p>
+                    <p class="text-[10px] text-text-muted hidden sm:block">Tunai / Tf</p>
                 </a>
 
-                <a href="{{ route('nasabah.wallet') }}#withdrawal-form" class="group relative bg-surface-container-low hover:bg-surface-container border border-outline-variant hover:border-amber-500/50 rounded-2xl p-4 flex flex-col items-center justify-center text-center transition-all duration-300 hover:-translate-y-1 hover:shadow-lg overflow-hidden">
-                    <div class="absolute inset-0 bg-gradient-to-b from-amber-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                    <div class="w-10 h-10 sm:w-12 sm:h-12 bg-amber-100 dark:bg-amber-900/40 rounded-full flex items-center justify-center mb-2 sm:mb-3 group-hover:scale-110 transition-transform shadow-inner">
-                        <svg class="w-5 h-5 sm:w-6 sm:h-6 text-amber-600 dark:text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                <a href="{{ route('nasabah.wallet') }}#withdrawal-form" class="card p-4 flex flex-col items-center justify-center text-center hover:border-emerald-500/50 transition-colors">
+                    <div class="w-10 h-10 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-xl flex items-center justify-center mb-2">
+                        <i class="bi bi-box-arrow-up-right text-lg"></i>
                     </div>
-                    <p class="font-bold text-sm text-on-surface mb-0.5">Tarik Dana</p>
-                    <p class="text-[10px] text-on-surface-variant uppercase tracking-wider hidden sm:block">Ajukan Tarik</p>
+                    <p class="font-bold text-xs text-text-primary mb-0.5">Tarik Dana</p>
+                    <p class="text-[10px] text-text-muted hidden sm:block">Ajukan Tarik</p>
                 </a>
 
-                <a href="{{ route('nasabah.edukasi') }}" class="group relative bg-surface-container-low hover:bg-surface-container border border-outline-variant hover:border-green-500/50 rounded-2xl p-4 flex flex-col items-center justify-center text-center transition-all duration-300 hover:-translate-y-1 hover:shadow-lg overflow-hidden">
-                    <div class="absolute inset-0 bg-gradient-to-b from-green-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                    <div class="w-10 h-10 sm:w-12 sm:h-12 bg-green-100 dark:bg-green-900/40 rounded-full flex items-center justify-center mb-2 sm:mb-3 group-hover:scale-110 transition-transform shadow-inner">
-                        <svg class="w-5 h-5 sm:w-6 sm:h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                <a href="{{ route('nasabah.edukasi') }}" class="card p-4 flex flex-col items-center justify-center text-center hover:border-emerald-500/50 transition-colors">
+                    <div class="w-10 h-10 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-xl flex items-center justify-center mb-2">
+                        <i class="bi bi-book text-lg"></i>
+                    </div>
                     </div>
                     <p class="font-bold text-sm text-on-surface mb-0.5">Edukasi</p>
                     <p class="text-[10px] text-on-surface-variant uppercase tracking-wider hidden sm:block">Artikel Tips</p>
@@ -145,6 +131,25 @@
             </div>
         </div>
     </div>
+
+    {{-- PETA GIS BANK SAMPAH & RADIUS PENJEMPUTAN UNTUK NASABAH --}}
+    <x-card class="border border-border/80 dark:border-white/10 overflow-hidden shadow-soft mb-8 animate-slide-in">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-border/60 mb-4">
+            <div>
+                <h2 class="text-base font-black text-on-surface flex items-center gap-2">
+                    <i class="bi bi-geo-alt-fill text-emerald-500 text-lg"></i>
+                    Lokasi Bank Sampah & Radius Penjemputan
+                </h2>
+                <p class="text-xs text-on-surface-variant mt-0.5">Lihat titik lokasi Bank Sampah terdekat dan cakupan wilayah area penjemputan sampah ke rumah Anda.</p>
+            </div>
+            <a href="{{ route('nasabah.pickup.form') }}" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs flex items-center gap-2 shadow-sm transition-all shrink-0">
+                <i class="bi bi-truck-front-fill"></i>
+                Pesan Penjemputan
+            </a>
+        </div>
+
+        <div id="nasabahGisMap" class="w-full h-[360px] rounded-2xl border border-border/80 overflow-hidden z-10"></div>
+    </x-card>
 
     {{-- ═══════════════ DAMPAK LINGKUNGAN (CARBON FOOTPRINT) ═══════════════ --}}
     <div class="mb-10">
@@ -432,8 +437,74 @@
                     }
                 }
             });
+        // GIS Map Initialization for Nasabah
+        const bankData = @json($bankSampahs ?? []);
+        const mapContainer = document.getElementById('nasabahGisMap');
+
+        if (mapContainer && bankData && bankData.length > 0) {
+            const defaultLat = parseFloat(bankData[0].latitude) || -6.8915;
+            const defaultLng = parseFloat(bankData[0].longitude) || 107.6107;
+
+            const map = L.map('nasabahGisMap').setView([defaultLat, defaultLng], 9);
+
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+                maxZoom: 19,
+                attribution: '&copy; CARTO & OpenStreetMap'
+            }).addTo(map);
+
+            const bounds = [];
+
+            bankData.forEach(bank => {
+                if (bank.latitude && bank.longitude) {
+                    const lat = parseFloat(bank.latitude);
+                    const lng = parseFloat(bank.longitude);
+                    const radiusMeters = bank.radius_layanan ? parseInt(bank.radius_layanan) : 2000;
+                    bounds.push([lat, lng]);
+
+                    // Service Radius Circle
+                    L.circle([lat, lng], {
+                        color: '#10B981',
+                        fillColor: '#10B981',
+                        fillOpacity: 0.15,
+                        weight: 2,
+                        dashArray: '5, 5'
+                    }).addTo(map);
+
+                    // Marker
+                    const marker = L.marker([lat, lng]).addTo(map);
+
+                    const popupHtml = `
+                        <div class="space-y-1.5 p-1">
+                            <div class="flex items-center gap-2">
+                                <span class="px-2 py-0.5 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-md text-[10px] font-black">${bank.kode_bank}</span>
+                                <h4 class="font-bold text-xs text-white">${bank.nama}</h4>
+                            </div>
+                            <p class="text-[11px] text-gray-300">${bank.alamat}</p>
+                            <div class="pt-1.5 border-t border-white/10 text-[10px] text-emerald-300 font-semibold space-y-0.5">
+                                <div><i class="bi bi-geo text-[10px]"></i> Jangkauan Penjemputan: <strong>${(radiusMeters/1000).toFixed(1)} km</strong></div>
+                                <div><i class="bi bi-clock text-[10px]"></i> Jam Buka: ${bank.jam_buka || '08:00'} - ${bank.jam_tutup || '16:00'}</div>
+                            </div>
+                        </div>
+                    `;
+                    marker.bindPopup(popupHtml);
+                }
+            });
+
+            if (bounds.length > 0) {
+                map.fitBounds(bounds, { padding: [30, 30] });
+            }
         }
     });
 </script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+@endpush
+
+@push('styles')
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
+    <style>
+        .leaflet-popup-content-wrapper { border-radius: 16px; padding: 4px; background: #0A241B; color: #ffffff; border: 1px solid rgba(255,255,255,0.12); box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+        .leaflet-popup-content { margin: 10px 12px; width: 260px !important; }
+        .leaflet-container { font-family: 'Plus Jakarta Sans', sans-serif; }
+    </style>
 @endpush
 @endsection

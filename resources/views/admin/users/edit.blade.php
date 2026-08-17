@@ -40,7 +40,7 @@
                 @error('password') <p class="mt-1 text-xs text-red-500">{{ $message }}</p> @enderror
             </div>
 
-            @php $currentRole = $user->roles->first()?->name; @endphp
+            @php $currentRole = $user->getRoleNames()->first(); @endphp
             <div>
                 <label for="role" class="block text-sm font-medium text-on-surface mb-2">Peran (Role) <span class="text-red-500">*</span></label>
                 <select name="role" id="role" required class="w-full px-4 py-2 bg-surface border border-outline-variant rounded-lg text-sm focus:ring-2 focus:ring-primary">

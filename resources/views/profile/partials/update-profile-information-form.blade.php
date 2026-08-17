@@ -2,60 +2,98 @@
 
     <form id="send-verification" method="post" action="{{ route('verification.send') }}">@csrf</form>
 
+    @if(session('success'))
+        <div class="p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-2xl text-emerald-400 text-xs font-semibold flex items-center gap-2">
+            <i class="bi bi-check-circle-fill text-base"></i>
+            {{ session('success') }}
+        </div>
+    @endif
+
     <form method="post" action="{{ route('profile.update') }}" class="space-y-4" enctype="multipart/form-data">
         @csrf
         @method('patch')
 
-        <div class="flex items-center gap-4 mb-4">
+        {{-- Foto Profil Upload --}}
+        <div class="flex items-center gap-4 mb-6 p-4 rounded-2xl bg-surface-container-low border border-outline-variant">
             <div class="shrink-0 relative group">
-                <img id="avatar-preview" class="w-16 h-16 rounded-full object-cover border border-outline-variant" src="{{ $user->avatar_url }}" alt="{{ $user->name }}">
-                <label for="avatar" class="absolute inset-0 flex items-center justify-center bg-black/50 text-white rounded-full opacity-0 group-hover:opacity-100 cursor-pointer transition-opacity">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                <img id="avatar-preview" class="w-16 h-16 rounded-2xl object-cover border-2 border-primary shadow-sm" src="{{ $user->avatar_url }}" alt="{{ $user->name }}">
+                <label for="avatar" class="absolute inset-0 flex items-center justify-center bg-black/60 text-white rounded-2xl opacity-0 group-hover:opacity-100 cursor-pointer transition-all">
+                    <i class="bi bi-camera-fill text-lg"></i>
                 </label>
             </div>
             <div class="flex-1">
-                <label class="form-label" for="avatar">Foto Profil</label>
-                <input class="block w-full text-sm text-on-surface-variant file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 transition-colors" type="file" name="avatar" id="avatar" accept="image/*" onchange="document.getElementById('avatar-preview').src = window.URL.createObjectURL(this.files[0])">
-                <x-input-error class="mt-2" :messages="$errors->get('avatar')" />
+                <label class="block text-xs font-bold text-on-surface uppercase tracking-wider mb-1" for="avatar">Foto Profil</label>
+                <input class="block w-full text-xs text-on-surface-variant file:mr-4 file:py-1.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-primary/20 file:text-primary hover:file:bg-primary/30 transition-colors" type="file" name="avatar" id="avatar" accept="image/*" onchange="document.getElementById('avatar-preview').src = window.URL.createObjectURL(this.files[0])">
+                <x-input-error class="mt-1 text-xs" :messages="$errors->get('avatar')" />
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label for="name" class="block text-xs font-bold text-on-surface uppercase tracking-wider mb-1">Nama Lengkap *</label>
+                <input id="name" name="name" type="text" value="{{ old('name', $user->name) }}"
+                       required autocomplete="name" class="w-full px-4 py-2.5 bg-surface border border-outline-variant rounded-xl text-xs font-semibold focus:ring-2 focus:ring-primary">
+                <x-input-error class="mt-1 text-xs" :messages="$errors->get('name')" />
+            </div>
+
+            <div>
+                <label for="email" class="block text-xs font-bold text-on-surface uppercase tracking-wider mb-1">Email *</label>
+                <input id="email" name="email" type="email" value="{{ old('email', $user->email) }}"
+                       required autocomplete="username" class="w-full px-4 py-2.5 bg-surface border border-outline-variant rounded-xl text-xs font-semibold focus:ring-2 focus:ring-primary">
+                <x-input-error class="mt-1 text-xs" :messages="$errors->get('email')" />
+
+                @if ($user instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && ! $user->hasVerifiedEmail())
+                    <div class="alert alert-warning mt-2 text-xs">
+                        <div>
+                            Email belum diverifikasi.
+                            <button form="send-verification" class="font-bold underline ml-1">Kirim ulang link verifikasi</button>
+                        </div>
+                    </div>
+                @endif
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+                <label for="nomor_telepon" class="block text-xs font-bold text-on-surface uppercase tracking-wider mb-1">Nomor Telepon / WA</label>
+                <input id="nomor_telepon" name="nomor_telepon" type="text" value="{{ old('nomor_telepon', $user->nomor_telepon) }}"
+                       placeholder="0812..." class="w-full px-4 py-2.5 bg-surface border border-outline-variant rounded-xl text-xs font-semibold focus:ring-2 focus:ring-primary">
+                <x-input-error class="mt-1 text-xs" :messages="$errors->get('nomor_telepon')" />
+            </div>
+
+            <div>
+                <label for="rt" class="block text-xs font-bold text-on-surface uppercase tracking-wider mb-1">Rukun Tetangga (RT)</label>
+                <input id="rt" name="rt" type="text" value="{{ old('rt', $user->rt) }}"
+                       placeholder="01" class="w-full px-4 py-2.5 bg-surface border border-outline-variant rounded-xl text-xs font-semibold focus:ring-2 focus:ring-primary">
+                <x-input-error class="mt-1 text-xs" :messages="$errors->get('rt')" />
+            </div>
+
+            <div>
+                <label for="rw" class="block text-xs font-bold text-on-surface uppercase tracking-wider mb-1">Rukun Warga (RW)</label>
+                <input id="rw" name="rw" type="text" value="{{ old('rw', $user->rw) }}"
+                       placeholder="02" class="w-full px-4 py-2.5 bg-surface border border-outline-variant rounded-xl text-xs font-semibold focus:ring-2 focus:ring-primary">
+                <x-input-error class="mt-1 text-xs" :messages="$errors->get('rw')" />
             </div>
         </div>
 
         <div>
-            <label for="name" class="form-label">Nama Lengkap</label>
-            <input id="name" name="name" type="text" value="{{ old('name', $user->name) }}"
-                   required autofocus autocomplete="name" class="form-input">
-            <x-input-error class="mt-2" :messages="$errors->get('name')" />
+            <label for="alamat_lengkap" class="block text-xs font-bold text-on-surface uppercase tracking-wider mb-1">Alamat Lengkap</label>
+            <textarea id="alamat_lengkap" name="alamat_lengkap" rows="3" placeholder="Jl. Raya No. 123..." class="w-full px-4 py-2.5 bg-surface border border-outline-variant rounded-xl text-xs font-semibold focus:ring-2 focus:ring-primary">{{ old('alamat_lengkap', $user->alamat_lengkap) }}</textarea>
+            <x-input-error class="mt-1 text-xs" :messages="$errors->get('alamat_lengkap')" />
         </div>
 
-        <div>
-            <label for="email" class="form-label">Email</label>
-            <input id="email" name="email" type="email" value="{{ old('email', $user->email) }}"
-                   required autocomplete="username" class="form-input">
-            <x-input-error class="mt-2" :messages="$errors->get('email')" />
+        {{-- Main Save Button --}}
+        <div class="flex items-center justify-between pt-4 border-t border-outline-variant">
+            <button type="submit" class="px-6 py-3 bg-primary hover:bg-forest-emerald text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all text-xs flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                Simpan Perubahan Profil
+            </button>
 
-            @if ($user instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && ! $user->hasVerifiedEmail())
-                <div class="alert alert-warning mt-3">
-                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                    <div>
-                        Email belum diverifikasi.
-                        <button form="send-verification" class="font-bold underline hover:no-underline ml-1">
-                            Kirim ulang link verifikasi
-                        </button>
-                        @if (session('status') === 'verification-link-sent')
-                            <p class="font-semibold text-primary mt-1">Link verifikasi sudah dikirim!</p>
-                        @endif
-                    </div>
-                </div>
-            @endif
-        </div>
-
-        <div class="flex items-center gap-4 pt-2">
-            <button type="submit" class="btn-primary">Simpan Perubahan</button>
             @if (session('status') === 'profile-updated')
-                <p x-data="{ show: true }" x-show="show" x-transition x-init="setTimeout(() => show = false, 2000)"
-                   class="text-sm font-semibold text-primary flex items-center gap-1">
+                <p x-data="{ show: true }" x-show="show" x-transition x-init="setTimeout(() => show = false, 3000)"
+                   class="text-xs font-bold text-emerald-500 flex items-center gap-1">
                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                   Tersimpan!
+                   Perubahan Berhasil Disimpan!
                 </p>
             @endif
         </div>

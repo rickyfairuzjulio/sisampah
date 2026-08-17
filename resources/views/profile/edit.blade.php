@@ -17,7 +17,7 @@
                 <div>
                     <h1 class="text-2xl sm:text-3xl font-bold mb-2 sm:mb-1 shadow-sm">{{ $user->name }}</h1>
                     <div class="flex items-center gap-2 text-white/90 text-sm font-medium">
-                        <span class="px-2 py-0.5 bg-white/20 rounded-md backdrop-blur-sm border border-white/20 capitalize">{{ $user->roles->first()->name ?? 'User' }}</span>
+                        <span class="px-2 py-0.5 bg-white/20 rounded-md backdrop-blur-sm border border-white/20 capitalize">{{ $user->getRoleNames()->first() ?? 'User' }}</span>
                         <span>·</span>
                         <p>{{ $user->email }}</p>
                     </div>

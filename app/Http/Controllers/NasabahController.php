@@ -22,7 +22,10 @@ class NasabahController extends Controller
 
         $saldo = $user->saldo;
 
-        $hargaSampah = TrashCategory::all();
+        $bsId = $user->bank_sampah_id;
+        $hargaSampah = TrashCategory::active()
+            ->when($bsId, fn ($q) => $q->where('bank_sampah_id', $bsId))
+            ->get();
 
         $transaksiTerbaru = $user->transactions()
             ->with('trashCategory')
@@ -52,10 +55,23 @@ class NasabahController extends Controller
 
         // Monthly Data (Last 6 Months)
         $sixMonthsAgo = now()->subMonths(5)->startOfMonth();
+
+        $driver = DB::connection()->getDriverName();
+        if ($driver === 'sqlite') {
+            $yearExpr = "CAST(strftime('%Y', created_at) AS INTEGER)";
+            $monthExpr = "CAST(strftime('%m', created_at) AS INTEGER)";
+        } elseif ($driver === 'pgsql') {
+            $yearExpr = "EXTRACT(YEAR FROM created_at)::INTEGER";
+            $monthExpr = "EXTRACT(MONTH FROM created_at)::INTEGER";
+        } else {
+            $yearExpr = "YEAR(created_at)";
+            $monthExpr = "MONTH(created_at)";
+        }
+
         $monthlyStats = $user->transactions()
             ->where('status', 'selesai')
             ->where('created_at', '>=', $sixMonthsAgo)
-            ->selectRaw('YEAR(created_at) as year, MONTH(created_at) as month, SUM(berat_kg) as total_berat')
+            ->selectRaw("{$yearExpr} as year, {$monthExpr} as month, SUM(berat_kg) as total_berat")
             ->groupBy('year', 'month')
             ->orderBy('year', 'asc')
             ->orderBy('month', 'asc')
@@ -78,6 +94,8 @@ class NasabahController extends Controller
             $chartData['data'][] = $stat ? (float) $stat->total_berat : 0;
         }
 
+        $bankSampahs = \App\Models\BankSampah::all(['id', 'nama', 'kode_bank', 'latitude', 'longitude', 'radius_layanan', 'alamat', 'telepon', 'email', 'jam_buka', 'jam_tutup']);
+
         return view('nasabah.dashboard', compact(
             'saldo',
             'hargaSampah',
@@ -86,46 +104,100 @@ class NasabahController extends Controller
             'totalPoin',
             'leaderboard',
             'impact',
-            'chartData'
+            'chartData',
+            'bankSampahs'
         ));
     }
 
     public function showPickupForm()
     {
         $trashCategories = TrashCategory::all();
+        $bankSampahs = \App\Models\BankSampah::active()->get();
 
-        return view('nasabah.pickup-form', compact('trashCategories'));
+        return view('nasabah.pickup-form', compact('trashCategories', 'bankSampahs'));
     }
 
     public function storePickup(StorePickupRequest $request)
     {
         $validated = $request->validated();
-        
-        $items = $validated['items'];
-        $transactions = [];
+        $userLat = (float) $validated['koordinat_lat'];
+        $userLng = (float) $validated['koordinat_lng'];
 
-        DB::transaction(function () use ($items, $validated) {
+        // Enforce pickup strictly to Nasabah's followed Bank Sampah
+        $user = auth()->user();
+        $bankSampahId = $user->bank_sampah_id;
+
+        if (!$bankSampahId) {
+            return back()->with('error', 'Anda belum terhubung dengan Unit Bank Sampah. Silakan perbarui profil Anda.')->withInput();
+        }
+
+        $bankSampah = \App\Models\BankSampah::find($bankSampahId);
+        if (!$bankSampah || $bankSampah->status !== 'aktif') {
+            return back()->with('error', 'Unit Bank Sampah yang Anda ikuti saat ini sedang tidak aktif.')->withInput();
+        }
+
+        // Validate service radius
+        $distanceKm = $bankSampah->calculateDistance($userLat, $userLng);
+        $maxRadiusKm = ($bankSampah->radius_layanan ?: 3000) / 1000;
+
+        if ($distanceKm > $maxRadiusKm) {
+            return back()->with('error', "Lokasi Anda ({$distanceKm} km) berada di luar radius layanan Bank Sampah '{$bankSampah->nama}' (Maksimal {$maxRadiusKm} km).")->withInput();
+        }
+
+        $items = $validated['items'];
+        $totalEstimasiBerat = 0;
+
+        foreach ($items as $item) {
+            $totalEstimasiBerat += (float) $item['perkiraan_berat'];
+        }
+
+        DB::transaction(function () use ($items, $validated, $bankSampah, $userLat, $userLng, $distanceKm, $totalEstimasiBerat) {
+            // 1. Create Pickup record
+            $pickup = \App\Models\Pickup::create([
+                'bank_sampah_id' => $bankSampah->id,
+                'nasabah_id' => auth()->id(),
+                'address' => $validated['alamat_lengkap'] ?? auth()->user()->alamat_lengkap ?? 'Lokasi GPS Nasabah',
+                'latitude' => $userLat,
+                'longitude' => $userLng,
+                'distance_km' => $distanceKm,
+                'scheduled_at' => now()->addHours(2),
+                'status' => 'requested',
+                'estimasi_berat' => $totalEstimasiBerat,
+                'catatan' => $validated['catatan'] ?? null,
+            ]);
+
+            // 2. Create Transaction records linked to bank_sampah_id
             foreach ($items as $item) {
                 $trashCategory = TrashCategory::findOrFail($item['trash_category_id']);
                 $weight = (float) $item['perkiraan_berat'];
 
                 Transaction::create([
                     'user_id' => auth()->id(),
+                    'bank_sampah_id' => $bankSampah->id,
                     'trash_category_id' => $trashCategory->id,
                     'berat_kg' => $weight,
                     'harga_per_kg' => $trashCategory->harga_per_kg,
                     'total_rp' => $weight * $trashCategory->harga_per_kg,
                     'tipe_setoran' => 'jemput',
                     'status' => 'pending',
-                    'koordinat_lat' => $validated['koordinat_lat'],
-                    'koordinat_lng' => $validated['koordinat_lng'],
+                    'koordinat_lat' => $userLat,
+                    'koordinat_lng' => $userLng,
                     'catatan' => $validated['catatan'] ?? null,
                 ]);
             }
+
+            \App\Services\AuditLogger::log(
+                'PICKUP_REQUESTED',
+                'Pickup',
+                $pickup->id,
+                null,
+                ['bank_sampah_id' => $bankSampah->id, 'distance_km' => $distanceKm],
+                "Permintaan pickup dibuat oleh " . auth()->user()->name
+            );
         });
 
         return redirect()->route('nasabah.dashboard')
-            ->with('success', 'Jadwal penjemputan sampah berhasil dibuat. Tunggu konfirmasi petugas.');
+            ->with('success', "Permintaan penjemputan ke Bank Sampah '{$bankSampah->nama}' berhasil dibuat (Jarak: {$distanceKm} km). Tunggu konfirmasi petugas.");
     }
 
     public function wallet()
@@ -158,28 +230,79 @@ class NasabahController extends Controller
     public function requestWithdrawal(StoreWithdrawalRequest $request)
     {
         $validated = $request->validated();
-
         $user = auth()->user();
+        $nominal = (float) $validated['nominal'];
 
-        if ($user->saldo < $validated['nominal']) {
-            return back()->with('error', 'Saldo Anda tidak cukup untuk penarikan sebesar Rp ' . number_format($validated['nominal'], 0, ',', '.'));
+        if ($nominal <= 0) {
+            return back()->with('error', 'Nominal penarikan harus lebih besar dari Rp 0.');
         }
 
-        DB::transaction(function () use ($user, $validated) {
-            Withdrawal::create([
-                'user_id' => $user->id,
-                'nominal' => $validated['nominal'],
-                'metode' => $validated['metode'],
-                'rekening_tujuan' => $validated['metode'] !== 'tunai' ? ($validated['rekening_tujuan'] ?? null) : null,
-                'nama_penerima' => $validated['metode'] !== 'tunai' ? ($validated['nama_penerima'] ?? null) : null,
-                'status' => 'pending',
-            ]);
+        if (!$user->bank_sampah_id) {
+            return back()->with('error', 'Anda belum terhubung dengan Bank Sampah mana pun untuk melakukan penarikan saldo.');
+        }
 
-            $user->decrement('saldo', $validated['nominal']);
-        });
+        try {
+            DB::transaction(function () use ($user, $validated, $nominal) {
+                $lockedUser = User::where('id', $user->id)->lockForUpdate()->firstOrFail();
+
+                if ($lockedUser->saldo < $nominal) {
+                    throw new \InvalidArgumentException('Saldo Anda tidak cukup untuk penarikan sebesar Rp ' . number_format($nominal, 0, ',', '.'));
+                }
+
+                $withdrawal = Withdrawal::create([
+                    'user_id' => $lockedUser->id,
+                    'bank_sampah_id' => $lockedUser->bank_sampah_id,
+                    'nominal' => $nominal,
+                    'metode' => $validated['metode'],
+                    'rekening_tujuan' => $validated['metode'] !== 'tunai' ? ($validated['rekening_tujuan'] ?? null) : null,
+                    'nama_penerima' => $validated['metode'] !== 'tunai' ? ($validated['nama_penerima'] ?? null) : null,
+                    'status' => 'pending',
+                    'status_penerimaan' => 'pending',
+                ]);
+
+                // Use WalletLedgerService for atomic hold
+                $walletService = new \App\Services\WalletLedgerService();
+                $walletService->recordTransaction(
+                    $lockedUser,
+                    'withdrawal_hold',
+                    $nominal,
+                    $lockedUser->bank_sampah_id,
+                    null,
+                    $withdrawal->id,
+                    'HOLD-' . $withdrawal->id,
+                    "Hold saldo untuk penarikan dana ID #{$withdrawal->id}"
+                );
+            });
+        } catch (\InvalidArgumentException $e) {
+            return back()->with('error', $e->getMessage());
+        }
 
         return redirect()->route('nasabah.wallet')
-            ->with('success', 'Pengajuan penarikan dana berhasil dibuat. Tunggu persetujuan admin.');
+            ->with('success', 'Pengajuan penarikan dana berhasil dibuat dan dimohonkan ke Admin Bank Sampah yang Anda ikuti.');
+    }
+
+    public function confirmWithdrawalReceipt(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'action' => 'required|in:diterima,disanggah',
+            'catatan' => 'nullable|string|max:500',
+        ]);
+
+        $withdrawal = Withdrawal::where('id', $id)
+            ->where('user_id', auth()->id())
+            ->firstOrFail();
+
+        $withdrawal->status_penerimaan = $validated['action'];
+        if ($validated['action'] === 'disanggah' && !empty($validated['catatan'])) {
+            $withdrawal->catatan_admin = ($withdrawal->catatan_admin ? $withdrawal->catatan_admin . "\n" : '') . "Sanggahan Nasabah: " . $validated['catatan'];
+        }
+        $withdrawal->save();
+
+        $msg = $validated['action'] === 'diterima'
+            ? 'Terima kasih, konfirmasi pencairan saldo telah berhasil.'
+            : 'Sanggahan Anda telah dikirimkan ke Admin Bank Sampah Unit.';
+
+        return back()->with('success', $msg);
     }
 
     public function certificate()
@@ -332,27 +455,33 @@ class NasabahController extends Controller
             return response()->json(['message' => 'Invalid Signature'], 403);
         }
 
-        // Find the TopUp record
-        $topup = TopUp::find($orderId);
-        if (!$topup) {
-            Log::error('Midtrans Webhook: Top-Up transaction not found for Order ID: ' . $orderId);
-            return response()->json(['message' => 'Transaction not found'], 404);
-        }
+        // Atomic Database Lock & Process
+        return DB::transaction(function () use ($orderId, $grossAmount, $transactionStatus, $paymentType, $payload) {
+            $topup = TopUp::where('id', $orderId)->lockForUpdate()->first();
+            if (!$topup) {
+                Log::error('Midtrans Webhook: Top-Up transaction not found for Order ID: ' . $orderId);
+                return response()->json(['message' => 'Transaction not found'], 404);
+            }
 
-        // If transaction is already success, ignore it (Idempotency)
-        if ($topup->status === 'success') {
-            return response()->json(['message' => 'Transaction already processed']);
-        }
+            // Server-side Amount Validation
+            if ((float) $grossAmount < (float) $topup->nominal) {
+                Log::error("Midtrans Webhook: Amount mismatch for Order ID {$orderId}. Expected {$topup->nominal}, got {$grossAmount}");
+                return response()->json(['message' => 'Amount mismatch'], 400);
+            }
 
-        // Map status
-        $status = 'pending';
-        if ($transactionStatus === 'capture' || $transactionStatus === 'settlement') {
-            $status = 'success';
-        } elseif (in_array($transactionStatus, ['deny', 'cancel', 'expire'])) {
-            $status = 'failed';
-        }
+            // If transaction is already success, ignore it (Idempotency)
+            if ($topup->status === 'success') {
+                return response()->json(['message' => 'Transaction already processed']);
+            }
 
-        DB::transaction(function () use ($topup, $status, $paymentType, $payload) {
+            // Map status
+            $status = 'pending';
+            if ($transactionStatus === 'capture' || $transactionStatus === 'settlement') {
+                $status = 'success';
+            } elseif (in_array($transactionStatus, ['deny', 'cancel', 'expire'])) {
+                $status = 'failed';
+            }
+
             $topup->update([
                 'status' => $status,
                 'payment_method' => $paymentType,
@@ -362,11 +491,22 @@ class NasabahController extends Controller
 
             if ($status === 'success') {
                 $user = $topup->user;
-                $user->increment('saldo', $topup->nominal);
+                $walletService = new \App\Services\WalletLedgerService();
+                $walletService->recordTransaction(
+                    $user,
+                    'credit',
+                    (float) $topup->nominal,
+                    $user->bank_sampah_id,
+                    null,
+                    null,
+                    'TOPUP-' . $topup->id,
+                    "Top Up Saldo via Midtrans Gateway ({$paymentType})"
+                );
+
                 Log::info("User ID {$user->id} ({$user->name}) balance topped up by Rp {$topup->nominal} via Midtrans.");
             }
-        });
 
-        return response()->json(['message' => 'OK']);
+            return response()->json(['message' => 'OK']);
+        });
     }
 }

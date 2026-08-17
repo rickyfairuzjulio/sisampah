@@ -129,10 +129,18 @@ class ChatbotController extends Controller
      */
     public function analyzeVision(Request $request)
     {
-        $request->validate([
-            'image' => 'required_without:image_base64|image|max:10240',
-            'image_base64' => 'required_without:image|string',
+        $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
+            'image' => 'required_without:image_base64|nullable|image|max:10240',
+            'image_base64' => 'required_without:image|nullable|string',
         ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Foto atau data image_base64 wajib diunggah.',
+                'errors' => $validator->errors(),
+            ], 422);
+        }
 
         $photoPath = null;
         $imageBase64Data = null;
@@ -214,91 +222,91 @@ class ChatbotController extends Controller
      */
     private function callGeminiVisionAPI($apiKey, $imageBase64, $mimeType, $dbCategories)
     {
-        $categoriesList = $dbCategories->pluck('nama')->implode(', ');
+        $categoriesList = collect($dbCategories)->pluck('nama')->filter()->implode(', ');
 
-        $systemVisionPrompt = "System Prompt — SiSampah AI Vision & Smart Waste Analyzer v2.0
+        $systemVisionPrompt = <<<EOT
+System Prompt — SiSampah AI Vision & Smart Waste Analyzer v2.0
 
 Anda adalah SiSampah AI Vision, sebuah AI multimodal yang memiliki kemampuan Computer Vision, Object Detection, OCR, Image Understanding, dan Reasoning.
 
 Urutan analisis wajib:
 1. Validasi kualitas gambar (Buram, Pencahayaan, Resolusi, Objek Kecil/Gelap/Tertutup).
-2. Deteksi seluruh objek (Manusia, Hewan, Kendaraan, Sampah Plastik, Kertas, Logam, Kaca, Organik, Elektronik, Tekstil, B3, Lainnya).
+2. Deteksi seluruh objek (Manusia, Hewan, Kendaraan, Bangunan/Gedung/Rumah, Pemandangan, Sampah Plastik, Kertas, Logam, Kaca, Organik, Elektronik, Tekstil, B3, Lainnya).
 3. Hitung jumlah objek.
-4. Identifikasi apakah terdapat manusia (Jika manusia terdeteksi: AI HANYA mendeteksi keberadaan manusia tanpa identitas, nama, usia, gender, profesi, maupun atribut pribadi). Jika HANYA manusia: 'Tidak ditemukan sampah yang dapat dianalisis.' (Jangan menghitung harga / berat).
-5. Identifikasi apakah terdapat sampah.
-6. Klasifikasi jenis sampah & OCR (baca kode PET 1, HDPE 2, PP 5, dll jika ada).
-7. Estimasi kondisi sampah.
-8. Estimasi nilai jual (Hanya jika benar-benar sampah bernilai ekonomi).
-9. Berikan rekomendasi pengelolaan & edukasi lingkungan.
+4. JIKA FOTO MERUPAKAN BANGUNAN, GEDUNG, RUMAH, PEMANDANGAN, KENDARAAN, ATAU BENDA NON-SAMPAH: Set is_valid=true, set is_recognized=false, set objects=[], set objects_detected_list=[{"nama": "Bangunan / Non-Sampah", "kategori": "Non-Sampah", "confidence": 99.0, "is_trash": false}], set unrecognized_message="Objek yang terdeteksi adalah Bangunan / Gedung / Non-Sampah. Tidak ditemukan sampah yang dapat dianalisis atau dijual.", dan set summary.jumlah_sampah=0, summary.total_estimasi_nilai=0.
+5. JIKA HANYA MANUSIA: Set human_detected.detected=true, set objects=[], set summary.jumlah_sampah=0.
+6. JIKA DITEMUKAN SAMPAH: Klasifikasi jenis sampah & OCR (baca kode PET 1, HDPE 2, PP 5, dll jika ada). Estimasi kondisi sampah & nilai jual aktual.
 
 Jika confidence < 70% atau gambar buram/gelap, set is_valid=false dan berikan saran foto ulang.
 
 Kembalikan respon HANYA DALAM FORMAT JSON VALID TANPA MARKDOWN CODEBLOCK:
 {
-  \"image_info\": {
-    \"kualitas_gambar\": \"Baik | Buram | Cukup\",
-    \"pencahayaan\": \"Cukup | Kurang\",
-    \"resolusi\": \"Tinggi | Rendah\",
-    \"jumlah_objek\": 2
+  "image_info": {
+    "kualitas_gambar": "Baik | Buram | Cukup",
+    "pencahayaan": "Cukup | Kurang",
+    "resolusi": "Tinggi | Rendah",
+    "jumlah_objek": 2
   },
-  \"is_valid\": true,
-  \"unrecognized_message\": \"Silakan ambil foto ulang dengan pencahayaan yang lebih baik dan objek memenuhi sebagian besar area foto.\",
-  \"human_detected\": {
-    \"detected\": false,
-    \"count\": 0,
-    \"face_visible\": false,
-    \"position\": \"-\",
-    \"confidence\": 0,
-    \"status\": \"TIDAK_TERDETEKSI\",
-    \"privacy_note\": \"AI hanya mendeteksi keberadaan manusia. AI tidak mengenali identitas, nama, usia, gender, profesi, maupun atribut pribadi lainnya.\"
+  "is_valid": true,
+  "is_recognized": true,
+  "unrecognized_message": null,
+  "human_detected": {
+    "detected": false,
+    "count": 0,
+    "face_visible": false,
+    "position": "-",
+    "confidence": 0,
+    "status": "TIDAK_TERDETEKSI",
+    "privacy_note": "AI hanya mendeteksi keberadaan manusia. AI tidak mengenali identitas, nama, usia, gender, profesi, maupun atribut pribadi lainnya."
   },
-  \"objects_detected_list\": [
-    {\"nama\": \"Botol Plastik PET\", \"kategori\": \"Plastik\", \"confidence\": 98.5, \"is_trash\": true}
+  "objects_detected_list": [
+    {"nama": "Botol Plastik PET", "kategori": "Plastik", "confidence": 98.5, "is_trash": true}
   ],
-  \"objects\": [
+  "objects": [
     {
-      \"nama_objek\": \"Botol Plastik PET\",
-      \"material\": \"Polyethylene Terephthalate (PET 1)\",
-      \"ocr_code\": \"PET 1\",
-      \"kategori\": \"Plastik | Kertas | Logam | Kaca | Elektronik | Organik | Tekstil | B3\",
-      \"confidence\": 98.5,
-      \"jumlah\": 1,
-      \"kondisi\": \"Utuh & Layak Daur Ulang\",
-      \"layak_didaur_ulang\": true,
-      \"layak_dijual\": true,
-      \"kebersihan_percent\": 92,
-      \"kerusakan_percent\": 8,
-      \"estimasi_berat_kg\": 0.45,
-      \"bounding_box\": [15, 15, 75, 45],
-      \"cara_memilah\": \"Pisahkan label plastik dan lepas tutup botol.\",
-      \"cara_membersihkan\": \"Bilas sisa minuman dengan air mengalir dan keringkan.\",
-      \"rekomendasi\": [\"Pisahkan label plastik\", \"Lepaskan tutup botol\", \"Keringkan sebelum disetor\"],
-      \"saran_ai\": \"Dapat dijadikan pot tanaman gantung atau disetor ke Bank Sampah.\",
-      \"edukasi\": {
-        \"lama_terurai\": \"450 Tahun\",
-        \"potensi_daur_ulang\": \"Dapat didaur ulang hingga 7 kali menjadi serat daur ulang.\",
-        \"manfaat_lingkungan\": \"Menghemat energi & emisi karbon.\",
-        \"cara_penyimpanan\": \"Simpan di tempat kering dan pipihkan.\",
-        \"tips_bank_sampah\": \"Bersihkan sebelum disetor.\"
+      "nama_objek": "Botol Plastik PET",
+      "material": "Polyethylene Terephthalate (PET 1)",
+      "ocr_code": "PET 1",
+      "kategori": "Plastik | Kertas | Logam | Kaca | Elektronik | Organik | Tekstil | B3",
+      "confidence": 98.5,
+      "jumlah": 1,
+      "kondisi": "Utuh & Layak Daur Ulang",
+      "layak_didaur_ulang": true,
+      "layak_dijual": true,
+      "kebersihan_percent": 92,
+      "kerusakan_percent": 8,
+      "estimasi_berat_kg": 0.45,
+      "bounding_box": [15, 15, 75, 45],
+      "cara_memilah": "Pisahkan label plastik dan lepas tutup botol.",
+      "cara_membersihkan": "Bilas sisa minuman dengan air mengalir dan keringkan.",
+      "rekomendasi": ["Pisahkan label plastik", "Lepaskan tutup botol", "Keringkan sebelum disetor"],
+      "saran_ai": "Dapat dijadikan pot tanaman gantung atau disetor ke Bank Sampah.",
+      "edukasi": {
+        "lama_terurai": "450 Tahun",
+        "potensi_daur_ulang": "Dapat didaur ulang hingga 7 kali menjadi serat daur ulang.",
+        "manfaat_lingkungan": "Menghemat energi & emisi karbon.",
+        "cara_penyimpanan": "Simpan di tempat kering dan pipihkan.",
+        "tips_bank_sampah": "Bersihkan sebelum disetor."
       }
     }
   ],
-  \"summary\": {
-    \"jumlah_sampah\": 1,
-    \"jumlah_non_sampah\": 0,
-    \"total_estimasi_nilai\": 2025,
-    \"total_estimasi_berat\": 0.45,
-    \"kesimpulan\": \"Terdeteksi 1 objek sampah plastik PET yang layak dijual.\"
+  "summary": {
+    "jumlah_sampah": 1,
+    "jumlah_non_sampah": 0,
+    "total_estimasi_nilai": 2025,
+    "total_estimasi_berat": 0.45,
+    "kesimpulan": "Terdeteksi 1 objek sampah plastik PET yang layak dijual."
   },
-  \"eco_impact\": {
-    \"co2_reduction_kg\": 0.85,
-    \"energy_saved_kwh\": 1.4,
-    \"water_saved_liter\": 3.5,
-    \"decomposition_years\": 450,
-    \"summary\": \"Daur ulang ini menghemat emisi karbon dan energi.\"
+  "eco_impact": {
+    "co2_reduction_kg": 0.85,
+    "energy_saved_kwh": 1.4,
+    "water_saved_liter": 3.5,
+    "decomposition_years": 450,
+    "summary": "Daur ulang ini menghemat emisi karbon dan energi."
   }
 }
-Daftar Kategori Bank Sampah SiSampah: {$categoriesList}.";
+Daftar Kategori Bank Sampah SiSampah: {$categoriesList}.
+EOT;
 
         $models = [
             'gemini-1.5-flash',
@@ -411,6 +419,7 @@ Daftar Kategori Bank Sampah SiSampah: {$categoriesList}.";
                     'jumlah_objek' => 1
                 ],
                 'is_valid' => true,
+                'is_recognized' => true,
                 'unrecognized_message' => null,
                 'human_detected' => [
                     'detected' => true,
@@ -442,7 +451,49 @@ Daftar Kategori Bank Sampah SiSampah: {$categoriesList}.";
             ];
         }
 
-        // 3. Logam (Kaleng, Aluminium, Besi, Tembaga)
+        // 3. Bangunan / Gedung / Rumah / Non-Sampah Detection
+        if (Str::contains($fnLower, ['bangunan', 'building', 'gedung', 'rumah', 'house', 'sekolah', 'kantor', 'pemandangan', 'landscape', 'mobil', 'car', 'motor', 'hewan', 'kucing', 'anjing', 'dog', 'cat', 'room', 'kamar', 'lantai', 'dinding'])) {
+            return [
+                'image_info' => [
+                    'kualitas_gambar' => 'Baik',
+                    'pencahayaan' => 'Cukup',
+                    'resolusi' => 'Tinggi',
+                    'jumlah_objek' => 1
+                ],
+                'is_valid' => true,
+                'is_recognized' => false,
+                'unrecognized_message' => 'Objek yang terdeteksi adalah Bangunan / Gedung / Non-Sampah. Tidak ditemukan sampah yang dapat dianalisis atau dijual.',
+                'human_detected' => [
+                    'detected' => false,
+                    'count' => 0,
+                    'face_visible' => false,
+                    'position' => '-',
+                    'confidence' => 0,
+                    'status' => 'TIDAK_TERDETEKSI',
+                    'privacy_note' => 'AI hanya mendeteksi keberadaan manusia. AI tidak mengenali identitas maupun atribut pribadi.'
+                ],
+                'objects_detected_list' => [
+                    ['nama' => 'Bangunan / Gedung / Non-Sampah', 'kategori' => 'Non-Sampah', 'confidence' => 99.0, 'is_trash' => false]
+                ],
+                'objects' => [],
+                'summary' => [
+                    'jumlah_sampah' => 0,
+                    'jumlah_non_sampah' => 1,
+                    'total_estimasi_nilai' => 0,
+                    'total_estimasi_berat' => 0,
+                    'kesimpulan' => 'Terdeteksi objek Bangunan / Non-Sampah. Silakan mengunggah foto objek sampah (seperti botol, kaleng, kardus, dll).'
+                ],
+                'eco_impact' => [
+                    'co2_reduction_kg' => 0,
+                    'energy_saved_kwh' => 0,
+                    'water_saved_liter' => 0,
+                    'decomposition_years' => 0,
+                    'summary' => 'Tidak ada sampah yang dapat didaur ulang.'
+                ]
+            ];
+        }
+
+        // 4. Logam (Kaleng, Aluminium, Besi, Tembaga)
         if (Str::contains($fnLower, ['kaleng', 'can', 'metal', 'soda', 'minuman', 'aluminium', 'besi', 'tembaga', 'kuningan'])) {
             $selectedObjects = [
                 [
@@ -478,7 +529,7 @@ Daftar Kategori Bank Sampah SiSampah: {$categoriesList}.";
             ];
             $co2 = 1.2; $energy = 2.4; $water = 5.0; $decomp = 200;
         } 
-        // 4. Kertas (Kardus, HVS, Koran, Buku, Karton)
+        // 5. Kertas (Kardus, HVS, Koran, Buku, Karton)
         elseif (Str::contains($fnLower, ['kardus', 'dus', 'box', 'karton', 'paper', 'kertas', 'hvs', 'koran', 'buku'])) {
             $selectedObjects = [
                 [
@@ -514,7 +565,7 @@ Daftar Kategori Bank Sampah SiSampah: {$categoriesList}.";
             ];
             $co2 = 1.5; $energy = 3.1; $water = 15.0; $decomp = 1;
         } 
-        // 5. Elektronik (HP, Charger, Kabel, Laptop, Keyboard)
+        // 6. Elektronik (HP, Charger, Kabel, Laptop, Keyboard)
         elseif (Str::contains($fnLower, ['hp', 'phone', 'charger', 'kabel', 'keyboard', 'laptop', 'elektronik', 'battery', 'powerbank'])) {
             $selectedObjects = [
                 [
@@ -550,8 +601,44 @@ Daftar Kategori Bank Sampah SiSampah: {$categoriesList}.";
             ];
             $co2 = 2.8; $energy = 6.2; $water = 18.0; $decomp = 50;
         }
-        // 6. Default Multi-Object (Botol PET + Kaleng Aluminium)
-        else {
+        // 7. Tekstil & Pakaian (Baju, Celana, Kain, Sprei, Handuk, Sepatu Bekas)
+        elseif (Str::contains($fnLower, ['tekstil', 'pakaian', 'baju', 'kaos', 'celana', 'kain', 'perca', 'sprei', 'handuk', 'sepatu', 'tas', 'fabric', 'clothes', 'shirt'])) {
+            $selectedObjects = [
+                [
+                    'nama_objek' => 'Pakaian Bekas & Limba Tekstil',
+                    'material' => 'Serat Katun & Poliester Sintetis',
+                    'ocr_code' => 'TEX 60',
+                    'confidence' => 97.2,
+                    'kategori' => 'Tekstil',
+                    'jumlah' => 1,
+                    'kondisi' => 'Kering & Bersih',
+                    'layak_jual' => true,
+                    'layak_didaur_ulang' => true,
+                    'kebersihan_percent' => 90,
+                    'kerusakan_percent' => 10,
+                    'estimasi_berat_kg' => 1.20,
+                    'bounding_box' => [15, 20, 80, 80],
+                    'cara_memilah' => 'Pisahkan pakaian bekas berdasarkan jenis bahan (katun 100% vs poliester sintetis) dan lepas kancing logam / ritsleting.',
+                    'cara_membersihkan' => 'Cuci bersih dan pastikan dalam kondisi kering sebelum disetorkan.',
+                    'rekomendasi' => [
+                        'Cuci dan keringkan pakaian.',
+                        'Pisahkan pakaian layak pakai dari kain perca rusak.',
+                        'Lipat rapi dan kelompokkan bahan katun.'
+                    ],
+                    'saran_ai' => 'Pakaian layak pakai didonasikan atau disetor ke Bank Sampah penerima Tekstil untuk diolah jadi benang daur ulang / majun industri.',
+                    'edukasi' => [
+                        'lama_terurai' => '200 Tahun (Poliester)',
+                        'potensi_daur_ulang' => 'Dicacah menjadi serat benang daur ulang, peredam suara, atau kain majun industri.',
+                        'manfaat_lingkungan' => 'Mengurangi emisi karbon industri fast fashion & menghemat penggunaan air suling.',
+                        'cara_penyimpanan' => 'Simpan di tempat kering dan tertutup agar tidak lembab.',
+                        'tips_bank_sampah' => 'Pastikan pakaian bersih dan bebas bau.'
+                    ]
+                ]
+            ];
+            $co2 = 3.5; $energy = 5.2; $water = 25.0; $decomp = 200;
+        }
+        // 8. Plastik (Botol, Gelas, Kantong, Pouch)
+        elseif (Str::contains($fnLower, ['botol', 'plastik', 'pet', 'sampah', 'gelas', 'aqua', 'minerale', 'sprite', 'coca', 'fanta', 'teh', 'pocari', 'pouch', 'kantong'])) {
             $selectedObjects = [
                 [
                     'nama_objek' => 'Botol Plastik PET Bening',
@@ -583,38 +670,50 @@ Daftar Kategori Bank Sampah SiSampah: {$categoriesList}.";
                         'cara_penyimpanan' => 'Simpan dalam kondisi pipih di tempat kering.',
                         'tips_bank_sampah' => 'Lepas ring tutup dan label terlebih dahulu.'
                     ]
-                ],
-                [
-                    'nama_objek' => 'Kaleng Aluminium Minuman',
-                    'material' => 'Aluminium Grade 3004 (OCR Kode 41 ALU)',
-                    'ocr_code' => '41 ALU',
-                    'confidence' => 94.2,
-                    'kategori' => 'Logam',
-                    'jumlah' => 1,
-                    'kondisi' => 'Sedikit Gepeng',
-                    'layak_jual' => true,
-                    'layak_didaur_ulang' => true,
-                    'kebersihan_percent' => 92,
-                    'kerusakan_percent' => 15,
-                    'estimasi_berat_kg' => 0.30,
-                    'bounding_box' => [25, 52, 80, 85],
-                    'cara_memilah' => 'Pisahkan kaleng aluminium dari botol plastik dan kertas.',
-                    'cara_membersihkan' => 'Bilas sisa minuman dan tiriskan.',
-                    'rekomendasi' => [
-                        'Bilas sisa minuman.',
-                        'Pipihkan kaleng agar hemat tempat penimbangan.'
-                    ],
-                    'saran_ai' => 'Dapat didaur ulang menjadi produk manufaktur logam baru.',
-                    'edukasi' => [
-                        'lama_terurai' => '200 Tahun',
-                        'potensi_daur_ulang' => 'Dilelehkan pada suhu 660°C menjadi lembaran aluminium baru.',
-                        'manfaat_lingkungan' => 'Menghemat 95% energi produksi dibanding bahan mentah.',
-                        'cara_penyimpanan' => 'Simpan di tempat kering.',
-                        'tips_bank_sampah' => 'Pipihkan kaleng agar penimbangan lebih mudah.'
-                    ]
                 ]
             ];
             $co2 = 2.0; $energy = 3.8; $water = 8.5; $decomp = 450;
+        }
+        // 8. Unrecognized Non-Trash Object Fallback
+        else {
+            return [
+                'image_info' => [
+                    'kualitas_gambar' => 'Cukup',
+                    'pencahayaan' => 'Cukup',
+                    'resolusi' => 'Tinggi',
+                    'jumlah_objek' => 0
+                ],
+                'is_valid' => true,
+                'is_recognized' => false,
+                'unrecognized_message' => 'Objek yang terdeteksi pada foto bukan merupakan jenis sampah (misal: Bangunan, Ruangan, atau Benda Non-Sampah). Silakan foto langsung objek sampah seperti botol, kardus, kaleng, atau kertas.',
+                'human_detected' => [
+                    'detected' => false,
+                    'count' => 0,
+                    'face_visible' => false,
+                    'position' => '-',
+                    'confidence' => 0,
+                    'status' => 'TIDAK_TERDETEKSI',
+                    'privacy_note' => 'AI hanya mendeteksi keberadaan manusia.'
+                ],
+                'objects_detected_list' => [
+                    ['nama' => 'Objek Non-Sampah', 'kategori' => 'Non-Sampah', 'confidence' => 95.0, 'is_trash' => false]
+                ],
+                'objects' => [],
+                'summary' => [
+                    'jumlah_sampah' => 0,
+                    'jumlah_non_sampah' => 1,
+                    'total_estimasi_nilai' => 0,
+                    'total_estimasi_berat' => 0,
+                    'kesimpulan' => 'Foto tidak mengandung objek sampah yang dapat diolah atau dijual. Silakan unggah foto sampah yang sesuai.'
+                ],
+                'eco_impact' => [
+                    'co2_reduction_kg' => 0,
+                    'energy_saved_kwh' => 0,
+                    'water_saved_liter' => 0,
+                    'decomposition_years' => 0,
+                    'summary' => 'Tidak ada sampah yang dapat didaur ulang.'
+                ]
+            ];
         }
 
         $objectsDetectedList = array_map(function($obj) {

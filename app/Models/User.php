@@ -11,7 +11,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 
-#[Fillable(['name', 'email', 'password', 'saldo', 'avatar', 'rt', 'rw', 'alamat_lengkap', 'nomor_telepon', 'bank_sampah_id'])]
+#[Fillable(['name', 'email', 'password', 'is_active', 'avatar', 'rt', 'rw', 'alamat_lengkap', 'nomor_telepon', 'bank_sampah_id'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -22,13 +22,39 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_active' => 'boolean',
             'saldo' => 'decimal:2',
         ];
+    }
+
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', true);
     }
 
     public function bankSampah()
     {
         return $this->belongsTo(BankSampah::class);
+    }
+
+    public function bankSampahAdmin(): HasOne
+    {
+        return $this->hasOne(BankSampahAdmin::class);
+    }
+
+    public function walletLedgers(): HasMany
+    {
+        return $this->hasMany(WalletLedger::class);
+    }
+
+    public function pickupsAsNasabah(): HasMany
+    {
+        return $this->hasMany(Pickup::class, 'nasabah_id');
+    }
+
+    public function pickupsAsPetugas(): HasMany
+    {
+        return $this->hasMany(Pickup::class, 'petugas_id');
     }
 
     public function transactions(): HasMany

@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\BankSampah;
 use App\Models\TrashCategory;
 use Illuminate\Database\Seeder;
 
@@ -9,174 +10,231 @@ class TrashCategorySeeder extends Seeder
 {
     public function run(): void
     {
-        $categories = [
+        $banks = BankSampah::all();
+
+        $baseCategories = [
             [
                 'nama' => 'Plastik',
-                'kode' => 'PLS-001',
+                'kode_prefix' => 'PLS',
                 'kategori' => 'anorganik',
                 'jenis' => 'Botol PET, Kantong, Kemasan',
-                'gambar' => 'trash_categories/3UzZlWS1HO0wb0P3ck89cEk9sWhLHhHr5nHihOnn.png',
-                'harga_per_kg' => 3500,
-                'harga_per_gram' => 3.5000,
+                'gambar' => 'https://images.unsplash.com/photo-1563245372-f21724e3856d?w=600&auto=format&fit=crop&q=80',
+                'harga_base' => 3500,
                 'satuan' => 'kg',
                 'kualitas' => 'standar',
                 'stok_dibutuhkan' => 500,
                 'status_harga' => 'naik',
                 'perubahan_persen' => 5.50,
                 'deskripsi' => 'Sampah plastik termasuk botol, kantong, dan kemasan plastik lainnya',
-                'manfaat' => 'Plastik daur ulang dapat dijadikan biji plastik untuk industri manufaktur, mengurangi ketergantungan terhadap plastik baru dari minyak bumi.',
+                'manfaat' => 'Plastik daur ulang dapat dijadikan biji plastik untuk industri manufaktur.',
                 'nilai_daur_ulang' => 'Tinggi',
-                'tips_penyimpanan' => 'Cuci bersih, lepaskan label, kempiskan botol agar hemat tempat. Simpan di tempat kering.',
-                'tips_menjual' => 'Pilah berdasarkan jenis plastik (PET, HDPE, PP). Plastik bersih dan terpilah mendapat harga lebih tinggi.',
-                'is_archived' => false,
+                'tips_penyimpanan' => 'Cuci bersih, lepaskan label, kempiskan botol agar hemat tempat.',
+                'tips_menjual' => 'Pilah berdasarkan jenis plastik (PET, HDPE, PP). Plastik bersih terpilah dihargai tinggi.',
             ],
             [
                 'nama' => 'Kardus',
-                'kode' => 'KDS-001',
+                'kode_prefix' => 'KDS',
                 'kategori' => 'anorganik',
                 'jenis' => 'Kardus Bekas, Box Kemasan',
-                'gambar' => 'trash_categories/7rg9gqZpr6HftOLVtPMiSBP8XI3eimPqKSiCiBfT.png',
-                'harga_per_kg' => 2500,
-                'harga_per_gram' => 2.5000,
+                'gambar' => 'https://images.unsplash.com/photo-1589939705384-5185137a7f0f?w=600&auto=format&fit=crop&q=80',
+                'harga_base' => 2500,
                 'satuan' => 'kg',
                 'kualitas' => 'standar',
                 'stok_dibutuhkan' => 300,
                 'status_harga' => 'stabil',
                 'perubahan_persen' => 0,
                 'deskripsi' => 'Kardus bekas dan kertas kemasan',
-                'manfaat' => 'Kardus daur ulang menjadi kertas baru, mengurangi penebangan pohon dan konsumsi air dalam proses produksi kertas.',
+                'manfaat' => 'Kardus daur ulang menjadi kertas baru, mengurangi penebangan pohon.',
                 'nilai_daur_ulang' => 'Tinggi',
-                'tips_penyimpanan' => 'Lipat rapi, hindari basah. Pisahkan dari kardus berlapis plastik atau aluminium.',
-                'tips_menjual' => 'Kardus yang bersih dan kering mendapat harga terbaik. Ikat rapi dalam bundel.',
-                'is_archived' => false,
+                'tips_penyimpanan' => 'Lipat rapi, hindari basah. Pisahkan dari kardus berlapis plastik.',
+                'tips_menjual' => 'Kardus yang bersih dan kering mendapat harga terbaik. Ikat rapi.',
             ],
             [
                 'nama' => 'Kertas',
-                'kode' => 'KRT-001',
+                'kode_prefix' => 'KRT',
                 'kategori' => 'anorganik',
                 'jenis' => 'Kertas HVS, Koran, Majalah',
-                'gambar' => 'trash_categories/AxYOaB1o0twVv2hmofTYuic6d3HPtPbvfl7NsppB.png',
-                'harga_per_kg' => 2000,
-                'harga_per_gram' => 2.0000,
+                'gambar' => 'https://images.unsplash.com/photo-1586075010923-2dd4570fb338?w=600&auto=format&fit=crop&q=80',
+                'harga_base' => 2000,
                 'satuan' => 'kg',
                 'kualitas' => 'standar',
                 'stok_dibutuhkan' => 400,
                 'status_harga' => 'turun',
                 'perubahan_persen' => -2.30,
                 'deskripsi' => 'Kertas putih, koran, dan majalah',
-                'manfaat' => 'Kertas daur ulang menghemat 70% energi dibandingkan membuat kertas baru. Mengurangi sampah di TPA.',
+                'manfaat' => 'Kertas daur ulang menghemat 70% energi dibanding kertas baru.',
                 'nilai_daur_ulang' => 'Sedang',
-                'tips_penyimpanan' => 'Simpan di tempat kering, jauhkan dari air. Pisahkan kertas putih dari koran.',
-                'tips_menjual' => 'Kertas putih HVS dihargai lebih tinggi dari koran. Jangan campur dengan kertas basah.',
-                'is_archived' => false,
+                'tips_penyimpanan' => 'Simpan di tempat kering, jauhkan dari air.',
+                'tips_menjual' => 'Kertas putih HVS dihargai lebih tinggi dari koran.',
             ],
             [
                 'nama' => 'Logam',
-                'kode' => 'LGM-001',
+                'kode_prefix' => 'LGM',
                 'kategori' => 'anorganik',
                 'jenis' => 'Aluminium, Besi, Tembaga',
-                'gambar' => 'trash_categories/COBWLDiBMqxaZioqM6Kw2OJCRfXajZbIodxsSGub.png',
-                'harga_per_kg' => 8000,
-                'harga_per_gram' => 8.0000,
+                'gambar' => 'https://images.unsplash.com/photo-1537498425277-c283d32ef9db?w=600&auto=format&fit=crop&q=80',
+                'harga_base' => 8000,
                 'satuan' => 'kg',
                 'kualitas' => 'premium',
                 'stok_dibutuhkan' => 200,
                 'status_harga' => 'naik',
                 'perubahan_persen' => 8.75,
                 'deskripsi' => 'Logam bekas termasuk aluminium, besi, dan tembaga',
-                'manfaat' => 'Logam 100% dapat didaur ulang tanpa kehilangan kualitas. Menghemat 95% energi dibanding menambang baru.',
+                'manfaat' => 'Logam 100% dapat didaur ulang tanpa kehilangan kualitas.',
                 'nilai_daur_ulang' => 'Sangat Tinggi',
-                'tips_penyimpanan' => 'Pisahkan berdasarkan jenis logam. Hindari logam berkarat tercampur dengan yang bersih.',
-                'tips_menjual' => 'Tembaga dan aluminium memiliki nilai tertinggi. Pisahkan dari besi untuk harga optimal.',
-                'is_archived' => false,
+                'tips_penyimpanan' => 'Pisahkan berdasarkan jenis logam. Hindari logam berkarat.',
+                'tips_menjual' => 'Tembaga dan aluminium memiliki nilai tertinggi.',
             ],
             [
                 'nama' => 'Kaca',
-                'kode' => 'KCC-001',
+                'kode_prefix' => 'KCC',
                 'kategori' => 'anorganik',
                 'jenis' => 'Botol Kaca, Pecahan Aman',
-                'gambar' => 'trash_categories/EcxMv3jRVUtkGLeyvvatUMNF2mZXJ5SOsIriQytT.jpg',
-                'harga_per_kg' => 1500,
-                'harga_per_gram' => 1.5000,
+                'gambar' => 'https://images.unsplash.com/photo-1516905041604-7a35da3a2b72?w=600&auto=format&fit=crop&q=80',
+                'harga_base' => 1500,
                 'satuan' => 'kg',
                 'kualitas' => 'standar',
                 'stok_dibutuhkan' => 150,
                 'status_harga' => 'stabil',
                 'perubahan_persen' => 0,
                 'deskripsi' => 'Botol kaca dan pecahan kaca yang aman',
-                'manfaat' => 'Kaca dapat didaur ulang berkali-kali tanpa penurunan kualitas. Mengurangi penggunaan pasir silika.',
+                'manfaat' => 'Kaca dapat didaur ulang berkali-kali tanpa penurunan kualitas.',
                 'nilai_daur_ulang' => 'Tinggi',
-                'tips_penyimpanan' => 'Bungkus pecahan kaca dengan koran. Simpan botol utuh terpisah dari pecahan.',
-                'tips_menjual' => 'Botol utuh lebih bernilai dari pecahan. Pisahkan berdasarkan warna kaca.',
-                'is_archived' => false,
+                'tips_penyimpanan' => 'Bungkus pecahan kaca dengan koran. Simpan botol utuh terpisah.',
+                'tips_menjual' => 'Botol utuh lebih bernilai dari pecahan.',
             ],
             [
                 'nama' => 'Organik',
-                'kode' => 'ORG-001',
+                'kode_prefix' => 'ORG',
                 'kategori' => 'organik',
                 'jenis' => 'Sisa Makanan, Daun, Ranting',
-                'gambar' => 'trash_categories/EqEnnaXE1rLUHnAfwAcusRL7zGEAnMYwSnkF9yyN.webp',
-                'harga_per_kg' => 500,
-                'harga_per_gram' => 0.5000,
+                'gambar' => 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=600&auto=format&fit=crop&q=80',
+                'harga_base' => 500,
                 'satuan' => 'kg',
                 'kualitas' => 'rendah',
                 'stok_dibutuhkan' => 1000,
                 'status_harga' => 'stabil',
                 'perubahan_persen' => 0,
                 'deskripsi' => 'Sampah organik seperti sisa makanan dan daun',
-                'manfaat' => 'Dijadikan kompos berkualitas untuk pertanian organik. Mengurangi emisi metana dari TPA.',
+                'manfaat' => 'Dijadikan kompos berkualitas untuk pertanian organik.',
                 'nilai_daur_ulang' => 'Sedang',
-                'tips_penyimpanan' => 'Pisahkan dari sampah anorganik. Gunakan wadah tertutup untuk menghindari bau.',
-                'tips_menjual' => 'Sampah organik segar lebih disukai untuk komposting. Hindari mencampur dengan sampah berminyak.',
-                'is_archived' => false,
+                'tips_penyimpanan' => 'Pisahkan dari sampah anorganik. Gunakan wadah tertutup.',
+                'tips_menjual' => 'Sampah organik segar lebih disukai untuk komposting.',
             ],
             [
                 'nama' => 'Elektronik',
-                'kode' => 'ELK-001',
+                'kode_prefix' => 'ELK',
                 'kategori' => 'b3',
                 'jenis' => 'PCB, Kabel, Komponen',
-                'gambar' => 'trash_categories/jLdUhOJi1fTdomYhDRnRpNUU6f1dSMe51f7SQhnP.png',
-                'harga_per_kg' => 12000,
-                'harga_per_gram' => 12.0000,
+                'gambar' => 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=600&auto=format&fit=crop&q=80',
+                'harga_base' => 12000,
                 'satuan' => 'kg',
                 'kualitas' => 'premium',
                 'stok_dibutuhkan' => 50,
                 'status_harga' => 'naik',
                 'perubahan_persen' => 12.00,
-                'deskripsi' => 'Limbah elektronik termasuk PCB, kabel, dan komponen elektronik',
-                'manfaat' => 'Mengandung logam mulia (emas, perak, tembaga). Mendukung urban mining dan mengurangi pencemaran lingkungan.',
+                'deskripsi' => 'Limbah elektronik termasuk PCB, kabel, dan komponen',
+                'manfaat' => 'Mengandung logam mulia (emas, perak, tembaga).',
                 'nilai_daur_ulang' => 'Sangat Tinggi',
-                'tips_penyimpanan' => 'Jangan bongkar baterai. Simpan di tempat kering, jauhkan dari jangkauan anak.',
-                'tips_menjual' => 'Peralatan utuh lebih bernilai. Pisahkan kabel tembaga dari komponen PCB.',
-                'is_archived' => false,
+                'tips_penyimpanan' => 'Jangan bongkar baterai. Simpan di tempat kering.',
+                'tips_menjual' => 'Peralatan utuh lebih bernilai. Pisahkan kabel tembaga.',
+            ],
+            [
+                'nama' => 'Tekstil & Pakaian',
+                'kode_prefix' => 'TKS',
+                'kategori' => 'anorganik',
+                'jenis' => 'Pakaian Bekas, Kain Perca, Sepatu/Tas Kain',
+                'gambar' => 'https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=600&auto=format&fit=crop&q=80',
+                'harga_base' => 2500,
+                'satuan' => 'kg',
+                'kualitas' => 'standar',
+                'stok_dibutuhkan' => 400,
+                'status_harga' => 'naik',
+                'perubahan_persen' => 4.00,
+                'deskripsi' => 'Limbah tekstil seperti pakaian bekas layak/rusak, kain perca, dan sprei/handuk.',
+                'manfaat' => 'Tekstil daur ulang dapat diolah menjadi lap industri (rag), isian peredam, dan benang daur ulang.',
+                'nilai_daur_ulang' => 'Sedang',
+                'tips_penyimpanan' => 'Cuci bersih dan pastikan dalam kondisi kering. Pisahkan pakaian berserat alami (katun) dari sintetis.',
+                'tips_menjual' => 'Pakaian bekas layak pakai yang terpilah baik biasanya dihargai lebih tinggi oleh Bank Sampah.',
             ],
             [
                 'nama' => 'Minyak Jelantah',
-                'kode' => 'MJL-001',
+                'kode_prefix' => 'MJL',
                 'kategori' => 'organik',
                 'jenis' => 'Minyak Goreng Bekas',
-                'gambar' => 'trash_categories/VnUqLNRYjc3gHSLOQP3E5P0qHKaZQwiVK6tsreEL.jpg',
-                'harga_per_kg' => 4000,
-                'harga_per_gram' => 4.0000,
+                'gambar' => 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=600&auto=format&fit=crop&q=80',
+                'harga_base' => 4000,
                 'satuan' => 'kg',
                 'kualitas' => 'standar',
                 'stok_dibutuhkan' => 100,
                 'status_harga' => 'naik',
                 'perubahan_persen' => 3.20,
                 'deskripsi' => 'Minyak goreng bekas pakai yang sudah disaring',
-                'manfaat' => 'Diolah menjadi biodiesel ramah lingkungan. Mengurangi pencemaran air dari pembuangan minyak sembarangan.',
+                'manfaat' => 'Diolah menjadi biodiesel ramah lingkungan.',
                 'nilai_daur_ulang' => 'Tinggi',
-                'tips_penyimpanan' => 'Saring dari sisa makanan, simpan dalam botol tertutup rapat.',
-                'tips_menjual' => 'Minyak yang bersih dari ampas mendapat harga lebih baik. Kumpulkan minimal 5 liter.',
-                'is_archived' => false,
+                'tips_penyimpanan' => 'Saring dari sisa makanan, simpan dalam botol tertutup.',
+                'tips_menjual' => 'Minyak yang bersih dari ampas mendapat harga lebih baik.',
             ],
         ];
 
-        foreach ($categories as $category) {
-            TrashCategory::updateOrCreate(
-                ['kode' => $category['kode']],
-                $category
-            );
+        // Seed prices per Bank Sampah unit with unique price variations
+        if ($banks->isEmpty()) {
+            foreach ($baseCategories as $base) {
+                TrashCategory::updateOrCreate(
+                    ['kode' => $base['kode_prefix'] . '-001'],
+                    array_merge($base, [
+                        'kode' => $base['kode_prefix'] . '-001',
+                        'harga_per_kg' => $base['harga_base'],
+                        'harga_per_gram' => $base['harga_base'] / 1000,
+                    ])
+                );
+            }
+            return;
+        }
+
+        $multiplierPerBank = [
+            'BS-001' => 1.00, // Melati Bersih
+            'BS-002' => 1.08, // Tampingan Asri
+            'BS-003' => 0.95, // Kenanga Utama
+            'BS-004' => 1.15, // Surabaya Eco
+            'BS-005' => 1.20, // Bali Asri
+        ];
+
+        foreach ($banks as $bank) {
+            $mult = $multiplierPerBank[$bank->kode_bank] ?? 1.00;
+
+            foreach ($baseCategories as $idx => $base) {
+                $unitPrice = round($base['harga_base'] * $mult, -2);
+                $kodeUnit = $base['kode_prefix'] . '-' . str_replace('-', '', $bank->kode_bank);
+
+                TrashCategory::updateOrCreate(
+                    [
+                        'bank_sampah_id' => $bank->id,
+                        'nama' => $base['nama'],
+                    ],
+                    [
+                        'bank_sampah_id' => $bank->id,
+                        'nama' => $base['nama'],
+                        'kode' => $kodeUnit,
+                        'kategori' => $base['kategori'],
+                        'jenis' => $base['jenis'],
+                        'gambar' => $base['gambar'],
+                        'harga_per_kg' => $unitPrice,
+                        'harga_per_gram' => $unitPrice / 1000,
+                        'satuan' => $base['satuan'],
+                        'kualitas' => $base['kualitas'],
+                        'stok_dibutuhkan' => $base['stok_dibutuhkan'],
+                        'status_harga' => $base['status_harga'],
+                        'perubahan_persen' => $base['perubahan_persen'],
+                        'deskripsi' => $base['deskripsi'],
+                        'manfaat' => $base['manfaat'],
+                        'nilai_daur_ulang' => $base['nilai_daur_ulang'],
+                        'tips_penyimpanan' => $base['tips_penyimpanan'],
+                        'tips_menjual' => $base['tips_menjual'],
+                        'is_archived' => false,
+                    ]
+                );
+            }
         }
     }
 }

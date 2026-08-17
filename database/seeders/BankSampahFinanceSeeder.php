@@ -141,8 +141,30 @@ class BankSampahFinanceSeeder extends Seeder
             $createdUnits[] = BankSampah::updateOrCreate(['kode_bank' => $data['kode_bank']], $data);
         }
 
-        // 3. Create Nasabah & Petugas for each unit
+        // 3. Create Admin, Nasabah & Petugas for each unit
         foreach ($createdUnits as $unit) {
+            // Admin Unit
+            $adminEmail = match ($unit->kode_bank) {
+                'BS-001' => 'admin@sisampah.id',
+                'BS-002' => 'admin.tampingan@sisampah.id',
+                'BS-003' => 'admin.kenanga@sisampah.id',
+                'BS-004' => 'admin.surabaya@sisampah.id',
+                'BS-005' => 'admin.bali@sisampah.id',
+                default => 'admin.' . Str::slug($unit->kode_bank) . '@sisampah.id',
+            };
+
+            $adminUser = User::firstOrCreate(
+                ['email' => $adminEmail],
+                [
+                    'name' => 'Admin ' . $unit->nama,
+                    'password' => Hash::make('password'),
+                    'saldo' => 0,
+                    'bank_sampah_id' => $unit->id,
+                    'alamat_lengkap' => $unit->alamat,
+                    'nomor_telepon' => $unit->telepon,
+                ]
+            );
+            $adminUser->syncRoles(['admin']);
             // Petugas
             $petugas = User::firstOrCreate(
                 ['email' => 'petugas.' . Str::slug($unit->kode_bank) . '@sisampah.id'],
@@ -180,14 +202,20 @@ class BankSampahFinanceSeeder extends Seeder
                 $nasabah->syncRoles(['nasabah']);
 
                 // Generate Setoran Transactions
+                $unitCategories = TrashCategory::where('bank_sampah_id', $unit->id)->get();
+                if ($unitCategories->isEmpty()) {
+                    $unitCategories = TrashCategory::all();
+                }
+
                 for ($t = 1; $t <= rand(3, 6); $t++) {
-                    $cat = $categories->random();
+                    $cat = $unitCategories->random();
                     $berat = rand(15, 120) / 10; // 1.5 - 12.0 kg
                     $harga = $cat->harga_per_kg;
                     $total = $berat * $harga;
 
                     Transaction::create([
                         'user_id' => $nasabah->id,
+                        'bank_sampah_id' => $unit->id,
                         'petugas_id' => $petugas->id,
                         'trash_category_id' => $cat->id,
                         'berat_kg' => $berat,

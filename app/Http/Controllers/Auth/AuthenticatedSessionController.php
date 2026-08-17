@@ -32,7 +32,7 @@ class AuthenticatedSessionController extends Controller
 
         $welcomeMsg = 'Selamat datang kembali, ' . explode(' ', $user->name)[0] . '!';
 
-        if ($user->hasRole('admin')) {
+        if ($user->hasRole('super_admin') || $user->hasRole('admin')) {
             return redirect()->intended(route('admin.dashboard', absolute: false))->with('welcome', $welcomeMsg);
         }
 

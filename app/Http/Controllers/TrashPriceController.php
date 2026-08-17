@@ -29,16 +29,22 @@ class TrashPriceController extends Controller
 
     public function index(Request $request)
     {
-        $filters = $request->only(['search', 'kategori', 'status_harga', 'kualitas', 'min_price', 'max_price', 'sort', 'is_archived']);
+        $filters = $request->only(['search', 'kategori', 'status_harga', 'kualitas', 'min_price', 'max_price', 'sort', 'is_archived', 'bank_sampah_id']);
+
+        if (Auth::user()?->bank_sampah_id) {
+            $filters['bank_sampah_id'] = Auth::user()->bank_sampah_id;
+        }
+
         $prices = $this->priceService->getFilteredPrices($filters, 10);
         $statistics = $this->priceService->getStatistics();
+        $bankSampahs = \App\Models\BankSampah::all();
 
-        return view('admin.trash-price.index', compact('prices', 'filters', 'statistics'));
+        return view('admin.trash-price.index', compact('prices', 'filters', 'statistics', 'bankSampahs'));
     }
 
     public function show($id)
     {
-        $category = TrashCategory::with('priceHistories.admin')->findOrFail($id);
+        $category = TrashCategory::with(['bankSampah', 'priceHistories.admin'])->findOrFail($id);
         $prediction = $this->predictionService->predictPrice($id, 7); // Predict 7 days ahead
         $trend = $this->predictionService->getTrendAnalysis($id);
 
@@ -57,7 +63,13 @@ class TrashPriceController extends Controller
 
     public function store(StoreTrashPriceRequest $request)
     {
-        $this->priceService->createPrice($request->validated(), Auth::user());
+        $validated = $request->validated();
+
+        if (Auth::user()?->bank_sampah_id) {
+            $validated['bank_sampah_id'] = Auth::user()->bank_sampah_id;
+        }
+
+        $this->priceService->createPrice($validated, Auth::user());
 
         return redirect()->route('admin.trash_price.index')->with('success', 'Harga sampah berhasil ditambahkan.');
     }
@@ -127,14 +139,37 @@ class TrashPriceController extends Controller
 
     public function publicIndex(Request $request)
     {
+        $user = Auth::user();
+        $userLat = $request->filled('lat') ? (float)$request->lat : -6.200000;
+        $userLng = $request->filled('lng') ? (float)$request->lng : 106.816666;
+        $radiusKm = $request->filled('radius') ? (float)$request->radius : 5.0;
+
+        // Determine target Bank Sampah (default to user's followed unit or requested unit)
+        $selectedBsId = $request->filled('bank_sampah_id') 
+            ? $request->bank_sampah_id 
+            : ($user?->bank_sampah_id ?: \App\Models\BankSampah::active()->first()?->id);
+
+        $selectedBankSampah = \App\Models\BankSampah::find($selectedBsId);
+
+        // Fetch active Bank Sampahs within dynamic radius
+        $allActiveBankSampahs = \App\Models\BankSampah::active()->get();
+        $nearbyBankSampahs = $allActiveBankSampahs->filter(function ($bs) use ($userLat, $userLng, $radiusKm) {
+            if ($radiusKm >= 999) return true; // 'semua' filter
+            $dist = $bs->calculateDistance($userLat, $userLng);
+            return $dist <= $radiusKm || $dist == 0;
+        })->values();
+
         $filters = $request->only(['search', 'kategori']);
         $filters['is_archived'] = 'false';
+        $filters['bank_sampah_id'] = $selectedBsId;
 
         $prices = $this->priceService->getFilteredPrices($filters, 12);
-        $user = Auth::user();
         $favorites = $user ? $user->priceFavorites()->pluck('trash_category_id')->toArray() : [];
 
-        return view('nasabah.prices.index', compact('prices', 'filters', 'favorites'));
+        return view('nasabah.prices.index', compact(
+            'prices', 'filters', 'favorites', 'selectedBankSampah',
+            'nearbyBankSampahs', 'radiusKm', 'selectedBsId'
+        ));
     }
 
     public function publicShow($id)

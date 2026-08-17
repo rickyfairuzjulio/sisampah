@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 #[Fillable([
-    'bank_sampah_id', 'nama', 'kode', 'kategori', 'jenis', 'gambar', 'harga_per_kg', 'harga_per_gram',
+    'bank_sampah_id', 'nama', 'kode', 'kategori', 'jenis', 'gambar', 'harga_per_kg', 'harga_minimal', 'harga_maksimal', 'harga_per_gram',
     'satuan', 'kualitas', 'stok_dibutuhkan', 'status_harga', 'perubahan_persen',
     'deskripsi', 'manfaat', 'nilai_daur_ulang', 'tips_penyimpanan', 'tips_menjual',
     'is_archived',
@@ -23,6 +23,8 @@ class TrashCategory extends Model
     {
         return [
             'harga_per_kg' => 'decimal:2',
+            'harga_minimal' => 'decimal:2',
+            'harga_maksimal' => 'decimal:2',
             'harga_per_gram' => 'decimal:4',
             'stok_dibutuhkan' => 'decimal:2',
             'perubahan_persen' => 'decimal:2',
@@ -62,14 +64,23 @@ class TrashCategory extends Model
     public function getImageUrlAttribute(): ?string
     {
         if (! $this->gambar) {
-            return null;
+            return 'https://images.unsplash.com/photo-1605600659873-d808a13e4d2a?w=400&auto=format&fit=crop&q=80';
         }
 
         if (str_starts_with($this->gambar, 'http')) {
             return $this->gambar;
         }
 
-        return asset('storage/'.$this->gambar);
+        if (\Storage::disk('public')->exists($this->gambar)) {
+            return asset('storage/'.$this->gambar);
+        }
+
+        return match(strtolower($this->kategori)) {
+            'organik' => 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=400&auto=format&fit=crop&q=80',
+            'anorganik' => 'https://images.unsplash.com/photo-1605600659873-d808a13e4d2a?w=400&auto=format&fit=crop&q=80',
+            'b3' => 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400&auto=format&fit=crop&q=80',
+            default => 'https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?w=400&auto=format&fit=crop&q=80',
+        };
     }
 
     public function getPriceStatusColorAttribute(): string

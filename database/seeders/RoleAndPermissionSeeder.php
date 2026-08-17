@@ -10,6 +10,7 @@ class RoleAndPermissionSeeder extends Seeder
 {
     public function run(): void
     {
+        Role::firstOrCreate(['name' => 'super_admin']);
         Role::firstOrCreate(['name' => 'admin']);
         Role::firstOrCreate(['name' => 'petugas']);
         Role::firstOrCreate(['name' => 'nasabah']);
@@ -22,9 +23,13 @@ class RoleAndPermissionSeeder extends Seeder
         Permission::firstOrCreate(['name' => 'input_timbangan']);
         Permission::firstOrCreate(['name' => 'view_saldo']);
         Permission::firstOrCreate(['name' => 'request_withdrawal']);
+        Permission::firstOrCreate(['name' => 'verify_bank_sampah']);
+
+        $superAdminRole = Role::findByName('super_admin');
+        $superAdminRole->givePermissionTo(Permission::all());
 
         $adminRole = Role::findByName('admin');
-        $adminRole->givePermissionTo(Permission::all());
+        $adminRole->givePermissionTo(['view_dashboard', 'manage_harga', 'manage_users', 'validate_withdrawal']);
 
         $petugasRole = Role::findByName('petugas');
         $petugasRole->givePermissionTo(['input_timbangan', 'view_dashboard']);

@@ -11,6 +11,7 @@ $maxWidth = [
     'lg' => 'sm:max-w-lg',
     'xl' => 'sm:max-w-xl',
     '2xl' => 'sm:max-w-2xl',
+    '3xl' => 'sm:max-w-3xl',
 ][$maxWidth];
 @endphp
 
@@ -44,9 +45,10 @@ $maxWidth = [
     x-on:keydown.tab.prevent="$event.shiftKey || nextFocusable().focus()"
     x-on:keydown.shift.tab.prevent="prevFocusable().focus()"
     x-show="show"
-    class="fixed inset-0 overflow-y-auto px-4 py-6 sm:px-0 z-50"
-    style="display: {{ $show ? 'block' : 'none' }};"
+    class="fixed inset-0 z-50 overflow-y-auto px-3 py-6 sm:px-4 flex justify-center items-start pt-16 sm:pt-20 min-h-screen"
+    style="display: {{ $show ? 'flex' : 'none' }};"
 >
+    {{-- Backdrop --}}
     <div
         x-show="show"
         class="fixed inset-0 transform transition-all"
@@ -58,18 +60,19 @@ $maxWidth = [
         x-transition:leave-start="opacity-100"
         x-transition:leave-end="opacity-0"
     >
-        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+        <div class="absolute inset-0 bg-slate-900/75 backdrop-blur-md"></div>
     </div>
 
+    {{-- Modal Panel Container --}}
     <div
         x-show="show"
-        class="mb-6 bg-surface-container-lowest text-on-surface border border-outline-variant rounded-3xl overflow-hidden shadow-2xl transform transition-all sm:w-full {{ $maxWidth }} sm:mx-auto"
+        class="relative w-full {{ $maxWidth }} max-h-[calc(100vh-6rem)] flex flex-col bg-white dark:bg-[#0c271e] text-gray-900 dark:text-white border border-gray-200 dark:border-white/10 rounded-2xl overflow-hidden shadow-2xl transform transition-all z-10 mb-8"
         x-transition:enter="ease-out duration-300"
-        x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-        x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+        x-transition:enter-start="opacity-0 scale-95 translate-y-2"
+        x-transition:enter-end="opacity-100 scale-100 translate-y-0"
         x-transition:leave="ease-in duration-200"
-        x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
-        x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+        x-transition:leave-start="opacity-100 scale-100 translate-y-0"
+        x-transition:leave-end="opacity-0 scale-95 translate-y-2"
     >
         {{ $slot }}
     </div>

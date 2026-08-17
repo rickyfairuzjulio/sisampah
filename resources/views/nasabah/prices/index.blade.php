@@ -6,7 +6,7 @@
     <x-role-nav role="nasabah" />
 
     {{-- Header Banner --}}
-    <div class="relative rounded-3xl overflow-hidden bg-gradient-to-br from-primary to-forest-emerald text-white shadow-xl mb-8 animate-fade-in min-h-[12rem] py-8 flex items-center">
+    <div class="relative rounded-3xl overflow-hidden bg-gradient-to-br from-primary to-forest-emerald text-white shadow-xl mb-6 animate-fade-in min-h-[10rem] py-6 flex items-center">
         <div class="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] mix-blend-overlay"></div>
         <div class="absolute inset-y-0 right-0 w-1/2 bg-gradient-to-l from-white/10 to-transparent"></div>
         <div class="relative z-10 px-6 sm:px-8 md:px-12 w-full flex justify-between items-center">
@@ -17,9 +17,53 @@
                 </p>
             </div>
             <div class="hidden md:block">
-                <svg class="w-28 h-28 opacity-20 transform rotate-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <svg class="w-24 h-24 opacity-20 transform rotate-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
             </div>
         </div>
+    </div>
+
+    <!-- Unit Bank Sampah Selector Toolbar (Single Unit View & Dynamic Radius) -->
+    <div class="bg-surface-container-high border border-outline-variant p-4 rounded-2xl mb-6 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-primary/20 text-primary border border-primary/30 flex items-center justify-center font-bold text-lg shrink-0">
+                <i class="bi bi-buildings-fill"></i>
+            </div>
+            <div>
+                <div class="flex items-center gap-2">
+                    <h3 class="font-bold text-on-surface text-sm sm:text-base">{{ $selectedBankSampah?->nama ?: 'Unit Bank Sampah Terpilih' }}</h3>
+                    @if(auth()->user()?->bank_sampah_id == $selectedBankSampah?->id)
+                        <span class="px-2 py-0.5 rounded text-[10px] font-extrabold bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">Unit Ikutan Saya</span>
+                    @endif
+                </div>
+                <p class="text-xs text-on-surface-variant line-clamp-1"><i class="bi bi-geo-alt"></i> {{ $selectedBankSampah?->alamat ?? 'Alamat Unit' }} (Kec. {{ $selectedBankSampah?->kecamatan ?? '-' }})</p>
+            </div>
+        </div>
+
+        <form action="{{ route('nasabah.prices.index') }}" method="GET" class="flex flex-wrap items-center gap-3 w-full md:w-auto">
+            @if(request('kategori'))
+                <input type="hidden" name="kategori" value="{{ request('kategori') }}">
+            @endif
+
+            <!-- Filter Radius Selector -->
+            <div class="flex items-center gap-1.5 bg-surface-container px-3 py-1.5 rounded-xl border border-outline-variant text-xs">
+                <span class="font-semibold text-on-surface-variant">Radius:</span>
+                <select name="radius" class="bg-transparent font-bold text-primary focus:outline-none cursor-pointer" onchange="this.form.submit()">
+                    <option value="3" {{ ($radiusKm ?? 5) == 3 ? 'selected' : '' }}>3 KM</option>
+                    <option value="5" {{ ($radiusKm ?? 5) == 5 ? 'selected' : '' }}>5 KM (Default)</option>
+                    <option value="10" {{ ($radiusKm ?? 5) == 10 ? 'selected' : '' }}>10 KM</option>
+                    <option value="999" {{ ($radiusKm ?? 5) >= 999 ? 'selected' : '' }}>Semua Unit</option>
+                </select>
+            </div>
+
+            <!-- Select Bank Sampah Unit -->
+            <select name="bank_sampah_id" class="px-3 py-2 rounded-xl bg-surface-container border border-outline-variant text-xs font-bold text-on-surface focus:ring-2 focus:ring-primary focus:outline-none cursor-pointer flex-1 md:w-56" onchange="this.form.submit()">
+                @foreach($nearbyBankSampahs as $bs)
+                    <option value="{{ $bs->id }}" {{ ($selectedBsId ?? null) == $bs->id ? 'selected' : '' }}>
+                        {{ $bs->nama }} {{ auth()->user()?->bank_sampah_id == $bs->id ? '★ (Ikutan)' : '' }}
+                    </option>
+                @endforeach
+            </select>
+        </form>
     </div>
 
     {{-- Filter & Search --}}

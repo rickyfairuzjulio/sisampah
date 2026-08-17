@@ -1,0 +1,143 @@
+# 📄 DOKUMEN MASTER BAHAN RAPAT TIM
+## Perancangan Arsitektur Multi-Tenant & Pemisahan Role SiSampah
+
+**Agenda Rapat**: Diskusi Konsep Transformasi Platform SiSampah (Multi-Tenant Bank Sampah Hub)  
+**Waktu Rapat**: 15 Agustus 2026  
+**Status Dokumen**: Bahan Pembahasan & Pengambilan Keputusan Tim  
+
+---
+
+## 📌 DAFTAR ISI RAPAT
+1. **Latar Belakang & Tujuan Transformasi Multi-Tenant**
+2. **Job Separation: Pemisahan Role Super Admin vs Admin Bank Sampah Unit**
+3. **Penyesuaian Mekanisme Keuangan (Payment / Payouts / Pencairan Dana)**
+4. **Bedah Model Nasabah & Dompet: Mengatasi Risiko Saldo Mengendap**
+5. **Rekomendasi Model Registrasi Nasabah (Hybrid Geo-Location & Referral)**
+6. **Matriks Perbandingan Skenario Keputusan**
+7. **Checklist Pengambilan Keputusan Rapat**
+
+---
+
+## 1. Latar Belakang & Tujuan Transformasi Multi-Tenant
+
+Aplikasi **SiSampah** akan dikembangkan dari aplikasi *single-tenant* (satu unit bank sampah) menjadi **Platform Multi-Tenant SaaS (Bank Sampah Hub)**. 
+
+### Tujuan Utama:
+* Memungkinkan **berbagai Unit Bank Sampah di Indonesia** untuk mendaftar, mengelola kas, petugas, dan warga di wilayahnya masing-masing secara mandiri.
+* Menjadikan pemilik platform sebagai **Super Admin (Jembatan Digital/Fasilitator)** tanpa mengintervensi atau memegang kas fisik milik masing-masing unit bank sampah.
+
+---
+
+## 2. Job Separation: Pemisahan Role Super Admin vs Admin Bank Sampah Unit
+
+> [!IMPORTANT]
+> **Masalah yang Diselesaikan**: Menghilangkan tumpang tindih tugas antara pemilik platform (Super Admin) dan pengelola operasional harian lokal (Admin Unit Bank Sampah).
+
+```mermaid
+graph TD
+    SA["👑 SUPER ADMIN (Pemilik Platform)"] -->|Menyetujui Pendaftaran| Tenant["🏢 Unit Bank Sampah A / B / C"]
+    SA -->|Membuat Akun Utama| AU["🏬 Admin Bank Sampah Unit (Ketua Unit)"]
+    SA -->|Kelola Standardisasi| P1["🏷️ Katalog Harga Acuan Pusat & Konten Global"]
+    
+    AU -->|Kelola Operasional| P2["👥 Petugas Kurir & Timbangan Unit"]
+    AU -->|Kelola Warga| P3["🧑‍🤝‍🧑 Nasabah Terdaftar Unit"]
+    AU -->|Proses Payout| P4["💰 Pengajuan Pencairan Saldo & Upload Resi Transfer"]
+    AU -->|Atur Harga Lokal| P5["💵 Unit Price Override"]
+```
+
+### 👑 A. Role: Super Admin (Platform Owner / Pengelola Pusat)
+**Fokus**: Tata kelola platform makro, *onboarding* tenant, dan standardisasi.
+* 🏢 **Verifikasi & Approval Tenant**: Menyetujui/menolak pendaftaran unit Bank Sampah baru yang ingin bergabung ke platform.
+* 👤 **Manajemen Akun Ketua Unit**: Menunjuk dan membuatkan akun login awal untuk Ketua/Admin dari masing-masing Bank Sampah.
+* 🏷️ **Harga Acuan Pusat (Global Baseline)**: Menetapkan patokan harga sampah acuan nasional/regional sebagai referensi.
+* 📊 **Executive Platform Analytics**: Dashboard agregat lintas bank sampah (total tonase nasional, perputaran uang total, perbandingan performa antar unit).
+* 📝 **Pengaturan Global**: Mengelola Artikel Edukasi Publik, FAQ umum, API Key (Gemini AI), dan Syarat & Ketentuan platform.
+
+### 🏬 B. Role: Admin Bank Sampah Unit (Ketua Unit)
+**Fokus**: Operasional harian, kas lokal, petugas, dan nasabah pada satu unit spesifik.
+* 👥 **Manajemen SDM Unit**: Menambah/mengelola akun **Petugas (Kurir/Operator Timbangan)** dan melihat data **Nasabah** di wilayah unitnya.
+* 💰 **Eksekusi Penarikan Saldo (Payout)**: Memeriksa pengajuan penarikan dana nasabah unitnya, melakukan transfer via Bank/E-Wallet/Tunai, dan mengunggah **Foto Resi Transfer**.
+* 💵 **Penyesuaian Harga Lokal**: Menentukan harga beli sampah unitnya (dapat memakai acuan pusat atau disesuaikan dengan harga pasar/pengepul lokal).
+* 🚚 **Pengawasan Penjemputan**: Mengatur manifes jadwal penjemputan dan penugasan kurir di wilayahnya.
+* 📈 **Laporan Kas & Tonase Unit**: Rekapitulasi transaksi, saldo kas unit, dan ekspor laporan CSV khusus unitnya.
+
+---
+
+## 3. Penyesuaian Mekanisme Keuangan (Pencairan Dana / Payouts)
+
+* **Prinsip Utama**: Aplikasi SiSampah adalah alur **Payout / Disbursement (Pencairan Saldo dari Bank Sampah ke Warga)**.
+* **Tidak Membutuhkan Payment Gateway Pembayaran Pusat**: Warga tidak membeli produk di aplikasi, melainkan menyetor sampah untuk mendapatkan saldo uang.
+* **Alur Keuangan**:
+  1. Warga menyetor sampah $\rightarrow$ Saldo Digital warga di aplikasi bertambah.
+  2. Warga mengajukan pencairan saldo (*Withdrawal*).
+  3. **Admin Bank Sampah Unit** mentransfer uang dari kas lokal unitnya ke rekening/e-wallet warga, lalu mengunggah bukti resi ke sistem.
+  4. Super Admin **tidak menyentuh atau memegang uang fisik**; Super Admin murni menyediakan platform pencatatan digitalnya.
+
+---
+
+## 4. Bedah Model Nasabah & Dompet: Mengatasi Risiko Saldo Mengendap
+
+### 🔴 Risiko jika Saldo/Poin Dipisah-pisah per Unit (*Multi-Sub-Account*):
+Jika nasabah bebas setor ke unit manapun dan saldonya terpisah di masing-masing unit:
+1. **Risiko Uang Mengendap (Saldo Terfragmentasi)**:
+   * Batas minimal pencairan saldo (*Minimum Withdrawal*) adalah **Rp 20.000**.
+   * Jika warga memiliki saldo: Bank Sampah A (**Rp 12.000**), Bank Sampah B (**Rp 10.000**), Bank Sampah C (**Rp 8.000**).
+   * Total uang warga sebenarnya **Rp 30.000**, namun warga **TIDAK BISA MENCAIRKAN UANG SEPESER PUN** karena di setiap unit saldonya kurang dari batas Rp 20.000. Ini membuat warga kecewa dan kapok menggunakan aplikasi.
+2. **Tampilan Dompet Membingungkan (Bad UX)**: Halaman dompet terbagi menjadi sub-dompet yang rumit bagi warga awam.
+3. **Poin Lingkungan (Badge/Level) Terpecah**: Poin reputasi hijau warga terpecah-pecah kecil di banyak unit, sehingga warga tidak pernah bisa naik ke level Badge *Pahlawan Bumi* atau mendapatkan sertifikat.
+
+---
+
+### 🟢 Solusi Rekomendasi Utama (Solusi 1): "Single Wallet + Cash di Tempat untuk Luar Unit"
+
+```mermaid
+graph TD
+    Warga["Nasabah Setor Sampah"] --> Cek{"Lokasi Penyetoran"}
+    Cek -->|Di Bank Sampah Utama Domisili| Base["Masuk Saldo Digital Aplikasi + Poin Lingkungan Global"]
+    Cek -->|Di Bank Sampah Lain / Luar Unit| Out["Dibayar CASH / Tunai di Tempat + Poin Lingkungan Global"]
+    Base --> Withdraw["Pencairan Saldo via Aplikasi ke Admin Unit Utama"]
+    Out --> Done["Uang Langsung Selesai di Tempat (COD)"]
+```
+
+1. **Poin Lingkungan (Badge/Level/Sertifikat)**:
+   * **SELALU 1 DOMPET GLOBAL (AKUMULATIF)**. Di manapun warga setor, Poin Lingkungan bertambah di akun yang sama sehingga reputasi hijau warga tetap utuh.
+2. **Uang / Saldo Rupiah**:
+   * Warga terdaftar di **1 Bank Sampah Utama** (sesuai domisili/pilihan).
+   * **Setor di Unit Utama**: Saldo masuk ke **Dompet Digital Aplikasi** dan dicairkan via aplikasi.
+   * **Setor di Luar Unit Utama**: Bank Sampah luar tersebut memberikan **Uang Tunai / Cash Langsung di Tempat (COD)** setelah menimbang. Petugas luar tetap menginput transaksi di aplikasi agar warga mendapat Poin Lingkungan, namun uangnya langsung selesai di tempat.
+
+---
+
+## 5. Rekomendasi Model Registrasi Nasabah (Sistem Hybrid)
+
+Untuk menghubungkan Warga (Nasabah) dengan Unit Bank Sampah secara efisien, direkomendasikan **Model Hybrid**:
+
+1. **Secara Otomatis (Geo-Location / RT-RW Match)**:
+   * Saat mendaftar, warga mengisi Alamat/RT/RW/GPS. Sistem otomatis mencocokkan ke **Unit Bank Sampah terdekat** di wilayahnya.
+   * *Keunggulan*: Mencegah warga terdaftar di unit yang lokasinya terlalu jauh, sehingga logistik penjemputan oleh petugas kurir tetap efisien.
+2. **Opsi Kode Referal / QR Code Unit**:
+   * Pengurus Bank Sampah Unit dapat membagikan Kode Referal/QR Code saat sosialisasi di warga setempat (contoh: `BS-MELATI-01`), sehingga warga yang scan otomatis terhubung ke unit tersebut.
+3. **Fitur Pindah Unit**:
+   * Warga yang pindah rumah/domisili di masa depan dapat mengajukan pindah ke Unit Bank Sampah terdekat di lokasi barunya.
+
+---
+
+## 6. Matriks Perbandingan Skenario Keputusan Rapat
+
+| Parameter Evaluasi | Skenario A (Saldo Terpisah per Unit) | Skenario B (Solusi 1: Cash Luar Unit) ⭐ | Skenario C (Solusi 2: Single Wallet Kliring) |
+| :--- | :--- | :--- | :--- |
+| **Kenyamanan Warga (UX)** | 🔴 Rumit & Membingungkan | 🟢 **Sangat Mudah & Transparan** | 🟢 **Sangat Mudah & Transparan** |
+| **Pencairan Uang** | 🔴 Berisiko Saldo Mengendap | 🟢 **Bebas Saldo Mengendap** | 🟢 **Bebas Saldo Mengendap** |
+| **Kebebasan Setor** | 🟢 Bebas | 🟢 **Bebas (Cash di tempat)** | 🟢 Bebas |
+| **Poin & Badge Lingkungan** | 🔴 Terpecah-pecah | 🟢 **Akumulatif Global** | 🟢 **Akumulatif Global** |
+| **Kemudahan Admin Unit** | 🟡 Harus cek porsi saldo unitnya | 🟢 **Sangat Mudah & Jelas** | 🟡 Perlu konsolidasi kas bulanan |
+
+---
+
+## 7. Checklist Pengambilan Keputusan Rapat Sore Ini
+
+Mohon tim menyepakati 3 poin keputusan ini dalam rapat sore nanti:
+
+- [ ] **Keputusan 1**: Apakah tim menyetujui struktur **Job Separation**: Super Admin (Pengelola Platform/Fasilitator) dan Admin Bank Sampah Unit (Pengelola Operasional/Kas Lokal)?
+- [ ] **Keputusan 2**: Apakah tim menyetujui **Mekanisme Pencairan Dana (Payout)** dilakukan langsung oleh Admin Bank Sampah Unit via transfer & upload bukti resi?
+- [ ] **Keputusan 3**: Apakah tim menyetujui Skema **Solusi 1 (Single Wallet + Cash di tempat jika setor di luar unit utama)** untuk menjaga UX warga tetap simpel tanpa saldo mengendap?

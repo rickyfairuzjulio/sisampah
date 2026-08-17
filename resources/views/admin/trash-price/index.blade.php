@@ -115,17 +115,14 @@
         </form>
     </x-card>
 
-    {{-- Main Table --}}
-    <x-card class="overflow-hidden border border-outline-variant shadow-sm !p-0 animate-slide-in">
-        
-        {{-- Toolbar --}}
-        <div class="p-4 border-b border-outline-variant bg-surface-container-low flex items-center justify-between">
-            <div class="flex items-center gap-2">
-                <h3 class="font-bold text-on-surface">Katalog Harga</h3>
-                <span class="px-2 py-1 text-xs font-semibold bg-primary/10 text-primary rounded-md">{{ $prices->total() }} Data</span>
-            </div>
-            <div class="flex items-center gap-2">
-                <a href="{{ route('admin.trash_price.history') }}" class="px-3 py-1.5 text-xs font-semibold border border-outline-variant rounded-lg hover:bg-surface-container transition-colors flex items-center gap-1 text-on-surface-variant">
+    {{-- Main Price Table --}}
+    <x-card class="overflow-hidden animate-slide-in" style="animation-delay: 100ms;">
+        <div class="p-4 border-b border-outline-variant bg-surface-container-lowest flex flex-wrap items-center justify-between gap-4">
+            <h2 class="text-base font-bold text-on-surface flex items-center gap-2">
+                Daftar Katalog & Tarif Sampah Unit
+            </h2>
+            <div class="flex items-center gap-3">
+                <a href="{{ route('admin.trash_price.history') }}" class="text-xs font-semibold text-primary hover:underline flex items-center gap-1">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                     Riwayat Global
                 </a>
@@ -138,6 +135,7 @@
                     <tr>
                         <th class="px-5 py-4 w-10"><input type="checkbox" @click="toggleAll" x-ref="selectAll" class="rounded border-gray-300 text-primary focus:ring-primary"></th>
                         <th class="px-5 py-4">Sampah</th>
+                        <th class="px-5 py-4">Unit Bank Sampah</th>
                         <th class="px-5 py-4 text-right">Harga (Kg)</th>
                         <th class="px-5 py-4 text-center">Tren</th>
                         <th class="px-5 py-4 text-center">Stok</th>
@@ -174,6 +172,10 @@
                                         </p>
                                     </div>
                                 </div>
+                            <td class="px-5 py-4">
+                                <span class="px-2.5 py-1 text-xs font-bold bg-primary/10 text-primary rounded-lg border border-primary/20">
+                                    {{ $price->bankSampah?->nama ?: 'Pusat' }}
+                                </span>
                             </td>
                             <td class="px-5 py-4 text-right">
                                 <p class="font-extrabold text-base text-primary">Rp {{ number_format($price->harga_per_kg, 0, ',', '.') }}</p>

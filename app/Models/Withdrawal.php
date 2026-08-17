@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-#[Fillable(['user_id', 'nominal', 'metode', 'rekening_tujuan', 'nama_penerima', 'status', 'foto_resi', 'catatan_admin'])]
+#[Fillable(['user_id', 'bank_sampah_id', 'nominal', 'metode', 'rekening_tujuan', 'nama_penerima', 'status', 'foto_resi', 'bukti_mutasi', 'status_penerimaan', 'catatan_admin'])]
 class Withdrawal extends Model
 {
     use HasUlids;
@@ -26,5 +26,10 @@ class Withdrawal extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function bankSampah(): BelongsTo
+    {
+        return $this->belongsTo(BankSampah::class);
     }
 }

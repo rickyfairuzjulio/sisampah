@@ -1,35 +1,52 @@
 <x-modal name="import-modal" maxWidth="md">
     <div class="p-6">
-        <div class="flex items-center justify-between mb-5 border-b border-outline-variant pb-4">
-            <h2 class="text-xl font-bold text-on-surface">Import Data Harga</h2>
-            <button @click="$dispatch('close-modal', 'import-modal')" class="text-on-surface-variant hover:text-on-surface">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        {{-- Header --}}
+        <div class="flex items-center justify-between mb-5 pb-4 border-b border-gray-200 dark:border-white/10">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-emerald-500/15 flex items-center justify-center">
+                    <i class="bi bi-cloud-upload text-emerald-500 text-lg"></i>
+                </div>
+                <h2 class="text-lg font-bold text-gray-900 dark:text-white">Import Data Harga</h2>
+            </div>
+            <button @click="$dispatch('close-modal', 'import-modal')"
+                class="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:bg-gray-100 dark:hover:bg-white/10 hover:text-gray-700 dark:hover:text-white transition-colors">
+                <i class="bi bi-x-lg text-sm"></i>
             </button>
         </div>
 
-        <div class="mb-4">
-            <p class="text-sm text-on-surface-variant mb-2">Gunakan fitur ini untuk memperbarui harga secara massal atau menambahkan kategori baru dari file Excel/CSV.</p>
-            <a href="#" class="text-sm font-semibold text-primary hover:underline flex items-center gap-1">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+        {{-- Description --}}
+        <div class="mb-5">
+            <p class="text-sm text-gray-600 dark:text-gray-300 mb-3 leading-relaxed">
+                Gunakan fitur ini untuk memperbarui harga secara massal atau menambahkan kategori baru dari file Excel/CSV.
+            </p>
+            <a href="#" class="inline-flex items-center gap-1.5 text-sm font-semibold text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors">
+                <i class="bi bi-download text-sm"></i>
                 Download Template Excel
             </a>
         </div>
 
-        <form action="#" method="POST" enctype="multipart/form-data" class="space-y-4">
+        <form action="#" method="POST" enctype="multipart/form-data" class="space-y-5">
             @csrf
-            
-            <div class="border-2 border-dashed border-outline-variant rounded-xl p-6 text-center hover:bg-surface-container-lowest transition-colors cursor-pointer relative" id="dropzone">
-                <input type="file" name="file" accept=".xlsx,.csv" required class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" onchange="document.getElementById('filename').textContent = this.files[0].name">
-                <svg class="w-10 h-10 text-on-surface-variant mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                <p class="text-sm font-semibold text-on-surface">Klik atau Drag & Drop file disini</p>
-                <p class="text-xs text-on-surface-variant mt-1" id="filename">Format didukung: .xlsx, .csv</p>
+
+            {{-- Dropzone --}}
+            <div class="border-2 border-dashed border-gray-300 dark:border-white/20 rounded-xl p-8 text-center hover:border-emerald-400 dark:hover:border-emerald-500 hover:bg-emerald-50 dark:hover:bg-emerald-500/5 transition-all cursor-pointer relative" id="dropzone">
+                <input type="file" name="file" accept=".xlsx,.csv" required
+                    class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                    onchange="document.getElementById('filename').textContent = this.files[0].name">
+                <i class="bi bi-file-earmark-plus text-4xl text-gray-400 dark:text-gray-500 mb-3 block"></i>
+                <p class="text-sm font-semibold text-gray-700 dark:text-gray-200">Klik atau Drag &amp; Drop file disini</p>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1.5" id="filename">Format didukung: .xlsx, .csv</p>
             </div>
 
-            <div class="flex justify-end gap-3 mt-6 pt-4 border-t border-outline-variant">
-                <button type="button" @click="$dispatch('close-modal', 'import-modal')" class="px-5 py-2.5 bg-surface-container hover:bg-surface-container-high text-on-surface font-semibold rounded-xl transition-colors">
+            {{-- Footer Actions --}}
+            <div class="flex justify-end gap-3 pt-4 border-t border-gray-200 dark:border-white/10">
+                <button type="button" @click="$dispatch('close-modal', 'import-modal')"
+                    class="px-5 py-2.5 bg-gray-100 dark:bg-white/10 hover:bg-gray-200 dark:hover:bg-white/15 text-gray-700 dark:text-gray-200 font-semibold rounded-xl transition-colors text-sm">
                     Batal
                 </button>
-                <button type="button" class="px-6 py-2.5 bg-primary opacity-50 cursor-not-allowed text-white font-bold rounded-xl shadow-sm transition-colors">
+                <button type="button" disabled
+                    class="px-6 py-2.5 bg-emerald-500 opacity-60 cursor-not-allowed text-white font-bold rounded-xl text-sm flex items-center gap-2">
+                    <i class="bi bi-cloud-upload-fill"></i>
                     Import Data (Coming Soon)
                 </button>
             </div>

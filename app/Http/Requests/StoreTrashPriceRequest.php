@@ -8,16 +8,18 @@ class StoreTrashPriceRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user() && $this->user()->hasRole('admin');
+        return $this->user() && ($this->user()->hasRole('admin') || $this->user()->hasRole('super_admin'));
     }
 
     public function rules(): array
     {
         return [
-            'nama' => ['required', 'string', 'max:255', 'unique:trash_categories,nama'],
+            'nama' => ['required', 'string', 'max:255'],
             'kategori' => ['required', 'in:organik,anorganik,b3'],
             'jenis' => ['nullable', 'string', 'max:255'],
             'harga_per_kg' => ['required', 'numeric', 'min:0'],
+            'harga_minimal' => ['nullable', 'numeric', 'min:0'],
+            'harga_maksimal' => ['nullable', 'numeric', 'min:0'],
             'satuan' => ['required', 'in:kg,gram,unit'],
             'kualitas' => ['required', 'in:premium,standar,rendah'],
             'stok_dibutuhkan' => ['nullable', 'numeric', 'min:0'],

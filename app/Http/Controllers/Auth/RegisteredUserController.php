@@ -20,7 +20,8 @@ class RegisteredUserController extends Controller
      */
     public function create(): View
     {
-        return view('auth.register');
+        $bankSampahs = \App\Models\BankSampah::active()->get();
+        return view('auth.register', compact('bankSampahs'));
     }
 
     /**
@@ -34,12 +35,15 @@ class RegisteredUserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'bank_sampah_id' => ['required', 'exists:bank_sampahs,id'],
         ]);
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'bank_sampah_id' => $request->bank_sampah_id,
+            'is_active' => true,
         ]);
 
         $user->assignRole('nasabah');

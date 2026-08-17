@@ -14,35 +14,35 @@
 
 @layer base {
     :root {
-        /* Light Theme */
-        --color-background: #F7FAF8;
+        /* Light Theme - Clean Minimalist */
+        --color-background: #F8FAFC;
         --color-surface: #FFFFFF;
         --color-card: #FFFFFF;
         --color-sidebar: #FFFFFF;
         --color-navbar: #FFFFFF;
-        --color-hover: #F0FDF4; /* Emerald 50 */
-        --color-border: #E5E7EB;
+        --color-hover: #F1F5F9;
+        --color-border: #E2E8F0;
         
         --color-text-primary: #0F172A;
-        --color-text-secondary: #64748B;
+        --color-text-secondary: #475569;
         --color-text-muted: #94A3B8;
-        --color-text-success: #22C55E;
+        --color-text-success: #10B981;
     }
 
     .dark {
-        /* Dark Theme (Landing Page Identity) */
-        --color-background: #04160F;
-        --color-surface: #0A241B;
-        --color-card: #0A241B;
-        --color-sidebar: #04160F;
-        --color-navbar: #04160F;
-        --color-hover: #113325;
-        --color-border: rgba(255,255,255,0.08);
+        /* Dark Theme - Sleek Modern Dark Slate */
+        --color-background: #0F172A;
+        --color-surface: #1E293B;
+        --color-card: #1E293B;
+        --color-sidebar: #0F172A;
+        --color-navbar: #0F172A;
+        --color-hover: #334155;
+        --color-border: rgba(255, 255, 255, 0.08);
         
-        --color-text-primary: #FFFFFF;
-        --color-text-secondary: #B7C7C1;
-        --color-text-muted: #8BA39A;
-        --color-text-success: #2DD67B;
+        --color-text-primary: #F8FAFC;
+        --color-text-secondary: #94A3B8;
+        --color-text-muted: #64748B;
+        --color-text-success: #34D399;
     }
 
     *, *::before, *::after {
@@ -50,7 +50,7 @@
     }
 
     body {
-        @apply font-sans antialiased bg-background text-text-primary transition-colors duration-300;
+        @apply font-sans antialiased bg-background text-text-primary transition-colors duration-200;
         font-feature-settings: "cv11", "ss01";
     }
 
@@ -66,18 +66,19 @@
 @layer components {
     /* ─── GLOBAL FORM ELEMENTS ─── */
     .form-input {
-        @apply rounded-btn border border-transparent bg-surface text-text-primary 
-               transition-all duration-200 py-3.5 px-4 w-full text-sm font-medium;
+        @apply rounded-xl border border-slate-200 dark:border-slate-700/80 bg-surface text-text-primary 
+               transition-all duration-200 py-2.5 px-3.5 w-full text-sm font-medium;
         outline: none;
     }
     
     .dark .form-input {
-        background-color: #0B2A1F; /* Lighter than surface */
+        background-color: #1E293B;
+        border-color: rgba(255, 255, 255, 0.1);
+        color: #F8FAFC;
     }
 
     .form-input:focus {
-        @apply border-primary;
-        box-shadow: 0 0 15px rgba(34, 197, 94, 0.2);
+        @apply border-emerald-500 ring-2 ring-emerald-500/20;
     }
 
     .form-input::placeholder {
@@ -86,22 +87,22 @@
     }
 
     .form-select {
-        @apply form-input appearance-none bg-no-repeat pr-10;
+        @apply form-input appearance-none bg-no-repeat pr-10 cursor-pointer;
         background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2364748B' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
         background-position: right 0.75rem center;
         background-size: 1.25em 1.25em;
     }
     
     .dark .form-select {
-        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%238BA39A' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2394A3B8' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
     }
 
     .form-label {
-        @apply block text-sm font-bold text-text-secondary tracking-wide mb-2;
+        @apply block text-xs font-semibold text-text-secondary uppercase tracking-wider mb-1.5;
     }
 
     .form-hint {
-        @apply text-xs text-text-muted mt-1.5 font-medium;
+        @apply text-xs text-text-muted mt-1 font-normal;
     }
 
     /* ─── PASSWORD WRAPPER ─── */
@@ -113,82 +114,83 @@
 
     /* ─── BUTTONS ─── */
     .btn {
-        @apply inline-flex items-center justify-center gap-2 font-bold transition-all duration-200 
-               focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 select-none;
-        min-height: 48px;
+        @apply inline-flex items-center justify-center gap-2 font-semibold transition-all duration-200 
+               focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 select-none cursor-pointer;
+        min-height: 40px;
     }
 
     .btn:active {
-        transform: scale(0.97);
+        transform: scale(0.99);
     }
 
     .btn-primary {
-        @apply btn text-white rounded-btn px-6 py-3 text-sm shadow-soft hover:shadow-glow-green;
-        background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+        @apply btn text-white rounded-xl px-4 py-2 text-xs shadow-sm hover:shadow bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800;
     }
 
     .btn-secondary {
-        @apply btn bg-transparent border border-border-color text-text-primary rounded-btn px-6 py-3 text-sm
-               hover:bg-hover-bg;
+        @apply btn bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-text-primary rounded-xl px-4 py-2 text-xs
+               hover:bg-slate-200 dark:hover:bg-slate-700;
     }
 
     .btn-outline {
-        @apply btn border-2 border-primary text-primary rounded-btn px-6 py-3 text-sm
-               hover:bg-primary hover:text-white;
+        @apply btn border border-emerald-500 text-emerald-600 dark:text-emerald-400 rounded-xl px-4 py-2 text-xs
+               hover:bg-emerald-500 hover:text-white;
     }
 
     .btn-danger {
-        @apply btn bg-danger text-white rounded-btn px-6 py-3 text-sm
-               hover:opacity-90 shadow-soft;
+        @apply btn bg-danger text-white rounded-xl px-5 py-2.5 text-xs hover:bg-red-600 shadow-sm;
     }
     
     .btn-ghost {
-        @apply btn bg-transparent text-text-primary rounded-btn px-6 py-3 text-sm hover:bg-hover-bg;
+        @apply btn bg-transparent text-text-primary rounded-xl px-4 py-2 text-xs hover:bg-hover-bg;
     }
 
     .btn-sm {
-        @apply px-4 py-2 text-xs rounded-[12px];
-        min-height: 38px;
+        @apply px-3 py-1.5 text-xs rounded-lg;
+        min-height: 34px;
     }
 
     .btn-full { @apply w-full; }
 
     /* ─── CARDS ─── */
     .card {
-        @apply bg-card rounded-card border border-border-color shadow-soft transition-all duration-300 overflow-hidden;
+        @apply bg-surface rounded-card border border-slate-200/80 dark:border-slate-800 shadow-sm transition-all duration-200 overflow-hidden;
     }
-    
+    .dark .card {
+        background-color: #1E293B;
+        @apply border-slate-800;
+    }
     .card:hover {
-        @apply -translate-y-1 shadow-glow-green-sm border-primary/30;
+        @apply border-slate-300 dark:border-slate-700 shadow-md;
     }
 
     .card-body {
-        @apply p-6 lg:p-8;
+        @apply p-5 lg:p-6;
     }
 
     .card-header {
-        @apply px-6 lg:px-8 py-5 border-b border-border-color flex items-center justify-between bg-surface;
+        @apply px-5 lg:px-6 py-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between;
     }
 
     .card-title {
-        @apply text-lg font-bold text-text-primary;
+        @apply text-base font-bold text-text-primary;
     }
 
     /* ─── STAT BADGE (KPI) ─── */
     .stat-card {
-        @apply card card-body flex flex-col gap-4 relative overflow-hidden;
+        @apply card card-body flex flex-col gap-3 relative overflow-hidden;
     }
 
     .stat-icon {
-        @apply w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 border;
+        @apply w-10 h-10 rounded-xl flex items-center justify-center shrink-0 border border-slate-200/60 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-emerald-500;
     }
 
     .stat-value {
-        @apply text-3xl font-black text-text-primary tracking-tight;
+        @apply text-2xl font-extrabold text-text-primary tracking-tight;
     }
 
     .stat-label {
-        @apply text-sm font-bold text-text-secondary;
+        @apply text-xs font-semibold text-text-secondary;
     }
 
     .trend-up {

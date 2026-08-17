@@ -24,6 +24,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 </head>
 <body class="font-sans antialiased bg-[#051410] text-white overflow-x-hidden">
     @php
@@ -45,22 +46,23 @@
                     <span class="text-lg sm:text-xl lg:text-2xl font-bold tracking-tight">SiSampah<span class="text-emerald">.</span></span>
                 </a>
 
-                <nav class="hidden lg:flex items-center gap-8 text-sm font-semibold text-white/70">
+                <nav class="hidden lg:flex items-center gap-6 text-sm font-semibold text-white/70">
                     <a href="#fitur" class="hover:text-emerald transition-colors">Fitur</a>
                     <a href="#cara-kerja" class="hover:text-emerald transition-colors">Cara Kerja</a>
-                    <a href="#dampak" class="hover:text-emerald transition-colors">Dampak</a>
                     <a href="{{ route('edukasi.index') }}" class="hover:text-emerald transition-colors">Edukasi</a>
+                    <a href="{{ route('pendaftaran_bank_sampah.index') }}" class="text-emerald hover:text-emerald-300 font-bold transition-colors">Daftarkan Bank Sampah</a>
+                    <a href="{{ route('pendaftaran_bank_sampah.tracking') }}" class="hover:text-emerald transition-colors">Lacak Pendaftaran</a>
                 </nav>
 
-                <div class="hidden lg:flex items-center gap-3">
+                <div class="hidden lg:flex items-center gap-4">
                     @auth
-                        <a href="{{ route($dashRoute) }}" class="px-6 py-2.5 bg-gradient-to-r from-primary to-emerald hover:shadow-lg hover:shadow-primary/20 text-white text-sm font-bold rounded-full transition-all">
-                            Dashboard Saya
+                        <a href="{{ route($dashRoute) }}" class="px-6 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-white text-sm font-bold rounded-full transition-all shadow-lg shadow-emerald-500/20 flex items-center gap-2">
+                            Dashboard Saya <i class="bi bi-arrow-right text-base"></i>
                         </a>
                     @else
-                        <a href="{{ route('login') }}" class="px-5 py-2.5 text-sm font-semibold text-white/80 hover:text-white transition-colors">Masuk</a>
-                        <a href="{{ route('register') }}" class="px-6 py-2.5 bg-white text-[#051410] text-sm font-bold rounded-full hover:bg-white/90 transition-all shadow-md">
-                            Daftar Gratis
+                        <a href="{{ route('login') }}" class="px-4 py-2 text-sm font-bold text-white/80 hover:text-white transition-colors">Masuk</a>
+                        <a href="{{ route('register') }}" class="px-6 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-white text-sm font-bold rounded-full transition-all shadow-lg shadow-emerald-500/20 flex items-center gap-2">
+                            Daftar Gratis <i class="bi bi-arrow-right text-base"></i>
                         </a>
                     @endauth
                 </div>

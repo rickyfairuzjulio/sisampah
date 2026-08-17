@@ -18,6 +18,7 @@ class PetugasController extends Controller
 
         $pickupRequests = Transaction::where('tipe_setoran', 'jemput')
             ->where('status', 'pending')
+            ->when($petugas->bank_sampah_id, fn ($q) => $q->where('bank_sampah_id', $petugas->bank_sampah_id))
             ->select('user_id', \DB::raw('SUM(berat_kg) as total_berat'), \DB::raw('COUNT(*) as total_items'), \DB::raw('MAX(created_at) as created_at'))
             ->groupBy('user_id')
             ->with('user')
@@ -52,7 +53,10 @@ class PetugasController extends Controller
     public function showWeighingForm($userId)
     {
         $user = User::findOrFail($userId);
-        $trashCategories = TrashCategory::all();
+        $petugas = auth()->user();
+        $trashCategories = TrashCategory::active()
+            ->when($petugas->bank_sampah_id, fn ($q) => $q->where('bank_sampah_id', $petugas->bank_sampah_id))
+            ->get();
 
         return view('petugas.weighing-form', compact('user', 'trashCategories'));
     }
@@ -78,6 +82,9 @@ class PetugasController extends Controller
                 ? $request->file('foto_bukti')->store('transactions', 'public')
                 : null;
 
+            $walletService = new \App\Services\WalletLedgerService();
+            $petugasBankSampahId = auth()->user()->bank_sampah_id;
+
             foreach ($items as $item) {
                 $trashCategory = TrashCategory::findOrFail($item['trash_category_id']);
                 $weight = (float) $item['berat_kg'];
@@ -85,6 +92,7 @@ class PetugasController extends Controller
 
                 $transaction = Transaction::create([
                     'user_id' => $user->id,
+                    'bank_sampah_id' => $petugasBankSampahId ?: $user->bank_sampah_id,
                     'petugas_id' => auth()->id(),
                     'trash_category_id' => $trashCategory->id,
                     'berat_kg' => $weight,
@@ -95,12 +103,22 @@ class PetugasController extends Controller
                     'foto_bukti' => $fotoPath,
                 ]);
 
+                // Record credit in wallet ledger
+                $walletService->recordTransaction(
+                    $user,
+                    'credit',
+                    $hargaTotal,
+                    $petugasBankSampahId ?: $user->bank_sampah_id,
+                    $transaction->id,
+                    null,
+                    'DEP-' . $transaction->id,
+                    "Setoran sampah jemput ({$trashCategory->nama} {$weight} kg)"
+                );
+
                 $totalSaldo += $hargaTotal;
                 $totalWeight += $weight;
                 $totalPoints += $this->calculatePoints($trashCategory->nama, $weight);
             }
-
-            $user->increment('saldo', $totalSaldo);
 
             $leaderboard = Leaderboard::firstOrCreate(
                 ['user_id' => $user->id],
@@ -118,7 +136,10 @@ class PetugasController extends Controller
 
     public function showSelfDepositForm()
     {
-        $trashCategories = TrashCategory::all();
+        $petugas = auth()->user();
+        $trashCategories = TrashCategory::active()
+            ->when($petugas->bank_sampah_id, fn ($q) => $q->where('bank_sampah_id', $petugas->bank_sampah_id))
+            ->get();
 
         return view('petugas.self-deposit-form', compact('trashCategories'));
     }
@@ -145,6 +166,10 @@ class PetugasController extends Controller
                 ? $validated['foto_bukti']->store('transactions', 'public')
                 : null;
 
+            $walletService = new \App\Services\WalletLedgerService();
+            $petugasBankSampahId = auth()->user()->bank_sampah_id;
+            $isFollowedBank = ($user->bank_sampah_id == $petugasBankSampahId);
+
             foreach ($items as $item) {
                 $trashCategory = TrashCategory::findOrFail($item['trash_category_id']);
                 $weight = (float) $item['berat_kg'];
@@ -152,6 +177,7 @@ class PetugasController extends Controller
 
                 $transaction = Transaction::create([
                     'user_id' => $user->id,
+                    'bank_sampah_id' => $petugasBankSampahId ?: $user->bank_sampah_id,
                     'petugas_id' => auth()->id(),
                     'trash_category_id' => $trashCategory->id,
                     'berat_kg' => $weight,
@@ -159,15 +185,33 @@ class PetugasController extends Controller
                     'total_rp' => $hargaTotal,
                     'tipe_setoran' => 'mandiri',
                     'status' => 'selesai',
+                    'catatan' => $isFollowedBank ? 'Pembayaran Dompet Digital' : 'Pembayaran TUNAI / CASH di tempat (Luar Unit)',
                     'foto_bukti' => $fotoPath,
                 ]);
+
+                if ($isFollowedBank) {
+                    // Record credit in digital wallet ledger if depositing to followed bank
+                    $walletService->recordTransaction(
+                        $user,
+                        'credit',
+                        $hargaTotal,
+                        $petugasBankSampahId ?: $user->bank_sampah_id,
+                        $transaction->id,
+                        null,
+                        'DEP-MAN-' . $transaction->id,
+                        "Setoran sampah mandiri ({$trashCategory->nama} {$weight} kg)"
+                    );
+                } else {
+                    // Deduct Unit Kas for Cash Outflow (COD)
+                    if ($petugasBankSampahId) {
+                        \App\Models\BankSampah::where('id', $petugasBankSampahId)->decrement('kas_unit', $hargaTotal);
+                    }
+                }
 
                 $totalSaldo += $hargaTotal;
                 $totalWeight += $weight;
                 $totalPoints += $this->calculatePoints($trashCategory->nama, $weight);
             }
-
-            $user->increment('saldo', $totalSaldo);
 
             $leaderboard = Leaderboard::firstOrCreate(
                 ['user_id' => $user->id],
@@ -179,8 +223,11 @@ class PetugasController extends Controller
             $leaderboard->increment('jumlah_transaksi', count($items));
         });
 
-        return redirect()->route('petugas.dashboard')
-            ->with('success', 'Setoran mandiri berhasil diproses.');
+        $message = ($user->bank_sampah_id == auth()->user()->bank_sampah_id)
+            ? 'Setoran mandiri berhasil diproses (Saldo digital nasabah bertambah).'
+            : 'Setoran mandiri berhasil diproses. Pembayaran diselesaikan secara CASH TUNAI di tempat (Kas Unit berkurang, Poin Lingkungan nasabah bertambah).';
+
+        return redirect()->route('petugas.dashboard')->with('success', $message);
     }
 
     private function calculatePoints($trashType, $weight)

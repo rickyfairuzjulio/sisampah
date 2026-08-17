@@ -9,7 +9,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('trash_categories', function (Blueprint $table) {
-            $table->string('kode')->unique()->after('id');
+            $table->string('kode')->after('id');
             $table->enum('kategori', ['organik', 'anorganik', 'b3'])->default('anorganik')->after('nama');
             $table->string('jenis')->nullable()->after('kategori');
             $table->string('gambar')->nullable()->after('jenis');

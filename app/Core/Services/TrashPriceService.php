@@ -28,13 +28,18 @@ class TrashPriceService
      */
     public function getFilteredPrices(array $filters, int $perPage = 10): LengthAwarePaginator
     {
-        $query = TrashCategory::query();
+        $query = TrashCategory::with('bankSampah');
 
         // Include archived or not
         if (isset($filters['is_archived']) && $filters['is_archived'] === 'true') {
             $query->archived();
         } else {
             $query->active();
+        }
+
+        // Bank Sampah Scoping
+        if (! empty($filters['bank_sampah_id'])) {
+            $query->where('bank_sampah_id', $filters['bank_sampah_id']);
         }
 
         // Search

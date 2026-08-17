@@ -11,7 +11,7 @@ class PriceHistorySeeder extends Seeder
 {
     public function run(): void
     {
-        $admin = User::where('email', 'admin@sisampah.local')->first();
+        $admin = User::where('email', 'superadmin@sisampah.id')->first() ?: User::role('admin')->first();
 
         if (! $admin) {
             return;
