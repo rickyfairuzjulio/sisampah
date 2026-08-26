@@ -7,6 +7,7 @@ export default {
         './vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php',
         './storage/framework/views/*.php',
         './resources/views/**/*.blade.php',
+        './resources/js/**/*.{js,jsx,ts,tsx}',
     ],
 
     darkMode: 'class',
@@ -22,6 +23,15 @@ export default {
                 mint: '#34D399',
                 warning: '#F59E0B',
                 danger: '#EF4444',
+
+                // Landing Page Specific Colors (Stitch Dark Mode)
+                'landing-bg': '#051410',
+                'landing-surface': '#061E17',
+                'landing-card': '#041611',
+                'landing-section-alt': '#03110D',
+                'landing-footer': '#030E0B',
+                'brand-emerald': '#22C55E',
+                'brand-emerald-light': '#34D399',
                 
                 // Semantic / Theming Colors (Mapped from CSS)
                 background: 'var(--color-background)',
@@ -45,8 +55,9 @@ export default {
                 lg: '1rem',
                 xl: '1.25rem',
                 '2xl': '1.5rem',
-                'btn': '0.75rem', // 12px for Buttons/Inputs
-                'card': '1rem', // 16px for Cards
+                '3xl': '2rem',
+                'btn': '0.75rem',
+                'card': '1rem',
                 full: '9999px',
             },
             boxShadow: {
@@ -56,6 +67,7 @@ export default {
                 'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.04), 0 2px 6px -1px rgba(0, 0, 0, 0.02)',
                 'glow-green': '0 4px 14px 0 rgba(16, 185, 129, 0.2)',
                 'glow-green-sm': '0 2px 8px 0 rgba(16, 185, 129, 0.15)',
+                'glow-emerald': '0 0 25px rgba(34, 197, 94, 0.25)',
             },
             keyframes: {
                 'slide-in': {
@@ -66,10 +78,21 @@ export default {
                     '0%': { opacity: '0' },
                     '100%': { opacity: '1' },
                 },
+                'marquee': {
+                    '0%': { transform: 'translateX(0%)' },
+                    '100%': { transform: 'translateX(-50%)' },
+                },
+                'float': {
+                    '0%, 100%': { transform: 'translateY(0) scale(1)' },
+                    '50%': { transform: 'translateY(-15px) scale(1.03)' },
+                },
             },
             animation: {
                 'slide-in': 'slide-in 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
                 'fade-in': 'fade-in 0.3s ease-out',
+                'marquee': 'marquee 65s linear infinite',
+                'float': 'float 7s ease-in-out infinite',
+                'float-delayed': 'float 7s ease-in-out 3.5s infinite',
             }
         },
     },

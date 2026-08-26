@@ -23,7 +23,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
 
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @viteReactRefresh
+    @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/js/app.jsx'])
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 </head>
 <body class="font-sans antialiased bg-[#051410] text-white overflow-x-hidden">
@@ -34,6 +35,8 @@
                 : (auth()->user()->hasRole('petugas') ? 'petugas.dashboard' : 'nasabah.dashboard');
         }
     @endphp
+
+    @unless(isset($isReactLanding) && $isReactLanding)
     {{-- Landing Nav --}}
     <header x-data="{ open: false, scrolled: false }"
             x-init="window.addEventListener('scroll', () => scrolled = window.scrollY > 30)"
@@ -119,11 +122,13 @@
             </div>
         </div>
     </header>
+    @endunless
 
     <main>
         @yield('content')
     </main>
 
+    @unless(isset($isReactLanding) && $isReactLanding)
     <!-- Footer Menyatu dengan Tema Utama (#051410) -->
     <footer class="bg-[#030e0b] border-t border-white/10 text-white relative overflow-hidden">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16 relative z-10">
@@ -183,5 +188,6 @@
             </div>
         </div>
     </footer>
+    @endunless
 </body>
 </html>

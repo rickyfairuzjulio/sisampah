@@ -32,16 +32,34 @@ class AuthenticatedSessionController extends Controller
 
         $welcomeMsg = 'Selamat datang kembali, ' . explode(' ', $user->name)[0] . '!';
 
-        if ($user->hasRole('super_admin') || $user->hasRole('admin')) {
-            return redirect()->intended(route('admin.dashboard', absolute: false))->with('welcome', $welcomeMsg);
+        $intended = $request->session()->pull('url.intended');
+
+        if ($user->hasRole('super_admin')) {
+            if ($intended && str_contains($intended, '/super-admin')) {
+                return redirect($intended)->with('welcome', $welcomeMsg);
+            }
+            return redirect()->route('super_admin.dashboard')->with('welcome', $welcomeMsg);
+        }
+
+        if ($user->hasRole('admin')) {
+            if ($intended && str_contains($intended, '/admin') && !str_contains($intended, '/super-admin')) {
+                return redirect($intended)->with('welcome', $welcomeMsg);
+            }
+            return redirect()->route('admin.dashboard')->with('welcome', $welcomeMsg);
         }
 
         if ($user->hasRole('petugas')) {
-            return redirect()->intended(route('petugas.dashboard', absolute: false))->with('welcome', $welcomeMsg);
+            if ($intended && str_contains($intended, '/petugas')) {
+                return redirect($intended)->with('welcome', $welcomeMsg);
+            }
+            return redirect()->route('petugas.dashboard')->with('welcome', $welcomeMsg);
         }
 
         if ($user->hasRole('nasabah')) {
-            return redirect()->intended(route('nasabah.dashboard', absolute: false))->with('welcome', $welcomeMsg);
+            if ($intended && !str_contains($intended, '/admin') && !str_contains($intended, '/super-admin') && !str_contains($intended, '/petugas')) {
+                return redirect($intended)->with('welcome', $welcomeMsg);
+            }
+            return redirect()->route('nasabah.dashboard')->with('welcome', $welcomeMsg);
         }
 
         return redirect()->intended(route('home', absolute: false))->with('welcome', $welcomeMsg);

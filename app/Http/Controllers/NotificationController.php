@@ -19,7 +19,7 @@ class NotificationController extends Controller
         }
 
         $role = $user->getRoleNames()->first() ?? '';
-        $isSuperAdmin = $role === 'super_admin' || ($role === 'admin' && empty($user->bank_sampah_id));
+        $isSuperAdmin = $role === 'super_admin';
         $bsId = $user->bank_sampah_id;
 
         $notifications = collect();
@@ -39,7 +39,7 @@ class NotificationController extends Controller
                     'title' => 'Verifikasi Bank Sampah',
                     'message' => "Unit '{$bs->nama}' mengajukan verifikasi pendaftaran.",
                     'time' => $bs->updated_at ? $bs->updated_at->diffForHumans() : 'Baru saja',
-                    'url' => route('admin.verifikasi_bank_sampah.show', $bs->id),
+                    'url' => route('super_admin.verifikasi_bank_sampah.show', $bs->id),
                     'is_read' => false,
                 ]);
             }

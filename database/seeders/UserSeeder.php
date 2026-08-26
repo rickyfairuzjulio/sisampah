@@ -35,7 +35,7 @@ class UserSeeder extends Seeder
                 'nomor_telepon' => '081100000000',
             ]
         );
-        $superAdmin->syncRoles(['super_admin', 'admin']);
+        $superAdmin->syncRoles(['super_admin']);
 
         // Delete legacy admin@sisampah.local if it exists
         User::where('email', 'admin@sisampah.local')->delete();

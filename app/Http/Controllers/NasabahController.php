@@ -19,41 +19,57 @@ class NasabahController extends Controller
     public function dashboard()
     {
         $user = auth()->user();
-
-        $saldo = $user->saldo;
-
         $bsId = $user->bank_sampah_id;
-        $hargaSampah = TrashCategory::active()
-            ->when($bsId, fn ($q) => $q->where('bank_sampah_id', $bsId))
-            ->get();
 
-        $transaksiTerbaru = $user->transactions()
-            ->with('trashCategory')
-            ->latest()
-            ->take(5)
-            ->get();
+        // 1. Auth & Bank Sampah Domisili
+        $authData = [
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'avatar_url' => $user->avatar_url,
+                'role' => $user->getRoleNames()->first() ?? 'nasabah',
+            ],
+            'bank_sampah_name' => $user->bankSampah?->nama ?? 'Unit Melati',
+            'bank_sampah_id' => $bsId,
+        ];
 
-        $totalBerat = $user->transactions()
-            ->where('status', 'selesai')
-            ->sum('berat_kg');
+        // 2. Gamifikasi
+        $userLeaderboard = $user->leaderboard;
+        $gamification = [
+            'level' => $userLeaderboard ? $userLeaderboard->level : 1,
+            'badge_name' => $userLeaderboard ? $userLeaderboard->badge_name : 'Warga Peduli',
+            'badge_icon' => $userLeaderboard ? $userLeaderboard->badge_icon : '🥉',
+            'badge_color' => $userLeaderboard ? $userLeaderboard->badge_color : 'from-orange-700 to-orange-900',
+            'current_xp' => (int) ($userLeaderboard?->total_poin_lingkungan ?? 0),
+            'next_xp' => (int) ($userLeaderboard?->next_level_xp ?? 100),
+            'xp_percentage' => (int) ($userLeaderboard?->xp_percentage ?? 0),
+        ];
 
-        $totalPoin = $user->leaderboard?->total_poin_lingkungan ?? 0;
+        // 3. Saldo & KPI
+        $saldo = (float) ($user->saldo ?? 0);
+        $totalBerat = (float) $user->transactions()->where('status', 'selesai')->sum('berat_kg');
+        $totalPoin = (int) ($userLeaderboard?->total_poin_lingkungan ?? 0);
+        $totalTrx = (int) $user->transactions()->count();
 
-        $leaderboard = Leaderboard::orderByDesc('total_poin_lingkungan')
-            ->take(5)
-            ->with('user')
-            ->get();
+        $kpiData = [
+            'saldo' => $saldo,
+            'saldo_formatted' => 'Rp ' . number_format($saldo, 0, ',', '.'),
+            'total_berat' => $totalBerat,
+            'total_poin' => $totalPoin,
+            'total_transaksi' => $totalTrx,
+        ];
 
-        // --- Carbon Footprint Logic ---
+        // 4. Dampak Lingkungan
         $impact = [
-            'co2' => $totalBerat * 1.5,
-            'pohon' => $totalBerat / 50,
-            'energi' => $totalBerat * 5,
-            'air' => $totalBerat * 20,
+            'co2' => round($totalBerat * 1.5, 2),
+            'pohon' => round($totalBerat / 50, 2),
+            'energi' => round($totalBerat * 5, 2),
+            'air' => round($totalBerat * 20, 2),
             'isGreenStarter' => $totalBerat > 10,
         ];
 
-        // Monthly Data (Last 6 Months)
+        // 5. Monthly Data (Last 6 Months)
         $sixMonthsAgo = now()->subMonths(5)->startOfMonth();
 
         $driver = DB::connection()->getDriverName();
@@ -86,7 +102,6 @@ class NasabahController extends Controller
             $date = now()->subMonths($i);
             $chartData['labels'][] = $date->translatedFormat('M Y');
 
-            // Find data for this month
             $stat = $monthlyStats->first(function ($item) use ($date) {
                 return $item->year == $date->year && $item->month == $date->month;
             });
@@ -94,27 +109,153 @@ class NasabahController extends Controller
             $chartData['data'][] = $stat ? (float) $stat->total_berat : 0;
         }
 
-        $bankSampahs = \App\Models\BankSampah::all(['id', 'nama', 'kode_bank', 'latitude', 'longitude', 'radius_layanan', 'alamat', 'telepon', 'email', 'jam_buka', 'jam_tutup']);
+        // 6. Prices, Transactions, Leaderboard, Bank Sampahs
+        $rawPrices = TrashCategory::active()
+            ->when($bsId, fn ($q) => $q->where('bank_sampah_id', $bsId))
+            ->get();
+
+        $prices = $rawPrices->map(fn ($p) => [
+            'id' => $p->id,
+            'nama' => $p->nama,
+            'harga_per_kg' => (int) $p->harga_per_kg,
+            'satuan' => $p->satuan ?? 'kg',
+        ]);
+
+        $rawTrx = $user->transactions()
+            ->with('trashCategory')
+            ->latest()
+            ->take(5)
+            ->get();
+
+        $recentTransactions = $rawTrx->map(fn ($t) => [
+            'id' => $t->id,
+            'kategori' => ['nama' => $t->trashCategory?->nama ?? 'Setoran Sampah'],
+            'berat_kg' => (float) $t->berat_kg,
+            'total_rp' => (int) $t->total_rp,
+            'status' => $t->status,
+            'rating' => $t->rating,
+            'ulasan' => $t->ulasan,
+            'created_at' => $t->created_at ? $t->created_at->toIso8601String() : null,
+        ]);
+
+        $rawLeaderboard = Leaderboard::orderByDesc('total_poin_lingkungan')
+            ->take(5)
+            ->with('user:id,name,avatar')
+            ->get();
+
+        $leaderboard = $rawLeaderboard->map(fn ($l) => [
+            'user_id' => $l->user_id,
+            'user' => ['name' => $l->user?->name ?? 'Warga'],
+            'badge_name' => $l->badge_name,
+            'badge_icon' => $l->badge_icon,
+            'total_poin_lingkungan' => (int) $l->total_poin_lingkungan,
+        ]);
+
+        $bankSampahs = \App\Models\BankSampah::all(['id', 'nama', 'kode_bank', 'latitude', 'longitude', 'radius_layanan', 'alamat', 'telepon'])
+            ->map(fn ($b) => [
+                'id' => $b->id,
+                'nama' => $b->nama,
+                'latitude' => (float) $b->latitude,
+                'longitude' => (float) $b->longitude,
+                'radius_layanan' => (float) ($b->radius_layanan ?? 5.0),
+                'alamat' => $b->alamat,
+                'telepon' => $b->telepon,
+            ]);
 
         return view('nasabah.dashboard', compact(
-            'saldo',
-            'hargaSampah',
-            'transaksiTerbaru',
-            'totalBerat',
-            'totalPoin',
-            'leaderboard',
+            'authData',
+            'gamification',
+            'kpiData',
             'impact',
             'chartData',
+            'prices',
+            'recentTransactions',
+            'leaderboard',
             'bankSampahs'
         ));
     }
 
     public function showPickupForm()
     {
-        $trashCategories = TrashCategory::all();
-        $bankSampahs = \App\Models\BankSampah::active()->get();
+        $user = auth()->user();
+        if ($user) {
+            $user->load('bankSampah');
+        }
 
-        return view('nasabah.pickup-form', compact('trashCategories', 'bankSampahs'));
+        $bankSampahId = $user?->bank_sampah_id ?: (\App\Models\BankSampah::active()->first()?->id ?? 1);
+        $bankSampah = \App\Models\BankSampah::find($bankSampahId) ?: \App\Models\BankSampah::first();
+
+        $trashCategories = TrashCategory::active()
+            ->when($bankSampahId, fn ($q) => $q->where('bank_sampah_id', $bankSampahId))
+            ->get(['id', 'nama', 'harga_per_kg', 'satuan', 'kategori'])
+            ->map(fn ($c) => [
+                'id' => $c->id,
+                'nama' => $c->nama,
+                'harga_per_kg' => (int) $c->harga_per_kg,
+                'satuan' => $c->satuan ?: 'Kg',
+                'kategori' => strtolower($c->kategori ?: 'anorganik'),
+            ]);
+
+        // If no categories found for specific unit, fetch all active categories
+        if ($trashCategories->isEmpty()) {
+            $trashCategories = TrashCategory::active()
+                ->take(12)
+                ->get(['id', 'nama', 'harga_per_kg', 'satuan', 'kategori'])
+                ->map(fn ($c) => [
+                    'id' => $c->id,
+                    'nama' => $c->nama,
+                    'harga_per_kg' => (int) $c->harga_per_kg,
+                    'satuan' => $c->satuan ?: 'Kg',
+                    'kategori' => strtolower($c->kategori ?: 'anorganik'),
+                ]);
+        }
+
+        $authData = [
+            'user' => [
+                'id' => $user?->id,
+                'name' => $user?->name ?? 'Nasabah',
+                'email' => $user?->email ?? '',
+                'avatar_url' => $user?->avatar_url,
+                'nomor_telepon' => $user?->nomor_telepon ?? '',
+                'alamat_lengkap' => $user?->alamat_lengkap ?? '',
+                'rt' => $user?->rt ?? '',
+                'rw' => $user?->rw ?? '',
+            ],
+            'bank_sampah_name' => $bankSampah?->nama ?? 'Unit Melati Asri',
+            'bank_sampah_id' => $bankSampahId,
+        ];
+
+        $bankSampahData = [
+            'id' => $bankSampah?->id,
+            'nama' => $bankSampah?->nama ?? 'Bank Sampah Unit',
+            'alamat' => $bankSampah?->alamat ?? 'Alamat Unit Domisili',
+            'telepon' => $bankSampah?->telepon ?? '0812-3456-7890',
+            'kecamatan' => $bankSampah?->kecamatan ?? 'Terdekat',
+            'latitude' => (float) ($bankSampah?->latitude ?? -6.8915),
+            'longitude' => (float) ($bankSampah?->longitude ?? 107.6107),
+            'radius_layanan' => (float) ($bankSampah?->radius_layanan ? ($bankSampah->radius_layanan / 1000) : 5.0),
+        ];
+
+        // Fetch recent pickup requests for this user
+        $rawPickups = $user ? $user->pickupsAsNasabah()->with(['petugas'])->latest()->take(5)->get() : collect();
+        $pickupHistory = $rawPickups->map(fn ($p) => [
+            'id' => $p->id,
+            'code' => 'PKP-' . str_pad($p->id, 4, '0', STR_PAD_LEFT),
+            'status' => $p->status,
+            'estimasi_berat' => (float) ($p->estimasi_berat ?? 0),
+            'distance_km' => (float) ($p->distance_km ?? 0),
+            'address' => $p->address,
+            'scheduled_at' => $p->scheduled_at ? $p->scheduled_at->translatedFormat('d M Y, H:i') : null,
+            'created_at' => $p->created_at ? $p->created_at->translatedFormat('d M Y') : null,
+            'petugas_name' => $p->petugas?->name ?? 'Tim Armada',
+        ]);
+
+        return view('nasabah.pickup-form', compact(
+            'authData',
+            'bankSampahData',
+            'trashCategories',
+            'pickupHistory'
+        ));
     }
 
     public function storePickup(StorePickupRequest $request)
@@ -203,28 +344,83 @@ class NasabahController extends Controller
     public function wallet()
     {
         $user = auth()->user();
+        if ($user) {
+            $user->load('bankSampah');
+        }
 
-        $saldo = $user->saldo;
+        $saldo = (int) ($user?->saldo ?? 0);
+        $points = (int) ($user?->total_poin_lingkungan ?? $user?->points ?? 0);
 
-        $mutasi = $user->transactions()
+        $authData = [
+            'user' => [
+                'id' => $user?->id,
+                'name' => $user?->name ?? 'Nasabah',
+                'email' => $user?->email ?? '',
+                'avatar_url' => $user?->avatar_url,
+                'nomor_telepon' => $user?->nomor_telepon ?? '',
+                'rt' => $user?->rt ?? '',
+                'rw' => $user?->rw ?? '',
+                'alamat_lengkap' => $user?->alamat_lengkap ?? '',
+                'saldo' => $saldo,
+                'points' => $points,
+                'virtual_account' => '8802 ' . str_pad($user?->id ?? 1, 4, '0', STR_PAD_LEFT) . ' 7891 4192',
+            ],
+            'bank_sampah_name' => $user?->bankSampah?->nama ?? 'Unit Melati Asri',
+            'bank_sampah_id' => $user?->bank_sampah_id,
+        ];
+
+        // 1. Transactions / Setoran Sampah
+        $rawMutasi = $user ? $user->transactions()
             ->where('status', 'selesai')
             ->with('trashCategory')
             ->latest()
-            ->paginate(10, ['*'], 'mutasi_page');
+            ->take(15)
+            ->get() : collect();
 
-        $withdrawals = $user->withdrawals()
-            ->latest()
-            ->paginate(10, ['*'], 'withdrawals_page');
+        $depositTransactions = $rawMutasi->map(fn ($t) => [
+            'id' => $t->id,
+            'kategori' => $t->trashCategory?->nama ?? 'Setoran Sampah',
+            'berat_kg' => (float) $t->berat_kg,
+            'harga_per_kg' => (int) $t->harga_per_kg,
+            'total_rp' => (int) $t->total_rp,
+            'status' => $t->status,
+            'created_at' => $t->created_at ? $t->created_at->toIso8601String() : null,
+            'created_at_formatted' => $t->created_at ? $t->created_at->translatedFormat('d M Y, H:i') : null,
+        ]);
 
-        if (\Illuminate\Support\Facades\Schema::hasTable('topups')) {
-            $topups = $user->topups()
-                ->latest()
-                ->paginate(10, ['*'], 'topups_page');
-        } else {
-            $topups = new \Illuminate\Pagination\LengthAwarePaginator([], 0, 10, 1, ['pageName' => 'topups_page']);
-        }
+        // 2. Withdrawals
+        $rawWithdrawals = $user ? $user->withdrawals()->latest()->take(15)->get() : collect();
+        $withdrawals = $rawWithdrawals->map(fn ($w) => [
+            'id' => $w->id,
+            'nominal' => (int) $w->nominal,
+            'metode' => $w->metode,
+            'rekening_tujuan' => $w->rekening_tujuan,
+            'nama_penerima' => $w->nama_penerima,
+            'status' => $w->status,
+            'status_penerimaan' => $w->status_penerimaan,
+            'catatan_admin' => $w->catatan_admin,
+            'created_at' => $w->created_at ? $w->created_at->toIso8601String() : null,
+            'created_at_formatted' => $w->created_at ? $w->created_at->translatedFormat('d M Y, H:i') : null,
+        ]);
 
-        return view('nasabah.wallet', compact('saldo', 'mutasi', 'withdrawals', 'topups'));
+        // 3. Stats KPI
+        $totalPemasukan = (int) ($user ? $user->transactions()->where('status', 'selesai')->sum('total_rp') : 0);
+        $totalDitarik = (int) ($user ? $user->withdrawals()->where('status', 'disetujui')->sum('nominal') : 0);
+        $penarikanPending = (int) ($user ? $user->withdrawals()->where('status', 'pending')->sum('nominal') : 0);
+
+        $walletStats = [
+            'total_pemasukan' => $totalPemasukan,
+            'total_ditarik' => $totalDitarik,
+            'penarikan_pending' => $penarikanPending,
+        ];
+
+        return view('nasabah.wallet', compact(
+            'authData',
+            'saldo',
+            'walletStats',
+            'depositTransactions',
+            'withdrawals'
+        ));
     }
 
     public function requestWithdrawal(StoreWithdrawalRequest $request)
@@ -309,45 +505,115 @@ class NasabahController extends Controller
     {
         $user = auth()->user();
 
-        $totalBerat = $user->transactions()
+        $totalBerat = (float) ($user ? $user->transactions()
             ->where('status', 'selesai')
-            ->sum('berat_kg');
+            ->sum('berat_kg') : 0);
 
-        $totalTransaksi = $user->transactions()
+        $totalTransaksi = (int) ($user ? $user->transactions()
             ->where('status', 'selesai')
-            ->count();
+            ->count() : 0);
 
-        $totalPoin = $user->leaderboard?->total_poin_lingkungan ?? 0;
+        $totalPoin = (int) ($user?->leaderboard?->total_poin_lingkungan ?? 0);
 
         // Impact calculations
         $impact = [
-            'co2' => $totalBerat * 1.5,
-            'pohon' => $totalBerat / 50,
-            'energi' => $totalBerat * 5,
-            'air' => $totalBerat * 20,
+            'co2' => round($totalBerat * 1.5, 1),
+            'pohon' => round($totalBerat / 50, 1),
+            'energi' => round($totalBerat * 5, 1),
+            'air' => round($totalBerat * 20, 1),
         ];
 
-        // Determine Badge & Level using Model Accessors
-        if ($user->leaderboard) {
-            $badge = $user->leaderboard->badge_name.' '.$user->leaderboard->badge_icon;
-            $levelText = 'Level '.$user->leaderboard->level;
+        // Determine Badge & Level
+        if ($user?->leaderboard) {
+            $badgeName = $user->leaderboard->badge_name ?? 'Warga Peduli';
+            $badgeIcon = $user->leaderboard->badge_icon ?? '🥉';
+            $levelText = 'Level ' . ($user->leaderboard->level ?? 1);
         } else {
-            $badge = 'Warga Peduli 🥉';
+            $badgeName = 'Warga Peduli';
+            $badgeIcon = '🥉';
             $levelText = 'Level 1 (Perunggu)';
         }
 
         // Get Rank Position
         $rank = Leaderboard::where('total_poin_lingkungan', '>', $totalPoin)->count() + 1;
 
+        $stats = [
+            'total_berat' => $totalBerat,
+            'total_transaksi' => $totalTransaksi,
+            'total_poin' => $totalPoin,
+            'rank' => $rank,
+            'badge_name' => $badgeName,
+            'badge_icon' => $badgeIcon,
+            'level_text' => $levelText,
+        ];
+
+        $certNumber = 'SMP-CERT/' . date('Y') . '/' . date('m') . '/' . str_pad($user?->id ?? 1, 4, '0', STR_PAD_LEFT);
+        $certificateDetails = [
+            'cert_number' => $certNumber,
+            'issued_date' => now()->translatedFormat('d F Y'),
+            'year' => date('Y'),
+            'verification_url' => url('/nasabah/sertifikat?verify=' . $certNumber),
+        ];
+
+        // 4 Milestones Gamification Badges
+        $badges = [
+            [
+                'id' => 'warga_peduli',
+                'name' => 'Warga Peduli',
+                'icon' => '🥉',
+                'tier' => 'Perunggu',
+                'target_kg' => 5,
+                'unlocked' => $totalBerat >= 5,
+                'description' => 'Memulai langkah pertama memilah dan menyetor sampah minimal 5 Kg.',
+            ],
+            [
+                'id' => 'pejuang_sirkular',
+                'name' => 'Pejuang Sirkular',
+                'icon' => '🥈',
+                'tier' => 'Perak',
+                'target_kg' => 25,
+                'unlocked' => $totalBerat >= 25,
+                'description' => 'Konsisten mendaur ulang sampah hingga mencapai 25 Kg sampah terkelola.',
+            ],
+            [
+                'id' => 'pahlawan_bumi',
+                'name' => 'Pahlawan Bumi',
+                'icon' => '🥇',
+                'tier' => 'Emas',
+                'target_kg' => 50,
+                'unlocked' => $totalBerat >= 50,
+                'description' => 'Kontribusi nyata mereduksi lebih dari 75 Kg CO₂e dengan total 50 Kg sampah.',
+            ],
+            [
+                'id' => 'duta_lestari',
+                'name' => 'Duta Lestari Desa',
+                'icon' => '👑',
+                'tier' => 'Mahkota Platinum',
+                'target_kg' => 100,
+                'unlocked' => $totalBerat >= 100,
+                'description' => 'Gelar kehormatan tertinggi atas dedikasi luar biasa lebih dari 100 Kg sampah.',
+            ],
+        ];
+
+        $authData = [
+            'user' => [
+                'id' => $user?->id,
+                'name' => $user?->name,
+                'email' => $user?->email,
+                'avatar_url' => $user?->avatar_url,
+                'saldo' => (float) ($user?->saldo ?? 0),
+                'virtual_account' => $user?->virtual_account ?? '88020812' . str_pad($user?->id ?? 1, 4, '0', STR_PAD_LEFT),
+            ],
+            'bank_sampah_name' => $user?->bankSampah?->nama ?? 'Unit Melati Asri',
+            'bank_sampah_id' => $user?->bank_sampah_id,
+        ];
+
         return view('nasabah.certificate', compact(
-            'user',
-            'totalBerat',
-            'totalTransaksi',
-            'totalPoin',
+            'authData',
+            'stats',
             'impact',
-            'badge',
-            'levelText',
-            'rank'
+            'certificateDetails',
+            'badges'
         ));
     }
 

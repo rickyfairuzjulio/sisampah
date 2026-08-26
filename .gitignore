@@ -3,7 +3,9 @@
 /public/hot
 /public/storage
 /storage/*.key
-/bootstrap/cache
+/bootstrap/cache/*
+!/bootstrap/cache/.gitignore
+!/bootstrap/cache/.gitkeep
 .env
 .env.backup
 .env.production.backup

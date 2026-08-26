@@ -39,7 +39,9 @@ Route::middleware('auth')->group(function () {
 
 Route::get('/dashboard', function () {
     $user = auth()->user();
-    if ($user->hasRole('super_admin') || $user->hasRole('admin')) {
+    if ($user->hasRole('super_admin')) {
+        return redirect()->route('super_admin.dashboard');
+    } elseif ($user->hasRole('admin')) {
         return redirect()->route('admin.dashboard');
     } elseif ($user->hasRole('petugas')) {
         return redirect()->route('petugas.dashboard');
@@ -58,16 +60,21 @@ Route::middleware(['auth'])->group(function () {
 Route::middleware(['auth', 'role:nasabah'])->prefix('nasabah')->name('nasabah.')->group(function () {
     Route::get('/dashboard', [NasabahController::class, 'dashboard'])->name('dashboard');
     Route::get('/jemput-sampah', [NasabahController::class, 'showPickupForm'])->name('pickup.form');
+    Route::get('/pickup', [NasabahController::class, 'showPickupForm']);
     Route::post('/jemput-sampah', [NasabahController::class, 'storePickup'])->middleware('throttle:10,1')->name('pickup.store');
     Route::get('/dompet', [NasabahController::class, 'wallet'])->name('wallet');
+    Route::get('/wallet', [NasabahController::class, 'wallet']);
     Route::post('/withdrawal', [NasabahController::class, 'requestWithdrawal'])->middleware('throttle:10,1')->name('withdrawal.request');
     Route::post('/withdrawal/{id}/confirm', [NasabahController::class, 'confirmWithdrawalReceipt'])->name('withdrawal.confirm');
     Route::get('/edukasi', [ArticleController::class, 'nasabahIndex'])->name('edukasi');
+    Route::get('/education', [ArticleController::class, 'nasabahIndex']);
     Route::get('/prices', [TrashPriceController::class, 'publicIndex'])->name('prices.index');
+    Route::get('/katalog-harga', [TrashPriceController::class, 'publicIndex']);
     Route::get('/prices/favorites', [TrashPriceController::class, 'favorites'])->name('prices.favorites');
     Route::get('/prices/{id}', [TrashPriceController::class, 'publicShow'])->name('prices.show');
     Route::post('/prices/{id}/favorite', [TrashPriceController::class, 'toggleFavorite'])->name('prices.favorite');
     Route::get('/sertifikat', [NasabahController::class, 'certificate'])->name('certificate');
+    Route::get('/certificate', [NasabahController::class, 'certificate']);
     Route::post('/transaksi/{id}/rating', [NasabahController::class, 'submitRating'])->name('transaction.rating');
     
     // Top Up Routes
@@ -76,18 +83,35 @@ Route::middleware(['auth', 'role:nasabah'])->prefix('nasabah')->name('nasabah.')
     Route::get('/topup/{id}/status', [NasabahController::class, 'checkTopUpStatus'])->name('topup.status');
 });
 
+// Root-level route aliases for nasabah convenience
+Route::middleware(['auth', 'role:nasabah'])->group(function () {
+    Route::get('/dompet', fn () => redirect()->route('nasabah.wallet'));
+    Route::get('/wallet', fn () => redirect()->route('nasabah.wallet'));
+    Route::get('/jemput-sampah', fn () => redirect()->route('nasabah.pickup.form'));
+    Route::get('/sertifikat', fn () => redirect()->route('nasabah.certificate'));
+});
+
+// Root-level route aliases for petugas convenience
+Route::middleware(['auth', 'role:petugas'])->group(function () {
+    Route::get('/manifes', fn () => redirect()->route('petugas.dashboard'));
+    Route::get('/setor-mandiri', fn () => redirect()->route('petugas.self_deposit.form'));
+});
+
 Route::middleware(['auth', 'role:petugas'])->prefix('petugas')->name('petugas.')->group(function () {
-    Route::get('/dashboard-manifes', [PetugasController::class, 'dashboardManifes'])->name('dashboard');
+    Route::get('/dashboard', [PetugasController::class, 'dashboardManifes'])->name('dashboard');
+    Route::get('/dashboard-manifes', [PetugasController::class, 'dashboardManifes']);
+    Route::get('/manifes', [PetugasController::class, 'dashboardManifes']);
     Route::get('/input-timbangan/{user_id}', [PetugasController::class, 'showWeighingForm'])->name('weighing.form');
     Route::post('/input-timbangan', [PetugasController::class, 'storeWeighing'])->name('weighing.store');
     Route::get('/setor-mandiri', [PetugasController::class, 'showSelfDepositForm'])->name('self_deposit.form');
     Route::post('/setor-mandiri', [PetugasController::class, 'storeSelfDeposit'])->name('self_deposit.store');
 });
 
-Route::middleware(['auth', 'role:admin|super_admin'])->prefix('admin')->name('admin.')->group(function () {
+// =========================================================================
+// 👑 1. SUPER ADMIN PLATFORM (Kewenangan Skala Nasional & Verifikasi Mitra)
+// =========================================================================
+Route::middleware(['auth', 'role:super_admin'])->prefix('super-admin')->name('super_admin.')->group(function () {
     Route::get('/dashboard', [SuperAdminController::class, 'dashboard'])->name('dashboard');
-    Route::resource('users', \App\Http\Controllers\Admin\UserController::class)->except(['show']);
-    Route::post('/users/{id}/toggle-status', [\App\Http\Controllers\Admin\UserController::class, 'toggleStatus'])->name('users.toggle_status');
 
     // Super Admin Bank Sampah Verification Pipeline
     Route::prefix('verifikasi-bank-sampah')->name('verifikasi_bank_sampah.')->group(function () {
@@ -112,7 +136,39 @@ Route::middleware(['auth', 'role:admin|super_admin'])->prefix('admin')->name('ad
         Route::delete('/{id}', [BankSampahController::class, 'destroy'])->name('destroy');
         Route::post('/{id}/toggle-status', [BankSampahController::class, 'toggleStatus'])->name('toggle_status');
     });
-    // Modul Harga Sampah (Admin)
+
+    Route::get('/konfigurasi-wilayah', [AdminController::class, 'configureRegion'])->name('region.configure');
+    Route::post('/konfigurasi-wilayah', [AdminController::class, 'updateSettings'])->name('region.update');
+    Route::get('/audit-logs', [SuperAdminController::class, 'auditLogs'])->name('audit_logs');
+
+    // Modul Edukasi & Artikel Nasional (Super Admin)
+    Route::get('/artikel', [ArticleController::class, 'superAdminIndex'])->name('artikel');
+    Route::get('/edukasi', [ArticleController::class, 'superAdminIndex'])->name('edukasi');
+    Route::prefix('articles')->name('articles.')->group(function () {
+        Route::get('/', [ArticleController::class, 'superAdminIndex'])->name('index');
+        Route::get('/{id}/edit', [ArticleController::class, 'edit'])->name('edit');
+        Route::post('/', [ArticleController::class, 'store'])->name('store');
+        Route::post('/{id}/toggle-publish', [ArticleController::class, 'togglePublish'])->name('toggle_publish');
+        Route::match(['PUT', 'POST'], '/{id}', [ArticleController::class, 'update'])->name('update');
+        Route::delete('/{id}', [ArticleController::class, 'destroy'])->name('destroy');
+    });
+});
+
+// =========================================================================
+// 🏢 2. ADMIN UNIT BANK SAMPAH (Operasional Unit, Kas, Inventaris, Warga & Petugas)
+// =========================================================================
+Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
+    Route::get('/pengguna', [\App\Http\Controllers\Admin\UserController::class, 'index'])->name('pengguna');
+    Route::resource('users', \App\Http\Controllers\Admin\UserController::class)->except(['show']);
+    Route::post('/users/{id}/toggle-status', [\App\Http\Controllers\Admin\UserController::class, 'toggleStatus'])->name('users.toggle_status');
+
+    // Modul Inventaris Gudang, Penjualan Pengepul & Upcycling Unit
+    Route::get('/inventaris', [AdminController::class, 'inventory'])->name('inventory');
+    Route::get('/inventaris-sampah', [AdminController::class, 'inventory']);
+
+    // Modul Harga Sampah Unit
+    Route::get('/harga', [TrashPriceController::class, 'index'])->name('harga');
     Route::prefix('trash-price')->name('trash_price.')->group(function () {
         Route::get('/', [TrashPriceController::class, 'index'])->name('index');
         Route::post('/', [TrashPriceController::class, 'store'])->name('store');
@@ -124,25 +180,30 @@ Route::middleware(['auth', 'role:admin|super_admin'])->prefix('admin')->name('ad
         Route::post('/{id}/restore', [TrashPriceController::class, 'restore'])->name('restore');
     });
 
-    // Modul Catatan Pelanggaran & Audit Trail
+    // Modul Catatan Pelanggaran Unit
     Route::prefix('pelanggaran')->name('pelanggaran.')->group(function () {
         Route::get('/', [PelanggaranController::class, 'index'])->name('index');
     });
 
+    // Keuangan & Validasi Penarikan Saldo Unit
+    Route::get('/keuangan', [AdminController::class, 'validateFinance'])->name('finance');
     Route::get('/validasi-keuangan', [AdminController::class, 'validateFinance'])->name('finance.validate');
     Route::post('/validasi-keuangan/topup-kas', [AdminController::class, 'topupKas'])->name('finance.topup_kas');
     Route::post('/validasi-keuangan/{id}', [AdminController::class, 'approveWithdrawal'])->name('finance.approve');
     Route::post('/validasi-keuangan/{id}/approve-gateway', [AdminController::class, 'approveWithdrawalWithGateway'])->name('finance.approve_gateway');
     Route::post('/validasi-keuangan/{id}/reject', [AdminController::class, 'rejectWithdrawal'])->name('finance.reject');
-    Route::get('/konfigurasi-wilayah', [AdminController::class, 'configureRegion'])->name('region.configure');
-    Route::post('/konfigurasi-wilayah', [AdminController::class, 'updateSettings'])->name('region.update');
+
+    // Laporan Operasional Unit
     Route::get('/laporan', [AdminController::class, 'reports'])->name('reports');
     Route::get('/laporan/export', [AdminController::class, 'exportReports'])->name('reports.export');
-    Route::get('/articles', [ArticleController::class, 'adminIndex'])->name('articles.index');
-    Route::get('/articles/{id}/edit', [ArticleController::class, 'edit'])->name('articles.edit');
-    Route::post('/articles', [ArticleController::class, 'store'])->name('articles.store');
-    Route::match(['PUT', 'POST'], '/articles/{id}', [ArticleController::class, 'update'])->name('articles.update');
-    Route::delete('/articles/{id}', [ArticleController::class, 'destroy'])->name('articles.destroy');
+});
+
+// Backward compatibility alias redirects
+Route::middleware(['auth', 'role:super_admin'])->prefix('admin')->group(function () {
+    Route::get('/verifikasi-bank-sampah', fn () => redirect()->route('super_admin.verifikasi_bank_sampah.index'));
+    Route::get('/verifikasi-bank-sampah/{id}', fn ($id) => redirect()->route('super_admin.verifikasi_bank_sampah.show', $id));
+    Route::get('/master-bank-sampah', fn () => redirect()->route('super_admin.master_bank_sampah.index'));
+    Route::get('/peta-sebaran', fn () => redirect()->route('super_admin.peta_sebaran'));
 });
 
 // Fallback route untuk menyajikan file dari storage/app/public jika symlink belum dibuat

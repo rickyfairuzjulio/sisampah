@@ -14,8 +14,14 @@ class EnsureUserHasRole
             return redirect()->route('login');
         }
 
-        foreach ($roles as $role) {
-            if ($request->user()->hasRole($role)) {
+        $flatRoles = [];
+        foreach ($roles as $r) {
+            $flatRoles = array_merge($flatRoles, preg_split('/[|,]/', $r));
+        }
+
+        foreach ($flatRoles as $role) {
+            $trimmed = trim($role);
+            if (!empty($trimmed) && $request->user()->hasRole($trimmed)) {
                 return $next($request);
             }
         }

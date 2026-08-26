@@ -13,10 +13,11 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @viteReactRefresh
+    @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/js/app.jsx'])
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
     
     @stack('styles')
     
@@ -29,8 +30,11 @@
         }
     </script>
 </head>
-<body class="font-sans antialiased bg-background text-text-primary overflow-hidden transition-colors duration-300">
+<body class="font-sans antialiased bg-background text-text-primary overflow-x-hidden transition-colors duration-300">
     
+    @if(isset($isReactDashboard) && $isReactDashboard)
+        @yield('content')
+    @else
     <div class="flex h-screen w-full bg-background" x-data="{ sidebarOpen: false }">
         
         <!-- Desktop Sidebar -->
@@ -194,6 +198,7 @@
             });
         });
     </script>
+    @endif
     @endif
 
 </body>
