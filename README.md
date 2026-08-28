@@ -1,15 +1,16 @@
-# ♻️ SiSampah - Platform Smart Bank Sampah & Multi-Unit Daur Ulang Eco-System (v1.0.1)
+# ♻️ SiSampah - Platform Smart Bank Sampah & Multi-Unit Daur Ulang Eco-System (v1.1.0)
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Release-v1.0.1-blue?style=for-the-badge&logo=github" alt="Release v1.0.1" />
-  <img src="https://img.shields.io/badge/Laravel-13.x-FF2D20?style=for-the-badge&logo=laravel&logoColor=white" alt="Laravel 13" />
-  <img src="https://img.shields.io/badge/PHP-8.3%2B-777BB4?style=for-the-badge&logo=php&logoColor=white" alt="PHP 8.3" />
-  <img src="https://img.shields.io/badge/Security-Hardened-00C853?style=for-the-badge&logo=shieldsdotio&logoColor=white" alt="Security Hardened" />
-  <img src="https://img.shields.io/badge/TailwindCSS-3.x-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind CSS" />
-  <img src="https://img.shields.io/badge/AI_Vision-v2.0-8A2BE2?style=for-the-badge&logo=google-gemini&logoColor=white" alt="AI Powered" />
+  <img src="https://img.shields.io/badge/Release-v1.1.0-blue?style=for-the-badge&logo=github" alt="Release v1.1.0" />
+  <img src="https://img.shields.io/badge/Laravel-12.x-FF2D20?style=for-the-badge&logo=laravel&logoColor=white" alt="Laravel" />
+  <img src="https://img.shields.io/badge/Inertia.js-React_SPA-9553E9?style=for-the-badge&logo=inertia&logoColor=white" alt="Inertia.js React SPA" />
+  <img src="https://img.shields.io/badge/React-19.x-61DAFB?style=for-the-badge&logo=react&logoColor=black" alt="React 19" />
+  <img src="https://img.shields.io/badge/TailwindCSS-v4.0-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind CSS" />
+  <img src="https://img.shields.io/badge/Dark_Mode-Emerald_Midnight-059669?style=for-the-badge&logo=moon&logoColor=white" alt="Emerald Midnight" />
+  <img src="https://img.shields.io/badge/AI_Vision-Gemini_2.0-8A2BE2?style=for-the-badge&logo=google-gemini&logoColor=white" alt="AI Powered" />
 </p>
 
-**SiSampah** adalah platform digital berbasis Web *production-ready* yang dirancang untuk mengelola dan mengdigitalisasi ekosistem Bank Sampah multi-unit skala daerah/nasional. Platform ini mengintegrasikan kecerdasan buatan (**SiSampah AI Vision v2.0 & Smart Assistant**), verifikasi legalitas Bank Sampah Unit (Pipeline Verifikasi Super Admin), pemetaan GIS (*Leaflet.js*), penjemputan berbasis radius lokasi, hingga sistem pencatatan keuangan transparan (*Wallet Ledger, Midtrans Gateway, & Atomic Balance Locks*).
+**SiSampah** adalah platform digital berbasis Web *Single Page Application (SPA)* *production-ready* yang dibangun di atas arsitektur modern **Laravel + Inertia.js + React**. Platform ini mengintegrasikan kecerdasan buatan (**SiSampah AI Vision & Smart Assistant berbasis Gemini 2.0 Flash**), sistem tema adaptif (**Emerald Midnight Dark Mode**), verifikasi legalitas Bank Sampah Unit (Pipeline Verifikasi Super Admin), pemetaan GIS (*Leaflet.js*), penjemputan berbasis radius lokasi, hingga sistem pencatatan keuangan transparan (*Wallet Ledger, Midtrans Gateway, & Atomic Balance Locks*).
 
 ---
 
@@ -61,14 +62,16 @@ Aplikasi ini telah melalui audit dan **security hardening menyeluruh**:
 
 ## 🛠️ Tech Stack & Arsitektur
 
-- **Backend Framework**: [Laravel 13](https://laravel.com) (PHP 8.3+)
-- **Frontend Layer**: Blade Components, Tailwind CSS v4, Alpine.js
+- **Backend Framework**: [Laravel 12](https://laravel.com) (PHP 8.2+)
+- **SPA Layer**: [Inertia.js](https://inertiajs.com) (Server-driven Single Page Application)
+- **Frontend UI Library**: [React 19](https://react.dev) + [Lucide React](https://lucide.dev)
+- **Styling & Design System**: [Tailwind CSS v4](https://tailwindcss.com) + *Emerald Midnight Dark Mode*
 - **Database**: MySQL / MariaDB / SQLite / PostgreSQL
-- **Security & Authorization**: Spatie Laravel-Permission & Custom Policy Guards
+- **Security & Authorization**: Spatie Laravel-Permission & Custom Multi-Tenant Policy Guards
 - **Map & GIS**: Leaflet.js & OpenStreetMap API
 - **Payment Gateway**: Midtrans Snap & Core API Integration
-- **AI Integration**: Gemini 2.0 Flash / Multimodal Vision API Integration
-- **Asset Bundler**: Vite v8
+- **AI Integration**: Google Gemini 2.0 Flash / Multimodal Vision API Integration
+- **Asset Bundler**: Vite (Rolldown Compiler)
 
 ---
 
@@ -139,31 +142,43 @@ Setelah menjalankan `php artisan db:seed`, Anda dapat menggunakan akun demo beri
 
 ---
 
-## 🗺️ Peta Routing Utama
+## 🗺️ Peta Routing Utama (Inertia SPA)
 
-- **Publik**:
+- **Publik & Autentikasi**:
   - `/` - Landing Page Utama
+  - `/login` - Halaman Masuk Akun
+  - `/register` - Halaman Pendaftaran Nasabah Baru
   - `/daftar-bank-sampah` - Pendaftaran Organisasi Bank Sampah
   - `/lacak-pendaftaran` - Tracking & Reupload Dokumen Registrasi
-  - `/edukasi` - Portal Artikel & Literasi Daur Ulang
-- **Nasabah (`/nasabah/*`)**:
-  - `/nasabah/dashboard` - Dashboard Saldo, Impact, & Trend
-  - `/nasabah/jemput-sampah` - Form Pickup GPS (Validasi Radius)
-  - `/nasabah/dompet` - Ledger Saldo & Form Penarikan (Withdrawal)
-  - `/nasabah/topup` - Form Top-Up Midtrans Gateway
-  - `/nasabah/sertifikat` - Generator Sertifikat Kontribusi Lingkungan
-- **Petugas (`/petugas/*`)**:
-  - `/petugas/dashboard-manifes` - Antrean Manifes Penjemputan Unit
-  - `/petugas/input-timbangan/{user_id}` - Form Timbangan Digital
-  - `/petugas/setor-mandiri` - Form Drop-off Sampah Langsung
-- **Admin & Super Admin (`/admin/*`)**:
-  - `/admin/dashboard` - Executive Overview & Analytics
-  - `/admin/verifikasi-bank-sampah` - Pipeline Verifikasi Pendaftaran (Super Admin)
-  - `/admin/master-bank-sampah` - Pengelolaan Master Unit (Super Admin)
-  - `/admin/peta-sebaran` - Peta GIS Sebaran Bank Sampah
-  - `/admin/validasi-keuangan` - Financial Validation & Withdrawal Approval
-  - `/admin/trash-price` - Katalog & Histori Harga Sampah
-  - `/admin/pelanggaran` - Audit Log Aktivitas System
+- **Nasabah (`/nasabah/*` & `/profile`)**:
+  - `/nasabah/dashboard` - Dashboard Interaktif, Gamifikasi Level, & Jejak Karbon
+  - `/nasabah/katalog-harga` - Katalog Harga Komoditas Sampah Realtime
+  - `/nasabah/jemput-sampah` - Form Penjemputan Sampah GPS (Radius Scoped)
+  - `/nasabah/dompet` - Dompet SiSampay & Form Penarikan Saldo Kas
+  - `/nasabah/sertifikat` - Generator Sertifikat Kontribusi Ekologis
+  - `/nasabah/edukasi` - Portal Literasi & Panduan Pemilahan Sampah
+  - `/profile` - Pengaturan Akun & Profil Nasabah
+- **Petugas Lapangan (`/petugas/*`)**:
+  - `/petugas/dashboard` - Manifes Penjemputan & Antrean Unit
+  - `/petugas/timbangan/{id?}` - Input Timbangan Digital & Bukti Foto
+  - `/petugas/setor-mandiri` - Input Setor Mandiri (Teller Pos)
+  - `/petugas/profil` - Pengaturan Akun & Rekap Kinerja Petugas
+- **Admin Bank Sampah Unit (`/admin/*`)**:
+  - `/admin/dashboard` - Pusat Kendali Operasional Unit
+  - `/admin/inventaris-gudang` - Inventaris Stok Fisik & Penjualan Pengepul
+  - `/admin/keuangan` - Validasi Payout & Approval Penarikan Saldo
+  - `/admin/harga-sampah` - Pengaturan Katalog Harga Sampah Unit
+  - `/admin/manajemen-user` - Pengelolaan Nasabah & Petugas Unit
+  - `/admin/pelanggaran-audit` - Pencatatan Pelanggaran & Log Audit
+  - `/admin/laporan-unit` - Laporan Rekapitulasi Neraca Sampah Unit
+- **Super Admin Platform Nasional (`/super-admin/*`)**:
+  - `/super-admin/dashboard` - Agregator Bank Sampah Nasional
+  - `/super-admin/verifikasi-bank-sampah` - Pipeline Verifikasi Legalitas Unit
+  - `/super-admin/master-bank-sampah` - Manajemen Master Bank Sampah se-Indonesia
+  - `/super-admin/peta-sebaran` - Peta GIS Sebaran Bank Sampah Nasional
+  - `/super-admin/artikel-nasional` - Publikasi Artikel & Literasi Nasional
+  - `/super-admin/konfigurasi-wilayah` - Konfigurasi Wilayah Binaan & Kuota
+  - `/super-admin/audit-logs` - Log Audit Keamanan & Transaksi Global
 
 ---
 
