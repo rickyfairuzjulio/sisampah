@@ -6,10 +6,12 @@ use App\Models\Article;
 use App\Models\Transaction;
 use App\Models\TrashCategory;
 use App\Models\User;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class HomeController extends Controller
 {
-    public function index()
+    public function index(): Response
     {
         $rawArticles = Article::where('is_published', true)
             ->latest()
@@ -73,6 +75,6 @@ class HomeController extends Controller
             ] : null,
         ];
 
-        return view('home', compact('articles', 'stats', 'categories', 'authData'));
+        return Inertia::render('landing/LandingPage', compact('articles', 'stats', 'categories', 'authData'));
     }
 }

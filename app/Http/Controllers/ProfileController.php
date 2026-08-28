@@ -7,14 +7,15 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
-use Illuminate\View\View;
+use Inertia\Inertia;
+use Inertia\Response;
 
 class ProfileController extends Controller
 {
     /**
      * Display the user's profile form.
      */
-    public function edit(Request $request): View
+    public function edit(Request $request): Response
     {
         $user = $request->user();
         if ($user) {
@@ -41,13 +42,9 @@ class ProfileController extends Controller
             'bank_sampah_id' => $user?->bank_sampah_id,
         ];
 
-        $officerStats = [
-            'total_pickups' => 0,
-            'total_weight_kg' => 0.0,
-            'total_self_deposits' => 0,
-        ];
+        $sessionStatus = session('status') ?: session('success');
 
-        if ($userRole === 'petugas' && $user) {
+        if ($userRole === 'petugas') {
             $officerStats = [
                 'total_pickups' => \App\Models\Transaction::where('petugas_id', $user->id)
                     ->where('tipe_setoran', 'jemput')
@@ -61,15 +58,11 @@ class ProfileController extends Controller
                     ->where('status', 'selesai')
                     ->count(),
             ];
+
+            return Inertia::render('petugas/profile/PetugasProfilePage', compact('authData', 'officerStats', 'sessionStatus'));
         }
 
-        return view('profile.edit', [
-            'user' => $user,
-            'userRole' => $userRole,
-            'authData' => $authData,
-            'officerStats' => $officerStats,
-            'sessionStatus' => session('status') ?: session('success'),
-        ]);
+        return Inertia::render('nasabah/profile/ProfilePage', compact('authData', 'sessionStatus'));
     }
 
     /**

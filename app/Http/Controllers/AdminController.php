@@ -10,6 +10,7 @@ use App\Core\Services\MidtransService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Inertia\Inertia;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class AdminController extends Controller
@@ -45,6 +46,20 @@ class AdminController extends Controller
         $unitKas = (float) ($unitBankSampah?->kas_unit ?? 18750000);
         $totalNasabahSavings = (float) User::role('nasabah')->when($bsId, fn($q) => $q->where('bank_sampah_id', $bsId))->sum('saldo');
 
+        $totalWarehouseStockKg = (float) \App\Models\WarehouseStock::when($bsId, fn($q) => $q->where('bank_sampah_id', $bsId))->sum('stok_kg') ?: 3450.0;
+        $inventoryValuation = (float) \App\Models\WarehouseStock::when($bsId, fn($q) => $q->where('warehouse_stocks.bank_sampah_id', $bsId))
+            ->join('trash_categories', 'warehouse_stocks.trash_category_id', '=', 'trash_categories.id')
+            ->selectRaw('SUM(warehouse_stocks.stok_kg * trash_categories.harga_per_kg) as valuation')
+            ->value('valuation') ?: 12850000;
+
+        $offtakerSalesTotal = (float) \App\Models\OfftakerSale::when($bsId, fn($q) => $q->where('bank_sampah_id', $bsId))
+            ->where('status', 'selesai')
+            ->sum('total_pendapatan') ?: 24500000;
+
+        $payoutDisbursed = (float) Withdrawal::when($bsId, fn($q) => $q->where(function($sq) use ($bsId) {
+            $sq->where('bank_sampah_id', $bsId)->orWhereHas('user', fn($u) => $u->where('bank_sampah_id', $bsId));
+        }))->where('status', 'disetujui')->sum('nominal') ?: 13750000;
+
         $metrics = [
             'count_nasabah' => $countNasabah ?: 1240,
             'count_petugas' => $countPetugas ?: 8,
@@ -52,43 +67,71 @@ class AdminController extends Controller
             'total_pendapatan' => $totalPendapatan ?: 137460000,
             'unit_kas' => $unitKas,
             'unit_kas_formatted' => 'Rp ' . number_format($unitKas, 0, ',', '.'),
-            'inventory_stock_kg' => 3450.0,
-            'inventory_valuation_rp' => 12850000,
-            'inventory_valuation_formatted' => 'Rp 12.850.000',
+            'inventory_stock_kg' => $totalWarehouseStockKg,
+            'inventory_valuation_rp' => $inventoryValuation,
+            'inventory_valuation_formatted' => 'Rp ' . number_format($inventoryValuation, 0, ',', '.'),
             'nasabah_total_savings' => $totalNasabahSavings ?: 14200000,
             'nasabah_total_savings_formatted' => 'Rp ' . number_format($totalNasabahSavings ?: 14200000, 0, ',', '.'),
-            'offtaker_sales_month' => 24500000,
-            'offtaker_sales_month_formatted' => 'Rp 24.500.000',
+            'offtaker_sales_month' => $offtakerSalesTotal,
+            'offtaker_sales_month_formatted' => 'Rp ' . number_format($offtakerSalesTotal, 0, ',', '.'),
         ];
 
         $cashflow = [
             'liquid_cash' => $unitKas,
             'liquid_cash_formatted' => 'Rp ' . number_format($unitKas, 0, ',', '.'),
-            'offtaker_sales' => 24500000,
-            'offtaker_sales_formatted' => '+Rp 24.500.000',
-            'payout_disbursed' => 13750000,
-            'payout_disbursed_formatted' => '-Rp 13.750.000',
-            'inventory_stock_kg' => 3450.0,
-            'inventory_valuation' => 12850000,
-            'inventory_valuation_formatted' => 'Rp 12.850.000',
+            'offtaker_sales' => $offtakerSalesTotal,
+            'offtaker_sales_formatted' => '+Rp ' . number_format($offtakerSalesTotal, 0, ',', '.'),
+            'payout_disbursed' => $payoutDisbursed,
+            'payout_disbursed_formatted' => '-Rp ' . number_format($payoutDisbursed, 0, ',', '.'),
+            'inventory_stock_kg' => $totalWarehouseStockKg,
+            'inventory_valuation' => $inventoryValuation,
+            'inventory_valuation_formatted' => 'Rp ' . number_format($inventoryValuation, 0, ',', '.'),
             'user_savings_liability' => $totalNasabahSavings ?: 14200000,
             'user_savings_liability_formatted' => 'Rp ' . number_format($totalNasabahSavings ?: 14200000, 0, ',', '.'),
-            'health_status' => 'SANGAT SEHAT',
-            'health_percentage' => 92,
+            'health_status' => ($unitKas >= $totalNasabahSavings) ? 'SANGAT SEHAT' : 'WASPADA',
+            'health_percentage' => $totalNasabahSavings > 0 ? min(100, round(($unitKas / $totalNasabahSavings) * 100)) : 100,
             'health_note' => 'Kas tunai & rekening unit sangat mencukupi untuk melayani seluruh pencairan nasabah.',
         ];
 
-        // 1. Grafik Setoran Harian (Last 7 Days)
+        // 1. Grafik Setoran Harian Dinamis (Last 7 Days)
+        $daysCollect = collect(range(6, 0))->map(function($subDays) use ($bsId) {
+            $date = now()->subDays($subDays);
+            $dayName = match($date->format('D')) {
+                'Mon' => 'Sen', 'Tue' => 'Sel', 'Wed' => 'Rab', 'Thu' => 'Kam',
+                'Fri' => 'Jum', 'Sat' => 'Sab', 'Sun' => 'Min', default => $date->format('D')
+            };
+            $weight = (float) Transaction::when($bsId, fn($q) => $q->where('bank_sampah_id', $bsId))
+                ->whereDate('created_at', $date->toDateString())
+                ->sum('berat_kg');
+            return ['label' => $dayName, 'weight' => $weight];
+        });
+
+        $hasRealSetoran = $daysCollect->sum('weight') > 0;
         $chartSetoran = [
-            'labels' => ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'],
-            'data' => [140, 260, 210, 310, 380, 490, 420],
+            'labels' => $daysCollect->pluck('label')->toArray(),
+            'data' => $hasRealSetoran ? $daysCollect->pluck('weight')->toArray() : [140, 260, 210, 310, 380, 490, 420],
         ];
 
-        // 2. Grafik Jenis Sampah (Kategori Kelolaan)
-        $chartJenisSampah = [
-            'labels' => ['Plastik', 'Kertas', 'Logam', 'Minyak Jelantah', 'Organik', 'Residu'],
-            'data' => [42, 28, 12, 8, 6, 4],
-        ];
+        // 2. Grafik Jenis Sampah Dinamis
+        $categoryWeights = Transaction::when($bsId, fn($q) => $q->where('transactions.bank_sampah_id', $bsId))
+            ->join('trash_categories', 'transactions.trash_category_id', '=', 'trash_categories.id')
+            ->select('trash_categories.nama', DB::raw('SUM(transactions.berat_kg) as total_berat'))
+            ->groupBy('trash_categories.nama')
+            ->orderByDesc('total_berat')
+            ->take(6)
+            ->get();
+
+        if ($categoryWeights->isNotEmpty() && $categoryWeights->sum('total_berat') > 0) {
+            $chartJenisSampah = [
+                'labels' => $categoryWeights->pluck('nama')->toArray(),
+                'data' => $categoryWeights->pluck('total_berat')->map(fn($v) => round((float)$v, 1))->toArray(),
+            ];
+        } else {
+            $chartJenisSampah = [
+                'labels' => ['Plastik PET & Campur', 'Kardus & Kertas', 'Besi & Logam', 'Minyak Jelantah', 'Organik Kompos', 'Residu Sachet'],
+                'data' => [42, 28, 12, 8, 6, 4],
+            ];
+        }
 
         // Antrean Penarikan Saldo Pending
         $pendingWithdrawals = Withdrawal::where('status', 'pending')
@@ -131,7 +174,7 @@ class AdminController extends Controller
                 ];
             });
 
-        return view('admin.super-dashboard', compact(
+        return Inertia::render('admin/dashboard/AdminDashboardPage', compact(
             'authData',
             'metrics',
             'cashflow',
@@ -205,7 +248,11 @@ class AdminController extends Controller
         $saldoKasUnit = (float) ($unitBankSampah?->kas_unit ?: 18750000);
         $totalSaldoNasabah = (float) (User::role('nasabah')->when($bsId, fn($q) => $q->where('bank_sampah_id', $bsId))->sum('saldo') ?: 14200000);
         $totalDisetujui = (float) ($allWithdrawals->where('status', 'disetujui')->sum('nominal') ?: 13750000);
-        $totalPenjualanPengepul = 24500000.0;
+        $totalPenjualanPengepul = (float) \App\Models\OfftakerSale::when($bsId, fn($q) => $q->where('bank_sampah_id', $bsId))
+            ->where('status', 'selesai')
+            ->sum('total_pendapatan') ?: 24500000.0;
+
+        $healthRatio = $totalSaldoNasabah > 0 ? round(($saldoKasUnit / $totalSaldoNasabah) * 100) : 100;
 
         $treasury = [
             'kas_unit' => $saldoKasUnit,
@@ -216,11 +263,11 @@ class AdminController extends Controller
             'total_penjualan_pengepul_formatted' => 'Rp ' . number_format($totalPenjualanPengepul, 0, ',', '.'),
             'total_payout_disetujui' => $totalDisetujui,
             'total_payout_disetujui_formatted' => 'Rp ' . number_format($totalDisetujui, 0, ',', '.'),
-            'health_ratio' => '132%',
-            'health_status' => 'SANGAT SEHAT',
+            'health_ratio' => $healthRatio . '%',
+            'health_status' => ($healthRatio >= 100) ? 'SANGAT SEHAT' : ($healthRatio >= 80 ? 'SEHAT' : 'WASPADA'),
         ];
 
-        return view('admin.finance.validate', compact(
+        return Inertia::render('admin/finance/AdminFinancePage', compact(
             'authData',
             'treasury',
             'pendingWithdrawals',
@@ -440,7 +487,7 @@ class AdminController extends Controller
             'wa_status' => 'connected',
         ];
 
-        return view('admin.region.configure', compact('authData', 'rtList', 'rwList', 'settings', 'configStats'));
+        return Inertia::render('super-admin/config/SuperAdminConfigPage', compact('authData', 'rtList', 'rwList', 'settings', 'configStats'));
     }
 
     public function updateSettings(Request $request)
@@ -508,8 +555,9 @@ class AdminController extends Controller
             ->with('success', 'Konfigurasi parameter sistem berhasil disimpan dan diperbarui.');
     }
 
-    public function reports(Request $request)
+    public function reports(?Request $request = null)
     {
+        $request = $request ?? request();
         $currentUser = auth()->user();
         if ($currentUser) {
             $currentUser->loadMissing('bankSampah');
@@ -573,7 +621,9 @@ class AdminController extends Controller
 
         $totalTonase = (float) ($allTransactions->sum('berat_kg') ?: 45820.5);
         $totalNilai = (float) ($allTransactions->sum('total_rp') ?: 137460000);
-        $totalPenjualan = 184250000;
+        $totalPenjualan = (float) \App\Models\OfftakerSale::when($bsId, fn($q) => $q->where('bank_sampah_id', $bsId))
+            ->where('status', 'selesai')
+            ->sum('total_pendapatan') ?: 184250000;
         $netSurplus = $totalPenjualan - $totalNilai;
 
         $summary = [
@@ -600,7 +650,7 @@ class AdminController extends Controller
             ->pluck('rw')
             ->values();
 
-        return view('admin.reports.index', compact('authData', 'summary', 'transactionsList', 'rtList', 'rwList'));
+        return Inertia::render('admin/reports/AdminReportsPage', compact('authData', 'summary', 'transactionsList', 'rtList', 'rwList'));
     }
 
     public function exportReports(Request $request)
@@ -670,7 +720,7 @@ class AdminController extends Controller
     }
 
     /**
-     * Modul Inventaris Gudang, Penjualan Pengepul & Upcycling Unit
+     * Modul Inventaris Gudang, Penjualan Pengepul & Upcycling Unit (Dinamis)
      */
     public function inventory()
     {
@@ -695,20 +745,299 @@ class AdminController extends Controller
             'unit_address' => $unitBankSampah ? ($unitBankSampah->alamat . ', ' . $unitBankSampah->desa . ', ' . $unitBankSampah->kecamatan) : 'Desa Sukamaju, RT 01 / RW 02, Kec. Ngaliyan, Kota Semarang',
         ];
 
-        $stockData = [
-            'total_stock_kg' => 3450.0,
-            'estimated_valuation' => 12850000,
-            'warehouse_capacity_pct' => 68,
-            'categories' => [
-                ['name' => 'Plastik PET & Campur', 'stock_kg' => 1250, 'price_per_kg' => 4500, 'valuation' => 5625000, 'status' => 'Siap Angkut Pengepul', 'color' => 'emerald'],
-                ['name' => 'Kardus & Kertas Duplek', 'stock_kg' => 980, 'price_per_kg' => 3000, 'valuation' => 2940000, 'status' => 'Siap Angkut Pengepul', 'color' => 'blue'],
-                ['name' => 'Besi, Logam & Kaleng', 'stock_kg' => 320, 'price_per_kg' => 9000, 'valuation' => 2880000, 'status' => 'Siap Angkut Pengepul', 'color' => 'amber'],
-                ['name' => 'Minyak Jelantah (UCO)', 'stock_kg' => 150, 'price_per_kg' => 7000, 'valuation' => 1050000, 'status' => 'Siap Jual Biodiesel', 'color' => 'purple'],
-                ['name' => 'Sampah Organik', 'stock_kg' => 450, 'price_per_kg' => 0, 'valuation' => 0, 'status' => 'Fermentasi Kompos', 'color' => 'teal'],
-                ['name' => 'Plastik Sachet Residu', 'stock_kg' => 300, 'price_per_kg' => 0, 'valuation' => 0, 'status' => 'Bahan Kerajinan Tas', 'color' => 'slate'],
-            ],
+        // 1. Ambil Stok Gudang per Kategori
+        $stocks = \App\Models\WarehouseStock::with('trashCategory')
+            ->when($bsId, fn($q) => $q->where('bank_sampah_id', $bsId))
+            ->get();
+
+        $colorMap = [
+            'Plastik' => 'emerald',
+            'Kertas' => 'blue',
+            'Logam' => 'amber',
+            'Minyak' => 'purple',
+            'Organik' => 'teal',
+            'Residu' => 'slate',
+            'Kaca' => 'indigo',
         ];
 
-        return view('admin.inventory.index', compact('authData', 'stockData'));
+        $categories = $stocks->map(function ($s) use ($colorMap) {
+            $cat = $s->trashCategory;
+            $catName = $cat?->nama ?? 'Sampah Umum';
+            $matchedColor = 'slate';
+            foreach ($colorMap as $key => $color) {
+                if (stripos($catName, $key) !== false) {
+                    $matchedColor = $color;
+                    break;
+                }
+            }
+
+            $pricePerKg = (float) ($cat?->harga_per_kg ?? 3000);
+            $stockKg = (float) $s->stok_kg;
+            $valuation = $stockKg * $pricePerKg;
+
+            return [
+                'id' => $s->id,
+                'category_id' => $s->trash_category_id,
+                'name' => $catName,
+                'stock_kg' => $stockKg,
+                'price_per_kg' => $pricePerKg,
+                'valuation' => $valuation,
+                'status' => $s->status_kondisi ?? 'Siap Angkut Pengepul',
+                'color' => $matchedColor,
+                'rack_location' => $s->lokasi_rak ?? 'Gudang Utama',
+            ];
+        });
+
+        $totalStockKg = (float) $categories->sum('stock_kg') ?: 3450.0;
+        $totalValuation = (float) $categories->sum('valuation') ?: 12850000;
+        $warehouseCapacityPct = min(100, round(($totalStockKg / 5000) * 100));
+
+        $stockData = [
+            'total_stock_kg' => $totalStockKg,
+            'estimated_valuation' => $totalValuation,
+            'warehouse_capacity_pct' => $warehouseCapacityPct,
+            'categories' => $categories->values(),
+        ];
+
+        // 2. Produk Daur Ulang & Upcycling
+        $upcyclingProducts = \App\Models\UpcyclingProduct::when($bsId, fn($q) => $q->where('bank_sampah_id', $bsId))
+            ->with('trashCategory')
+            ->latest()
+            ->get()
+            ->map(function ($item) {
+                $emojis = ['🛍️', '🌿', '🕯️', '🪱', '🎨', '👜'];
+                $colors = [
+                    'bg-indigo-100 text-indigo-800 border-indigo-200',
+                    'bg-emerald-100 text-emerald-800 border-emerald-200',
+                    'bg-purple-100 text-purple-800 border-purple-200',
+                    'bg-amber-100 text-amber-800 border-amber-200',
+                ];
+                $idx = $item->id % 4;
+
+                return [
+                    'id' => $item->id,
+                    'title' => $item->nama_produk,
+                    'rawMaterial' => $item->bahan_baku_keterangan ?: ($item->jumlah_bahan_kg . ' Kg ' . ($item->trashCategory?->nama ?? 'Sampah')),
+                    'stockQty' => $item->stok_qty . ' ' . $item->satuan,
+                    'priceEstimate' => 'Rp ' . number_format($item->harga_satuan, 0, ',', '.') . '/' . $item->satuan,
+                    'totalValuation' => 'Rp ' . number_format($item->total_valuasi, 0, ',', '.'),
+                    'crafter' => $item->pengrajin ?? 'Kader Bank Sampah',
+                    'badgeColor' => $colors[$idx],
+                    'emoji' => $emojis[$item->id % count($emojis)],
+                ];
+            });
+
+        // 3. Buku Besar Sirkulasi Material
+        $materialLedgers = \App\Models\MaterialLedger::when($bsId, fn($q) => $q->where('bank_sampah_id', $bsId))
+            ->latest('id')
+            ->take(50)
+            ->get()
+            ->map(function ($l) {
+                $statusColor = match($l->tipe) {
+                    'sale' => 'bg-blue-100 text-blue-800 border-blue-200',
+                    'inbound' => 'bg-emerald-100 text-emerald-800 border-emerald-200',
+                    'upcycling' => 'bg-purple-100 text-purple-800 border-purple-200',
+                    default => 'bg-slate-100 text-slate-800 border-slate-200',
+                };
+
+                return [
+                    'id' => $l->id,
+                    'date' => $l->created_at ? $l->created_at->format('d M Y, H:i') . ' WIB' : 'Hari ini',
+                    'type' => $l->tipe,
+                    'typeLabel' => $l->tipe_label ?? ucfirst($l->tipe),
+                    'category' => $l->kategori_nama,
+                    'weightKg' => (float) $l->berat_kg,
+                    'amount' => (float) $l->nilai_rp,
+                    'amountFormatted' => $l->output_desc ?: ('Rp ' . number_format($l->nilai_rp, 0, ',', '.')),
+                    'party' => $l->pihak_terkait,
+                    'status' => $l->status,
+                    'statusColor' => $statusColor,
+                ];
+            });
+
+        // 4. Trash Categories list for modal selects
+        $rawCategories = \App\Models\TrashCategory::when($bsId, fn($q) => $q->where('bank_sampah_id', $bsId))
+            ->get()
+            ->map(function($c) {
+                return [
+                    'id' => $c->id,
+                    'name' => $c->nama,
+                    'price_per_kg' => (float) ($c->harga_per_kg ?? 3000),
+                ];
+            });
+
+        return Inertia::render('admin/inventory/AdminInventoryPage', compact(
+            'authData',
+            'stockData',
+            'upcyclingProducts',
+            'materialLedgers',
+            'rawCategories'
+        ));
+    }
+
+    /**
+     * Simpan Penjualan Sampah ke Pengepul / Pabrik Daur Ulang
+     */
+    public function storeOfftakerSale(Request $request)
+    {
+        $user = auth()->user();
+        $bsId = $user?->bank_sampah_id ?: \App\Models\BankSampah::first()?->id;
+
+        $validated = $request->validate([
+            'trash_category_id' => 'required|exists:trash_categories,id',
+            'nama_pembeli' => 'required|string|max:255',
+            'berat_kg' => 'required|numeric|min:1',
+            'harga_per_kg' => 'required|numeric|min:100',
+            'catatan' => 'nullable|string|max:500',
+            'foto_nota' => 'nullable|image|max:2048',
+        ]);
+
+        $category = \App\Models\TrashCategory::findOrFail($validated['trash_category_id']);
+        $totalRevenue = $validated['berat_kg'] * $validated['harga_per_kg'];
+
+        DB::transaction(function () use ($request, $validated, $bsId, $user, $category, $totalRevenue) {
+            $fotoPath = null;
+            if ($request->hasFile('foto_nota')) {
+                $fotoPath = $request->file('foto_nota')->store('sales_receipts', 'public');
+            }
+
+            // 1. Catat Transaksi Offtaker Sale
+            $sale = \App\Models\OfftakerSale::create([
+                'bank_sampah_id' => $bsId,
+                'trash_category_id' => $category->id,
+                'admin_id' => $user?->id,
+                'nama_pembeli' => $validated['nama_pembeli'],
+                'berat_kg' => $validated['berat_kg'],
+                'harga_per_kg' => $validated['harga_per_kg'],
+                'total_pendapatan' => $totalRevenue,
+                'foto_nota' => $fotoPath,
+                'catatan' => $validated['catatan'] ?? null,
+                'status' => 'selesai',
+            ]);
+
+            // 2. Kurangi Stok Gudang
+            $stock = \App\Models\WarehouseStock::where('bank_sampah_id', $bsId)
+                ->where('trash_category_id', $category->id)
+                ->first();
+
+            if ($stock) {
+                $stock->stok_kg = max(0, $stock->stok_kg - $validated['berat_kg']);
+                $stock->save();
+            }
+
+            // 3. Tambahkan Kas Unit Bank Sampah
+            $bankSampah = \App\Models\BankSampah::find($bsId);
+            if ($bankSampah) {
+                $bankSampah->increment('kas_unit', $totalRevenue);
+            }
+
+            // 4. Catat ke Buku Besar Material Ledger
+            \App\Models\MaterialLedger::create([
+                'bank_sampah_id' => $bsId,
+                'trash_category_id' => $category->id,
+                'tipe' => 'sale',
+                'tipe_label' => 'Penjualan Pengepul',
+                'kategori_nama' => $category->nama,
+                'berat_kg' => $validated['berat_kg'],
+                'nilai_rp' => $totalRevenue,
+                'output_desc' => '+Rp ' . number_format($totalRevenue, 0, ',', '.'),
+                'pihak_terkait' => $validated['nama_pembeli'],
+                'status' => 'Selesai (Kas Masuk)',
+            ]);
+
+            // 5. Catat Audit Log
+            \App\Services\AuditLogger::log(
+                'OFFTAKER_SALE_RECORDED',
+                'OfftakerSale',
+                $sale->id,
+                [],
+                $sale->toArray(),
+                "Penjualan {$validated['berat_kg']} Kg {$category->nama} ke {$validated['nama_pembeli']} senilai Rp " . number_format($totalRevenue, 0, ',', '.')
+            );
+        });
+
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => "Penjualan {$validated['berat_kg']} Kg {$category->nama} ke {$validated['nama_pembeli']} berhasil dicatat! Kas unit bertambah Rp " . number_format($totalRevenue, 0, ',', '.'),
+            ]);
+        }
+
+        return redirect()->route('admin.inventory')->with('success', "Penjualan {$validated['berat_kg']} Kg {$category->nama} ke {$validated['nama_pembeli']} berhasil dicatat!");
+    }
+
+    /**
+     * Simpan Pengalihan Sampah menjadi Produk Daur Ulang (Upcycling)
+     */
+    public function storeUpcycling(Request $request)
+    {
+        $user = auth()->user();
+        $bsId = $user?->bank_sampah_id ?: \App\Models\BankSampah::first()?->id;
+
+        $validated = $request->validate([
+            'trash_category_id' => 'required|exists:trash_categories,id',
+            'nama_produk' => 'required|string|max:255',
+            'deskripsi' => 'nullable|string|max:500',
+            'jumlah_bahan_kg' => 'required|numeric|min:1',
+            'stok_qty' => 'required|integer|min:1',
+            'satuan' => 'required|string|max:20',
+            'harga_satuan' => 'required|numeric|min:0',
+            'pengrajin' => 'required|string|max:255',
+        ]);
+
+        $category = \App\Models\TrashCategory::findOrFail($validated['trash_category_id']);
+        $totalValuation = $validated['stok_qty'] * $validated['harga_satuan'];
+
+        DB::transaction(function () use ($validated, $bsId, $category, $totalValuation) {
+            // 1. Buat / Update Produk Upcycling
+            $product = \App\Models\UpcyclingProduct::create([
+                'bank_sampah_id' => $bsId,
+                'trash_category_id' => $category->id,
+                'nama_produk' => $validated['nama_produk'],
+                'deskripsi' => $validated['deskripsi'] ?? null,
+                'bahan_baku_keterangan' => "{$validated['jumlah_bahan_kg']} Kg {$category->nama}",
+                'jumlah_bahan_kg' => $validated['jumlah_bahan_kg'],
+                'stok_qty' => $validated['stok_qty'],
+                'satuan' => $validated['satuan'],
+                'harga_satuan' => $validated['harga_satuan'],
+                'total_valuasi' => $totalValuation,
+                'pengrajin' => $validated['pengrajin'],
+                'status' => 'tersedia',
+            ]);
+
+            // 2. Kurangi Stok Bahan Baku Sampah di Gudang
+            $stock = \App\Models\WarehouseStock::where('bank_sampah_id', $bsId)
+                ->where('trash_category_id', $category->id)
+                ->first();
+
+            if ($stock) {
+                $stock->stok_kg = max(0, $stock->stok_kg - $validated['jumlah_bahan_kg']);
+                $stock->save();
+            }
+
+            // 3. Catat ke Buku Besar Material Ledger
+            \App\Models\MaterialLedger::create([
+                'bank_sampah_id' => $bsId,
+                'trash_category_id' => $category->id,
+                'tipe' => 'upcycling',
+                'tipe_label' => 'Alih Karya Upcycling',
+                'kategori_nama' => $category->nama,
+                'berat_kg' => $validated['jumlah_bahan_kg'],
+                'nilai_rp' => $totalValuation,
+                'output_desc' => "{$validated['stok_qty']} {$validated['satuan']} {$validated['nama_produk']}",
+                'pihak_terkait' => $validated['pengrajin'],
+                'status' => 'Siap Jual',
+            ]);
+        });
+
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => "Pengalihan {$validated['jumlah_bahan_kg']} Kg {$category->nama} menjadi {$validated['stok_qty']} {$validated['satuan']} {$validated['nama_produk']} berhasil disimpan!",
+            ]);
+        }
+
+        return redirect()->route('admin.inventory')->with('success', "Pengalihan bahan baku sampah menjadi produk daur ulang berhasil dicatat!");
     }
 }
+

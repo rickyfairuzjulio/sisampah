@@ -6,6 +6,7 @@ use App\Models\Article;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Inertia\Inertia;
 
 class ArticleController extends Controller
 {
@@ -86,7 +87,7 @@ class ArticleController extends Controller
             ['id' => 'zerowaste', 'name' => 'Tips Zero Waste', 'count' => $allArticles->filter(fn($a) => stripos($a['kategori'], 'zero') !== false || stripos($a['kategori'], 'tips') !== false || stripos($a['kategori'], 'lingkungan') !== false)->count()],
         ];
 
-        return view('articles.nasabah-index', compact(
+        return Inertia::render('nasabah/education/EducationPage', compact(
             'authData',
             'allArticles',
             'featuredArticle',
@@ -146,7 +147,7 @@ class ArticleController extends Controller
             'total_views' => $allArticles->sum('views_count') ?: 3420,
         ];
 
-        return view('articles.admin-index', compact('authData', 'statistics', 'articlesList'));
+        return Inertia::render('admin/articles/AdminArticlesPage', compact('authData', 'statistics', 'articlesList'));
     }
 
     public function togglePublish($id)

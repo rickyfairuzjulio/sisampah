@@ -12,7 +12,7 @@ export default function PetugasAppLayout({
     const [mobileOpen, setMobileOpen] = useState(false);
 
     return (
-        <div className="flex h-screen w-full bg-slate-50 text-slate-900 overflow-hidden font-sans antialiased">
+        <div className="flex h-screen w-full bg-slate-50 dark:bg-[#090D16] text-slate-900 dark:text-slate-100 overflow-hidden font-sans antialiased transition-colors duration-200">
             
             {/* 1. Desktop Sidebar Kiri (260px) */}
             <div className="hidden lg:block h-full shrink-0">
@@ -31,7 +31,7 @@ export default function PetugasAppLayout({
                         onClick={() => setMobileOpen(false)}
                     />
                     {/* Drawer Content */}
-                    <div className="relative flex-1 flex flex-col max-w-xs w-full bg-white z-10 animate-slide-in">
+                    <div className="relative flex-1 flex flex-col max-w-xs w-full bg-white dark:bg-[#0D131F] z-10 animate-slide-in">
                         <PetugasSidebarNav
                             activeMenu={activeMenu}
                             authData={authData}
@@ -42,7 +42,7 @@ export default function PetugasAppLayout({
             )}
 
             {/* 3. Konten Utama Kanan (Scrollable Area) */}
-            <div className="flex-1 flex flex-col h-full min-w-0 overflow-hidden bg-slate-50">
+            <div className="flex-1 flex flex-col h-full min-w-0 overflow-hidden bg-slate-50 dark:bg-[#090D16] transition-colors duration-200">
                 
                 {/* Header Topbar */}
                 <PetugasTopNavBar

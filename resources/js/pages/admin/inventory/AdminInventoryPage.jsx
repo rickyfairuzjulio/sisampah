@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { router } from '@inertiajs/react';
 import AdminAppLayout from '../../../layouts/AdminAppLayout';
 import InventoryHeroBanner from './sections/InventoryHeroBanner';
 import WarehouseStockGrid from './sections/WarehouseStockGrid';
@@ -10,6 +11,10 @@ import RecordUpcyclingModal from './sections/RecordUpcyclingModal';
 export default function AdminInventoryPage({
     authData = {},
     stockData = {},
+    upcyclingProducts = [],
+    materialLedgers = [],
+    rawCategories = [],
+    csrfToken = '',
 }) {
     const [isSaleModalOpen, setIsSaleModalOpen] = useState(false);
     const [isUpcyclingModalOpen, setIsUpcyclingModalOpen] = useState(false);
@@ -46,10 +51,15 @@ export default function AdminInventoryPage({
                 />
 
                 {/* 3. Katalog Produk Daur Ulang & Ekonomi Sirkular */}
-                <UpcyclingProductsGrid />
+                <UpcyclingProductsGrid
+                    products={upcyclingProducts}
+                    onOpenCreateModal={() => setIsUpcyclingModalOpen(true)}
+                />
 
                 {/* 4. Buku Besar Sirkulasi Material & Log Mutasi */}
-                <MaterialLedgerTable />
+                <MaterialLedgerTable
+                    ledgerData={materialLedgers}
+                />
 
             </div>
 
@@ -58,8 +68,10 @@ export default function AdminInventoryPage({
                 isOpen={isSaleModalOpen}
                 onClose={() => setIsSaleModalOpen(false)}
                 selectedCategory={selectedCategoryToSell}
-                onSuccess={(data) => {
-                    alert(`Penjualan ${data.weightKg} Kg ${data.category} ke ${data.buyerName} berhasil dicatat! Kas unit bertambah Rp ${data.totalRevenue.toLocaleString('id-ID')}.`);
+                categories={rawCategories.length > 0 ? rawCategories : (stockData?.categories || [])}
+                csrfToken={csrfToken}
+                onSuccess={(msg) => {
+                    router.reload({ only: ['stockData', 'materialLedgers'] });
                 }}
             />
 
@@ -67,8 +79,10 @@ export default function AdminInventoryPage({
             <RecordUpcyclingModal
                 isOpen={isUpcyclingModalOpen}
                 onClose={() => setIsUpcyclingModalOpen(false)}
-                onSuccess={(data) => {
-                    alert(`Pengalihan ${data.rawWeightKg} Kg ${data.rawCategory} menjadi ${data.outputQty} ${data.outputUnit} ${data.productType} berhasil dicatat!`);
+                categories={rawCategories.length > 0 ? rawCategories : (stockData?.categories || [])}
+                csrfToken={csrfToken}
+                onSuccess={(msg) => {
+                    router.reload({ only: ['stockData', 'upcyclingProducts', 'materialLedgers'] });
                 }}
             />
         </AdminAppLayout>

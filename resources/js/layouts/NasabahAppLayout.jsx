@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import SidebarNav from './components/SidebarNav';
 import TopNavBar from './components/TopNavBar';
 import NasabahFooter from './components/NasabahFooter';
+import AiChatbotWidget from '@/components/AiChatbotWidget';
 
 export default function NasabahAppLayout({
     children,
@@ -12,7 +13,7 @@ export default function NasabahAppLayout({
     const [mobileOpen, setMobileOpen] = useState(false);
 
     return (
-        <div className="bg-[#F8FAFC] text-slate-600 font-sans antialiased min-h-screen flex flex-col lg:flex-row">
+        <div className="bg-[#F8FAFC] dark:bg-[#090D16] text-slate-600 dark:text-slate-300 font-sans antialiased min-h-screen flex flex-col lg:flex-row relative transition-colors duration-200">
             
             {/* 1. Desktop Persistent Left Sidebar (260px) */}
             <div className="hidden lg:block fixed left-0 top-0 h-screen w-[260px] z-50">
@@ -43,9 +44,9 @@ export default function NasabahAppLayout({
             )}
 
             {/* 3. Main Content Wrapper */}
-            <div className="flex-1 lg:ml-[260px] min-h-screen flex flex-col bg-[#F8FAFC] w-full min-w-0">
+            <div className="flex-1 lg:ml-[260px] min-h-screen flex flex-col bg-[#F8FAFC] dark:bg-[#090D16] w-full min-w-0 transition-colors duration-200">
                 
-                {/* Topbar Header (Tanpa Search Bar) */}
+                {/* Topbar Header */}
                 <TopNavBar
                     pageTitle={pageTitle}
                     authData={authData}
@@ -57,12 +58,14 @@ export default function NasabahAppLayout({
                     {children}
                 </main>
 
-                {/* Shared Nasabah Footer (Copyright, Bodrex Developer, SWITF) */}
+                {/* Shared Nasabah Footer */}
                 <NasabahFooter />
 
             </div>
 
+            {/* 4. SiSampah AI Vision & Assistant Floating Widget */}
+            <AiChatbotWidget />
+
         </div>
     );
 }
-

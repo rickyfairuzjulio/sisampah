@@ -10,6 +10,7 @@ use App\Models\PriceHistory;
 use App\Models\TrashCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
 
 class TrashPriceController extends Controller
 {
@@ -106,7 +107,7 @@ class TrashPriceController extends Controller
             'price_down_count' => $allCategories->where('status_harga', 'turun')->count() ?: 2,
         ];
 
-        return view('admin.trash-price.index', compact('authData', 'statistics', 'categoryList'));
+        return Inertia::render('admin/prices/AdminTrashPricePage', compact('authData', 'statistics', 'categoryList'));
     }
 
     public function show($id)
@@ -291,9 +292,10 @@ class TrashPriceController extends Controller
             'is_my_unit' => $user?->bank_sampah_id == $selectedBankSampah?->id,
         ];
 
-        return view('nasabah.prices.index', compact(
+        $selectedBankSampah = $selectedBankSampahData;
+        return Inertia::render('nasabah/prices/PriceCatalogPage', compact(
             'authData',
-            'selectedBankSampahData',
+            'selectedBankSampah',
             'nearbyBankSampahs',
             'radiusKm',
             'selectedBsId',

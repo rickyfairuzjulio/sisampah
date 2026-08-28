@@ -14,6 +14,7 @@ use App\Services\WhatsAppService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Inertia\Inertia;
 
 class BankSampahVerificationController extends Controller
 {
@@ -189,7 +190,7 @@ class BankSampahVerificationController extends Controller
             'all' => BankSampah::count() ?: 29,
         ];
 
-        return view('super-admin.verifications.index', compact('authData', 'stats', 'registrations', 'statusFilter', 'searchQuery'));
+        return Inertia::render('super-admin/verification/SuperAdminVerificationIndexPage', compact('authData', 'stats', 'registrations', 'statusFilter', 'searchQuery'));
     }
 
     /**
@@ -357,7 +358,8 @@ class BankSampahVerificationController extends Controller
             });
         }
 
-        return view('super-admin.verifications.show', compact('authData', 'bankSampahData', 'documents', 'verifications'));
+        $bankSampah = $bankSampahData;
+        return Inertia::render('super-admin/verification/SuperAdminVerificationDetailPage', compact('authData', 'bankSampah', 'documents', 'verifications'));
     }
 
     /**

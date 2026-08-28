@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from '@inertiajs/react';
 import { Eye, EyeOff, ArrowUpRight, Truck, ShieldCheck, Sparkles } from 'lucide-react';
 
 export default function WalletBalanceCard({
@@ -18,10 +19,10 @@ export default function WalletBalanceCard({
     };
 
     return (
-        <div className="relative rounded-3xl overflow-hidden bg-gradient-to-br from-emerald-600 via-emerald-700 to-teal-800 text-white shadow-md p-6 sm:p-8 animate-slide-in select-none">
+        <div className="relative rounded-3xl overflow-hidden bg-gradient-to-br from-emerald-600 via-emerald-700 to-teal-800 dark:from-emerald-950 dark:via-[#093526] dark:to-[#041a12] text-white shadow-md p-6 sm:p-8 animate-slide-in select-none border border-transparent dark:border-emerald-800/50">
             
             {/* Ambient Background Glows & Card Pattern */}
-            <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 dark:bg-emerald-400/10 rounded-full blur-3xl pointer-events-none" />
             <div className="absolute -bottom-10 -left-10 w-72 h-72 bg-emerald-400/10 rounded-full blur-2xl pointer-events-none" />
             
             <div className="relative z-10 space-y-6">
@@ -39,8 +40,8 @@ export default function WalletBalanceCard({
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/15 backdrop-blur-md border border-white/20 text-xs font-bold text-emerald-100">
-                        <ShieldCheck className="w-3.5 h-3.5 text-emerald-200" />
+                    <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/15 dark:bg-emerald-500/20 backdrop-blur-md border border-white/20 dark:border-emerald-500/30 text-xs font-bold text-emerald-100 dark:text-emerald-300">
+                        <ShieldCheck className="w-3.5 h-3.5 text-emerald-200 dark:text-emerald-300" />
                         <span>Buku Tabungan Sampah Resmi</span>
                     </div>
                 </div>
@@ -48,7 +49,7 @@ export default function WalletBalanceCard({
                 {/* Middle Row: Virtual Account & Balance */}
                 <div className="space-y-2">
                     <div className="flex items-center gap-2">
-                        <span className="text-xs font-semibold text-emerald-100/90 uppercase tracking-widest">
+                        <span className="text-xs font-semibold text-emerald-100/90 dark:text-emerald-300 uppercase tracking-widest">
                             Saldo Tabungan Sampah Anda
                         </span>
                         <button
@@ -65,7 +66,7 @@ export default function WalletBalanceCard({
                         {showBalance ? formatCurrency(user.saldo || 0) : 'Rp ••••••••'}
                     </div>
 
-                    <div className="flex items-center gap-3 pt-1 text-xs text-emerald-100/80 font-mono">
+                    <div className="flex items-center gap-3 pt-1 text-xs text-emerald-100/80 dark:text-emerald-300/80 font-mono">
                         <span>No. Rekening: {user.virtual_account || '8802 •••• •••• 4192'}</span>
                         <span>•</span>
                         <span className="font-sans font-medium">{user.name || 'Nasabah'} ({bankSampahName})</span>
@@ -79,20 +80,20 @@ export default function WalletBalanceCard({
                     <button
                         type="button"
                         onClick={onOpenWithdrawModal}
-                        className="px-6 py-3 rounded-2xl bg-white text-emerald-800 hover:bg-emerald-50 active:bg-emerald-100 font-extrabold text-xs sm:text-sm shadow-sm hover:shadow-md transition-all flex items-center gap-2 cursor-pointer hover:-translate-y-0.5"
+                        className="px-6 py-3 rounded-2xl bg-white dark:bg-emerald-500 text-emerald-800 dark:text-slate-950 hover:bg-emerald-50 dark:hover:bg-emerald-400 active:bg-emerald-100 font-extrabold text-xs sm:text-sm shadow-sm hover:shadow-md transition-all flex items-center gap-2 cursor-pointer hover:-translate-y-0.5"
                     >
-                        <ArrowUpRight className="w-4 h-4 text-emerald-700" />
+                        <ArrowUpRight className="w-4 h-4 text-emerald-700 dark:text-slate-950" />
                         <span>Tarik Saldo Kas</span>
                     </button>
 
                     {/* Link to Jemput Sampah */}
-                    <a
+                    <Link
                         href="/nasabah/jemput-sampah"
-                        className="px-6 py-3 rounded-2xl bg-white/15 hover:bg-white/25 text-white border border-white/20 font-bold text-xs sm:text-sm backdrop-blur-md transition-all flex items-center gap-2 hover:-translate-y-0.5"
+                        className="px-6 py-3 rounded-2xl bg-white/15 dark:bg-emerald-950/60 hover:bg-white/25 dark:hover:bg-emerald-900/80 text-white border border-white/20 dark:border-emerald-800/80 font-bold text-xs sm:text-sm backdrop-blur-md transition-all flex items-center gap-2 hover:-translate-y-0.5"
                     >
                         <Truck className="w-4 h-4 text-emerald-300" />
                         <span>Jadwalkan Jemput Sampah</span>
-                    </a>
+                    </Link>
 
                 </div>
 

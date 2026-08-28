@@ -9,6 +9,7 @@ use App\Models\TrashCategory;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Inertia\Inertia;
 
 class PetugasController extends Controller
 {
@@ -103,7 +104,7 @@ class PetugasController extends Controller
                 ];
             });
 
-        return view('petugas.dashboard', compact(
+        return Inertia::render('petugas/dashboard/PetugasDashboardPage', compact(
             'authData',
             'kpiData',
             'pickupManifest',
@@ -172,7 +173,7 @@ class PetugasController extends Controller
                 ];
             });
 
-        return view('petugas.weighing-form', compact(
+        return Inertia::render('petugas/weighing/WeighingFormPage', compact(
             'authData',
             'targetNasabah',
             'trashCategories',
@@ -303,7 +304,7 @@ class PetugasController extends Controller
                 ];
             });
 
-        return view('petugas.self-deposit-form', compact(
+        return Inertia::render('petugas/self-deposit/SelfDepositPage', compact(
             'authData',
             'trashCategories',
             'registeredNasabahs'

@@ -30,13 +30,13 @@
     }
 
     .dark {
-        /* Dark Theme - Sleek Modern Dark Slate */
-        --color-background: #0F172A;
-        --color-surface: #1E293B;
-        --color-card: #1E293B;
-        --color-sidebar: #0F172A;
-        --color-navbar: #0F172A;
-        --color-hover: #334155;
+        /* Dark Theme - Emerald Midnight */
+        --color-background: #090D16;
+        --color-surface: #111827;
+        --color-card: #111827;
+        --color-sidebar: #0D131F;
+        --color-navbar: #0D131F;
+        --color-hover: #1E293B;
         --color-border: rgba(255, 255, 255, 0.08);
         
         --color-text-primary: #F8FAFC;
@@ -402,6 +402,57 @@
 
     .dark .swal2-title { color: #FFFFFF !important; }
     .dark .swal2-html-container { color: #B7C7C1 !important; }
+
+    /* ─── EMERALD MIDNIGHT GLOBAL DARK MODE CASCADE ─── */
+    .dark .bg-white:not([class*="dark:bg-"]) {
+        background-color: #111827;
+    }
+
+    .dark .bg-slate-50:not([class*="dark:bg-"]),
+    .dark .bg-slate-100:not([class*="dark:bg-"]) {
+        background-color: #0D131F;
+    }
+
+    .dark .border-slate-200:not([class*="dark:border-"]),
+    .dark .border-slate-200\/80:not([class*="dark:border-"]),
+    .dark .border-slate-200\/60:not([class*="dark:border-"]),
+    .dark .border-slate-300:not([class*="dark:border-"]),
+    .dark .border-slate-100:not([class*="dark:border-"]) {
+        border-color: #1E293B;
+    }
+
+    .dark .text-slate-900:not([class*="dark:text-"]),
+    .dark .text-slate-800:not([class*="dark:text-"]) {
+        color: #F8FAFC;
+    }
+
+    .dark .text-slate-700:not([class*="dark:text-"]),
+    .dark .text-slate-600:not([class*="dark:text-"]) {
+        color: #CBD5E1;
+    }
+
+    .dark .text-slate-500:not([class*="dark:text-"]),
+    .dark .text-slate-400:not([class*="dark:text-"]) {
+        color: #94A3B8;
+    }
+
+    .dark .divide-slate-100 > :not([hidden]) ~ :not([hidden]),
+    .dark .divide-slate-200 > :not([hidden]) ~ :not([hidden]) {
+        border-color: #1E293B;
+    }
+
+    .dark input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([class*="dark:bg-"]),
+    .dark select:not([class*="dark:bg-"]),
+    .dark textarea:not([class*="dark:bg-"]) {
+        background-color: #0D131F;
+        border-color: #1E293B;
+        color: #F8FAFC;
+    }
+
+    .dark input::placeholder,
+    .dark textarea::placeholder {
+        color: #64748B;
+    }
 
     /* ─── PRINT OPTIMIZATION FOR A4 CERTIFICATE ─── */
     @media print {

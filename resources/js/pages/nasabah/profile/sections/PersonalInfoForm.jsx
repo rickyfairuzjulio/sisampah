@@ -35,18 +35,18 @@ export default function PersonalInfoForm({
     const avatarError = errors?.avatar;
 
     return (
-        <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
+        <div className="bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-8 shadow-sm space-y-6 transition-colors duration-200">
             
             {/* Header Section */}
-            <div className="flex items-center gap-3.5 pb-5 border-b border-slate-100">
-                <div className="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center justify-center font-bold shrink-0">
+            <div className="flex items-center gap-3.5 pb-5 border-b border-slate-100 dark:border-slate-800">
+                <div className="w-10 h-10 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/80 flex items-center justify-center font-bold shrink-0">
                     <User className="w-5 h-5" />
                 </div>
                 <div>
-                    <h2 className="font-extrabold text-base sm:text-lg text-slate-900 tracking-tight">
+                    <h2 className="font-extrabold text-base sm:text-lg text-slate-900 dark:text-white tracking-tight">
                         Informasi Data Pribadi
                     </h2>
-                    <p className="text-xs text-slate-500 mt-0.5">
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                         Perbarui identitas diri, kontak, dan alamat domisili untuk layanan penjemputan sampah.
                     </p>
                 </div>
@@ -64,9 +64,9 @@ export default function PersonalInfoForm({
                 <input type="hidden" name="_method" value="PATCH" />
 
                 {/* 1. Avatar Upload Box */}
-                <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 border border-slate-200 flex flex-col sm:flex-row items-center gap-5 justify-between">
+                <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 dark:bg-[#0D131F] border border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row items-center gap-5 justify-between">
                     <div className="flex items-center gap-4">
-                        <div className="w-16 h-16 rounded-2xl bg-white border border-slate-200 overflow-hidden shadow-2xs shrink-0 flex items-center justify-center">
+                        <div className="w-16 h-16 rounded-2xl bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 overflow-hidden shadow-2xs shrink-0 flex items-center justify-center">
                             <img 
                                 src={avatarPreview || `https://ui-avatars.com/api/?name=${encodeURIComponent(name || 'Nasabah')}&background=025e36&color=fff&size=128&bold=true`} 
                                 alt={name}
@@ -74,10 +74,10 @@ export default function PersonalInfoForm({
                             />
                         </div>
                         <div>
-                            <h4 className="font-bold text-xs sm:text-sm text-slate-900">
+                            <h4 className="font-bold text-xs sm:text-sm text-slate-900 dark:text-white">
                                 Foto Profil Akun
                             </h4>
-                            <p className="text-[11px] text-slate-500 mt-0.5">
+                            <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
                                 Format JPG, PNG, atau WebP. Maksimal 2MB.
                             </p>
                         </div>
@@ -95,14 +95,14 @@ export default function PersonalInfoForm({
                     <button
                         type="button"
                         onClick={triggerFileInput}
-                        className="px-4 py-2 bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 rounded-xl font-bold text-xs shadow-2xs flex items-center gap-2 transition-colors cursor-pointer"
+                        className="px-4 py-2 bg-white dark:bg-[#111827] hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-xl font-bold text-xs shadow-2xs flex items-center gap-2 transition-colors cursor-pointer"
                     >
-                        <Upload className="w-3.5 h-3.5 text-emerald-600" />
+                        <Upload className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
                         <span>Pilih Gambar Baru</span>
                     </button>
                 </div>
                 {avatarError && (
-                    <p className="text-xs font-semibold text-red-500">{avatarError}</p>
+                    <p className="text-xs font-semibold text-rose-500">{avatarError}</p>
                 )}
 
                 {/* 2. Grid Form Fields */}
@@ -110,11 +110,11 @@ export default function PersonalInfoForm({
                     
                     {/* Nama Lengkap */}
                     <div>
-                        <label htmlFor="name" className="block text-xs font-bold text-slate-700 mb-1.5">
-                            Nama Lengkap <span className="text-emerald-600">*</span>
+                        <label htmlFor="name" className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                            Nama Lengkap <span className="text-emerald-600 dark:text-emerald-400">*</span>
                         </label>
                         <div className="relative">
-                            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 dark:text-slate-500">
                                 <User className="w-4 h-4" />
                             </div>
                             <input
@@ -125,29 +125,29 @@ export default function PersonalInfoForm({
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
                                 placeholder="Ahmad Fauzi"
-                                className="w-full pl-10 pr-4 py-2.5 sm:py-3 bg-white text-slate-900 text-xs sm:text-sm font-medium border border-slate-200 rounded-xl focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all"
+                                className="w-full pl-10 pr-4 py-2.5 sm:py-3 bg-white dark:bg-[#0D131F] text-slate-900 dark:text-white text-xs sm:text-sm font-medium border border-slate-200 dark:border-slate-800 rounded-xl focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all placeholder-slate-400 dark:placeholder-slate-500"
                             />
                         </div>
                         {nameError && (
-                            <p className="mt-1 text-xs font-semibold text-red-500">{nameError}</p>
+                            <p className="mt-1 text-xs font-semibold text-rose-500">{nameError}</p>
                         )}
                     </div>
 
                     {/* Alamat Email */}
                     <div>
                         <div className="flex items-center justify-between mb-1.5">
-                            <label htmlFor="email" className="block text-xs font-bold text-slate-700">
-                                Alamat Email <span className="text-emerald-600">*</span>
+                            <label htmlFor="email" className="block text-xs font-bold text-slate-700 dark:text-slate-300">
+                                Alamat Email <span className="text-emerald-600 dark:text-emerald-400">*</span>
                             </label>
                             {user.email_verified && (
-                                <span className="inline-flex items-center gap-1 text-[10px] font-extrabold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
-                                    <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                                <span className="inline-flex items-center gap-1 text-[10px] font-extrabold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800/80">
+                                    <CheckCircle2 className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
                                     <span>Terverifikasi</span>
                                 </span>
                             )}
                         </div>
                         <div className="relative">
-                            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 dark:text-slate-500">
                                 <Mail className="w-4 h-4" />
                             </div>
                             <input
@@ -158,21 +158,21 @@ export default function PersonalInfoForm({
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 placeholder="nama@email.com"
-                                className="w-full pl-10 pr-4 py-2.5 sm:py-3 bg-white text-slate-900 text-xs sm:text-sm font-medium border border-slate-200 rounded-xl focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all"
+                                className="w-full pl-10 pr-4 py-2.5 sm:py-3 bg-white dark:bg-[#0D131F] text-slate-900 dark:text-white text-xs sm:text-sm font-medium border border-slate-200 dark:border-slate-800 rounded-xl focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all placeholder-slate-400 dark:placeholder-slate-500"
                             />
                         </div>
                         {emailError && (
-                            <p className="mt-1 text-xs font-semibold text-red-500">{emailError}</p>
+                            <p className="mt-1 text-xs font-semibold text-rose-500">{emailError}</p>
                         )}
                     </div>
 
                     {/* Nomor WhatsApp */}
                     <div>
-                        <label htmlFor="nomor_telepon" className="block text-xs font-bold text-slate-700 mb-1.5">
+                        <label htmlFor="nomor_telepon" className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
                             Nomor Telepon / WhatsApp
                         </label>
                         <div className="relative">
-                            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 dark:text-slate-500">
                                 <Phone className="w-4 h-4" />
                             </div>
                             <input
@@ -182,18 +182,18 @@ export default function PersonalInfoForm({
                                 value={nomorTelepon}
                                 onChange={(e) => setNomorTelepon(e.target.value)}
                                 placeholder="0812-3456-7890"
-                                className="w-full pl-10 pr-4 py-2.5 sm:py-3 bg-white text-slate-900 text-xs sm:text-sm font-medium border border-slate-200 rounded-xl focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all"
+                                className="w-full pl-10 pr-4 py-2.5 sm:py-3 bg-white dark:bg-[#0D131F] text-slate-900 dark:text-white text-xs sm:text-sm font-medium border border-slate-200 dark:border-slate-800 rounded-xl focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all placeholder-slate-400 dark:placeholder-slate-500"
                             />
                         </div>
                         {phoneError && (
-                            <p className="mt-1 text-xs font-semibold text-red-500">{phoneError}</p>
+                            <p className="mt-1 text-xs font-semibold text-rose-500">{phoneError}</p>
                         )}
                     </div>
 
                     {/* RT & RW (2 Mini Columns) */}
                     <div className="grid grid-cols-2 gap-3">
                         <div>
-                            <label htmlFor="rt" className="block text-xs font-bold text-slate-700 mb-1.5">
+                            <label htmlFor="rt" className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
                                 Rukun Tetangga (RT)
                             </label>
                             <input
@@ -203,12 +203,12 @@ export default function PersonalInfoForm({
                                 value={rt}
                                 onChange={(e) => setRt(e.target.value)}
                                 placeholder="03"
-                                className="w-full px-3.5 py-2.5 sm:py-3 bg-white text-slate-900 text-xs sm:text-sm font-medium border border-slate-200 rounded-xl focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all text-center"
+                                className="w-full px-3.5 py-2.5 sm:py-3 bg-white dark:bg-[#0D131F] text-slate-900 dark:text-white text-xs sm:text-sm font-medium border border-slate-200 dark:border-slate-800 rounded-xl focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all text-center placeholder-slate-400 dark:placeholder-slate-500"
                             />
                         </div>
 
                         <div>
-                            <label htmlFor="rw" className="block text-xs font-bold text-slate-700 mb-1.5">
+                            <label htmlFor="rw" className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
                                 Rukun Warga (RW)
                             </label>
                             <input
@@ -218,14 +218,14 @@ export default function PersonalInfoForm({
                                 value={rw}
                                 onChange={(e) => setRw(e.target.value)}
                                 placeholder="05"
-                                className="w-full px-3.5 py-2.5 sm:py-3 bg-white text-slate-900 text-xs sm:text-sm font-medium border border-slate-200 rounded-xl focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all text-center"
+                                className="w-full px-3.5 py-2.5 sm:py-3 bg-white dark:bg-[#0D131F] text-slate-900 dark:text-white text-xs sm:text-sm font-medium border border-slate-200 dark:border-slate-800 rounded-xl focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all text-center placeholder-slate-400 dark:placeholder-slate-500"
                             />
                         </div>
                     </div>
 
                     {/* Alamat Lengkap Domisili (Full Width) */}
                     <div className="sm:col-span-2">
-                        <label htmlFor="alamat_lengkap" className="block text-xs font-bold text-slate-700 mb-1.5">
+                        <label htmlFor="alamat_lengkap" className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
                             Alamat Lengkap / Patokan Rumah
                         </label>
                         <div className="relative">
@@ -236,7 +236,7 @@ export default function PersonalInfoForm({
                                 value={alamatLengkap}
                                 onChange={(e) => setAlamatLengkap(e.target.value)}
                                 placeholder="Jl. Melati No. 14, RT 03 / RW 05, Blok C (Pagar Hitam Depan Masjid)"
-                                className="w-full p-3.5 bg-white text-slate-900 text-xs sm:text-sm font-medium border border-slate-200 rounded-xl focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all resize-none"
+                                className="w-full p-3.5 bg-white dark:bg-[#0D131F] text-slate-900 dark:text-white text-xs sm:text-sm font-medium border border-slate-200 dark:border-slate-800 rounded-xl focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all resize-none placeholder-slate-400 dark:placeholder-slate-500"
                             />
                         </div>
                     </div>
@@ -244,8 +244,8 @@ export default function PersonalInfoForm({
                 </div>
 
                 {/* Footer Action */}
-                <div className="pt-4 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4">
-                    <p className="text-[11px] text-slate-400 text-center sm:text-left">
+                <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <p className="text-[11px] text-slate-400 dark:text-slate-500 text-center sm:text-left">
                         Perubahan disimpan secara aman di database server SiSampah.
                     </p>
                     <button

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
+use Inertia\Inertia;
 
 class UserController extends Controller
 {
@@ -83,7 +84,7 @@ class UserController extends Controller
             'active_users_count' => $allUsers->where('is_active', true)->count() ?: ($totalNasabah + $totalPetugas),
         ];
 
-        return view('admin.users.index', compact('authData', 'statistics', 'usersList'));
+        return Inertia::render('admin/users/AdminUsersPage', compact('authData', 'statistics', 'usersList'));
     }
 
     public function create()

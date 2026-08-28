@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from '@inertiajs/react';
 import { Clock, Check, X, ArrowUpRight, ShieldAlert, CreditCard } from 'lucide-react';
 
 export default function PendingWithdrawalsCard({
@@ -22,13 +23,13 @@ export default function PendingWithdrawalsCard({
                     </div>
                 </div>
 
-                <a
+                <Link
                     href="/admin/validasi-keuangan"
                     className="text-[11px] font-bold text-emerald-700 hover:text-emerald-800 flex items-center gap-1"
                 >
                     <span>Semua</span>
                     <ArrowUpRight className="w-3 h-3" />
-                </a>
+                </Link>
             </div>
 
             {(!pendingWithdrawals || pendingWithdrawals.length === 0) ? (
@@ -81,13 +82,13 @@ export default function PendingWithdrawalsCard({
                                     </span>
                                 </div>
 
-                                <a
+                                <Link
                                     href="/admin/validasi-keuangan"
                                     className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-[11px] font-extrabold transition-colors shadow-2xs cursor-pointer flex items-center gap-1"
                                 >
                                     <span>Validasi</span>
                                     <ArrowUpRight className="w-3 h-3" />
-                                </a>
+                                </Link>
                             </div>
                         </div>
                     ))}

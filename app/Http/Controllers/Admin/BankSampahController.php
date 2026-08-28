@@ -10,6 +10,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Inertia\Inertia;
 
 class BankSampahController extends Controller
 {
@@ -89,7 +90,7 @@ class BankSampahController extends Controller
         $provinsiList = $bankSampahs->pluck('provinsi')->unique()->filter()->values();
         $kabupatenList = $bankSampahs->pluck('kabupaten')->unique()->filter()->values();
 
-        return view('admin.bank-sampah.index', compact('authData', 'stats', 'bankSampahs', 'provinsiList', 'kabupatenList'));
+        return Inertia::render('super-admin/master-bs/SuperAdminMasterBsIndexPage', compact('authData', 'stats', 'bankSampahs', 'provinsiList', 'kabupatenList'));
     }
 
     /**
@@ -177,8 +178,8 @@ class BankSampahController extends Controller
             'id' => $c->id,
             'nama' => $c->nama,
             'kategori' => $c->kategori ?: 'Anorganik',
-            'harga_beli' => (float) $c->harga_beli,
-            'harga_beli_formatted' => 'Rp ' . number_format($c->harga_beli, 0, ',', '.') . ' / ' . ($c->satuan ?: 'Kg'),
+            'harga_beli' => (float) $c->harga_per_kg,
+            'harga_beli_formatted' => 'Rp ' . number_format($c->harga_per_kg, 0, ',', '.') . ' / ' . ($c->satuan ?: 'Kg'),
             'satuan' => $c->satuan ?: 'Kg',
             'status' => $c->status ?: 'aktif',
         ]);
@@ -199,13 +200,18 @@ class BankSampahController extends Controller
                 'time_formatted' => $t->created_at ? $t->created_at->diffForHumans() : 'Baru saja',
             ]);
 
-        return view('admin.bank-sampah.show', compact(
+        $admins = $adminsList;
+        $petugas = $petugasList;
+        $prices = $trashPricesList;
+        $transactions = $recentTransactionsList;
+
+        return Inertia::render('super-admin/master-bs/SuperAdminMasterBsDetailPage', compact(
             'authData',
             'unitDetail',
-            'adminsList',
-            'petugasList',
-            'trashPricesList',
-            'recentTransactionsList'
+            'admins',
+            'petugas',
+            'prices',
+            'transactions'
         ));
     }
 
@@ -385,6 +391,7 @@ class BankSampahController extends Controller
             ],
         ];
 
-        return view('admin.bank-sampah.sebaran-map', compact('authData', 'bankSampahs', 'gisStats', 'blankSpotInsights'));
+        $blankSpots = $blankSpotInsights;
+        return Inertia::render('super-admin/map/SuperAdminMapPage', compact('authData', 'bankSampahs', 'gisStats', 'blankSpots'));
     }
 }

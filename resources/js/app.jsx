@@ -1,5 +1,35 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
+import { createInertiaApp } from '@inertiajs/react';
+
+// 1. Initialize Inertia.js SPA for Inertia routes
+const hasInertiaRoot = document.getElementById('app') || document.querySelector('script[data-page]');
+if (hasInertiaRoot) {
+    createInertiaApp({
+        resolve: (name) => {
+            const pages = import.meta.glob('./pages/**/*.jsx', { eager: true });
+            let page = pages[`./pages/${name}.jsx`];
+            if (!page) {
+                const normalizedTarget = `./pages/${name}.jsx`.toLowerCase();
+                const matchedKey = Object.keys(pages).find(k => k.toLowerCase() === normalizedTarget);
+                if (matchedKey) {
+                    page = pages[matchedKey];
+                }
+            }
+            if (!page) {
+                throw new Error(`Inertia page component "${name}" not found in ./pages/ directory.`);
+            }
+            return page.default || page;
+        },
+        setup({ el, App, props }) {
+            createRoot(el).render(<App {...props} />);
+        },
+        progress: {
+            color: '#10B981',
+            showSpinner: true,
+        },
+    });
+}
 
 // Helper to safely parse JSON attributes
 const parseDataAttr = (element, attrName, defaultValue = {}) => {

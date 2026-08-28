@@ -166,6 +166,8 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     // Modul Inventaris Gudang, Penjualan Pengepul & Upcycling Unit
     Route::get('/inventaris', [AdminController::class, 'inventory'])->name('inventory');
     Route::get('/inventaris-sampah', [AdminController::class, 'inventory']);
+    Route::post('/inventaris/jual-pengepul', [AdminController::class, 'storeOfftakerSale'])->name('inventory.sale');
+    Route::post('/inventaris/olah-karya', [AdminController::class, 'storeUpcycling'])->name('inventory.upcycling');
 
     // Modul Harga Sampah Unit
     Route::get('/harga', [TrashPriceController::class, 'index'])->name('harga');
@@ -183,6 +185,9 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     // Modul Catatan Pelanggaran Unit
     Route::prefix('pelanggaran')->name('pelanggaran.')->group(function () {
         Route::get('/', [PelanggaranController::class, 'index'])->name('index');
+        Route::post('/', [PelanggaranController::class, 'store'])->name('store');
+        Route::post('/{id}/resolve', [PelanggaranController::class, 'resolve'])->name('resolve');
+        Route::delete('/{id}', [PelanggaranController::class, 'destroy'])->name('destroy');
     });
 
     // Keuangan & Validasi Penarikan Saldo Unit

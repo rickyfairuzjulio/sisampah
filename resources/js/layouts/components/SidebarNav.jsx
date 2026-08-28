@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from '@inertiajs/react';
 import { 
     LayoutGrid, 
     Tag, 
@@ -55,12 +56,12 @@ export default function SidebarNav({ activeMenu = 'dashboard', authData = {}, on
     ];
 
     return (
-        <aside className="h-full w-[260px] bg-white border-r border-slate-200 shadow-sm flex flex-col justify-between select-none">
+        <aside className="h-full w-[260px] bg-white dark:bg-[#0D131F] border-r border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between select-none transition-colors duration-200">
             
             <div>
                 {/* 1. Header Logo */}
-                <div className="h-16 flex items-center justify-between px-6 border-b border-slate-100">
-                    <a href="/" className="flex items-center gap-2.5 group">
+                <div className="h-16 flex items-center justify-between px-6 border-b border-slate-100 dark:border-slate-800">
+                    <Link href="/nasabah/dashboard" className="flex items-center gap-2.5 group">
                         <img 
                             src="/images/logo.png" 
                             alt="SiSampah Logo" 
@@ -70,15 +71,15 @@ export default function SidebarNav({ activeMenu = 'dashboard', authData = {}, on
                                 e.target.src = 'https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/sprout.svg';
                             }}
                         />
-                        <span className="text-xl font-bold text-slate-900 tracking-tight">
-                            SiSampah<span className="text-[#22C55E]">.</span>
+                        <span className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">
+                            SiSampah<span className="text-emerald-500">.</span>
                         </span>
-                    </a>
+                    </Link>
 
                     {onCloseMobile && (
                         <button 
                             onClick={onCloseMobile}
-                            className="lg:hidden p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100"
+                            className="lg:hidden p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
                         >
                             <X className="w-5 h-5" />
                         </button>
@@ -86,7 +87,7 @@ export default function SidebarNav({ activeMenu = 'dashboard', authData = {}, on
                 </div>
 
                 {/* 2. Mini Profil Nasabah Box */}
-                <div className="mx-4 my-4 p-3 bg-slate-50 border border-slate-200 rounded-xl flex items-center gap-3">
+                <div className="mx-4 my-4 p-3 bg-slate-50 dark:bg-[#111827] border border-slate-200 dark:border-slate-800 rounded-xl flex items-center gap-3">
                     {user?.avatar_url ? (
                         <img 
                             src={user.avatar_url} 
@@ -98,22 +99,22 @@ export default function SidebarNav({ activeMenu = 'dashboard', authData = {}, on
                             }}
                         />
                     ) : (
-                        <div className="w-10 h-10 rounded-full bg-emerald-100 border-2 border-emerald-500 flex items-center justify-center text-emerald-700 font-bold shrink-0">
+                        <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-950 border-2 border-emerald-500 flex items-center justify-center text-emerald-700 dark:text-emerald-300 font-bold shrink-0">
                             {user?.name ? user.name.charAt(0).toUpperCase() : 'N'}
                         </div>
                     )}
                     <div className="min-w-0 flex-1">
-                        <p className="font-bold text-[13px] text-slate-900 leading-tight truncate">
+                        <p className="font-bold text-[13px] text-slate-900 dark:text-white leading-tight truncate">
                             {user?.name || 'Ahmad Fauzi'}
                         </p>
-                        <span className="text-[10px] bg-emerald-50 text-emerald-700 border border-emerald-200 px-1.5 py-0.5 rounded inline-block mt-1 font-medium truncate max-w-full">
+                        <span className="text-[10px] bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/80 px-1.5 py-0.5 rounded inline-block mt-1 font-medium truncate max-w-full">
                             Nasabah {bankSampahName}
                         </span>
                     </div>
                 </div>
 
                 {/* 3. Label Menu */}
-                <p className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 px-6 mb-2">
+                <p className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-500 px-6 mb-2">
                     MENU UTAMA
                 </p>
 
@@ -124,30 +125,30 @@ export default function SidebarNav({ activeMenu = 'dashboard', authData = {}, on
                         const isActive = activeMenu === item.key;
 
                         return (
-                            <a
+                            <Link
                                 key={item.key}
                                 href={item.href}
                                 className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm transition-all duration-200 ${
                                     isActive
-                                        ? 'bg-emerald-50 text-emerald-700 font-bold border-l-4 border-emerald-600 shadow-sm'
-                                        : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900 font-semibold'
+                                        ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 font-bold border-l-4 border-emerald-600 dark:border-emerald-500 shadow-sm'
+                                        : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-white font-semibold'
                                 }`}
                             >
-                                <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-emerald-600' : 'text-slate-400'}`} />
+                                <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-400 dark:text-slate-500'}`} />
                                 <span className="truncate">{item.label}</span>
-                            </a>
+                            </Link>
                         );
                     })}
                 </nav>
             </div>
 
             {/* 5. Footer Sidebar */}
-            <div className="p-4 border-t border-slate-100">
+            <div className="p-4 border-t border-slate-100 dark:border-slate-800">
                 <a
                     href="/"
-                    className="w-full border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs py-2.5 rounded-xl flex items-center justify-center gap-2 font-semibold transition-colors shadow-sm"
+                    className="w-full border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 text-xs py-2.5 rounded-xl flex items-center justify-center gap-2 font-semibold transition-colors shadow-sm"
                 >
-                    <ArrowLeft className="w-4 h-4 text-slate-400" />
+                    <ArrowLeft className="w-4 h-4 text-slate-400 dark:text-slate-500" />
                     <span>Kembali ke Beranda</span>
                 </a>
             </div>

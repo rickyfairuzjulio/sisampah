@@ -13,6 +13,7 @@ use App\Core\Services\MidtransService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Inertia\Inertia;
 
 class NasabahController extends Controller
 {
@@ -162,7 +163,7 @@ class NasabahController extends Controller
                 'telepon' => $b->telepon,
             ]);
 
-        return view('nasabah.dashboard', compact(
+        return Inertia::render('nasabah/dashboard/NasabahDashboardPage', compact(
             'authData',
             'gamification',
             'kpiData',
@@ -250,9 +251,10 @@ class NasabahController extends Controller
             'petugas_name' => $p->petugas?->name ?? 'Tim Armada',
         ]);
 
-        return view('nasabah.pickup-form', compact(
+        $bankSampah = $bankSampahData;
+        return Inertia::render('nasabah/pickup/PickupBookingPage', compact(
             'authData',
-            'bankSampahData',
+            'bankSampah',
             'trashCategories',
             'pickupHistory'
         ));
@@ -414,7 +416,7 @@ class NasabahController extends Controller
             'penarikan_pending' => $penarikanPending,
         ];
 
-        return view('nasabah.wallet', compact(
+        return Inertia::render('nasabah/wallet/WalletPage', compact(
             'authData',
             'saldo',
             'walletStats',
@@ -608,7 +610,7 @@ class NasabahController extends Controller
             'bank_sampah_id' => $user?->bank_sampah_id,
         ];
 
-        return view('nasabah.certificate', compact(
+        return Inertia::render('nasabah/certificate/CertificatePage', compact(
             'authData',
             'stats',
             'impact',
